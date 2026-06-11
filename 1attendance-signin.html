@@ -1,0 +1,570 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Sign In">
+<title>Ashram Sign-In</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    --burgundy: #6B1F2A; --gold: #C9A84C;
+    --guruvara-teal: #0E4D4D; --vigil-indigo: #1E2A5E;
+    --bg: #F5F0E8; --surface: #FFFFFF;
+    --text: #1A1A1A; --text-muted: #666;
+    --green: #2D6A35; --green-light: #E8F5E9;
+    --amber: #B8620A; --amber-light: #FFF3E0;
+    --radius: 12px;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); min-height: 100vh; color: var(--text); overflow-x: hidden; }
+
+  /* HEADER */
+  .header { background: var(--burgundy); color: white; padding: 12px 16px 10px; position: sticky; top: 0; z-index: 10; }
+  .header.guruvara-mode { background: var(--guruvara-teal); }
+  .header.vigil-mode { background: var(--vigil-indigo); }
+  .header-title { font-size: 17px; font-weight: 600; }
+  .header-sub { font-size: 12px; opacity: 0.8; }
+
+  /* SCREENS */
+  .screen { display: none; padding: 16px; }
+  .screen.active { display: block; }
+  .content-area { padding-bottom: 70px; }
+
+  /* SCHEDULE CARDS */
+  .section-label { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+  .schedule-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+  .sched-card { padding: 14px 6px; border-radius: var(--radius); border: 2.5px solid #DDD; background: var(--surface); color: var(--text-muted); font-size: 14px; font-weight: 600; text-align: center; cursor: pointer; -webkit-appearance: none; line-height: 1.3; transition: all 0.15s; }
+  .sched-card-icon { font-size: 22px; display: block; margin-bottom: 4px; }
+  .sched-card.active-weekday  { background: #FDF0F2; border-color: var(--burgundy); color: var(--burgundy); }
+  .sched-card.active-guruvara { background: #EEF7F7; border-color: var(--guruvara-teal); color: var(--guruvara-teal); }
+  .sched-card.active-vigil    { background: #EEEEF8; border-color: var(--vigil-indigo); color: var(--vigil-indigo); }
+
+  /* ACTION BUTTONS */
+  .action-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .action-btn { padding: 18px 10px; font-size: 20px; font-weight: 700; border-radius: var(--radius); border: 2.5px solid transparent; cursor: pointer; text-align: center; -webkit-appearance: none; transition: all 0.12s; }
+  .action-btn .action-icon { font-size: 28px; display: block; margin-bottom: 4px; }
+  .action-btn .action-label { font-size: 18px; }
+  .action-btn.arrive { background: var(--green-light); border-color: #A5D6A7; color: var(--green); }
+  .action-btn.depart { background: var(--amber-light); border-color: #FFCC80; color: var(--amber); }
+  .action-btn.arrive.selected { background: var(--green); border-color: var(--green); color: white; }
+  .action-btn.depart.selected { background: var(--amber); border-color: var(--amber); color: white; }
+
+  /* EVENT LISTS — show/hide by schedule */
+  .event-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .event-set { display: none; }
+  .event-set.active { display: contents; }
+  .event-btn { background: var(--surface); border: 1.5px solid #DDD; border-radius: var(--radius); padding: 16px 20px; font-size: 17px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; -webkit-appearance: none; transition: all 0.12s; }
+  .event-btn:active, .event-btn.selected { background: #F0E8D0; border-color: var(--gold); border-width: 2px; font-weight: 700; }
+
+  /* NAMES SCREEN */
+  .names-top-bar { background: var(--burgundy); color: white; padding: 10px 16px; margin: -16px -16px 0 -16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .names-top-bar.guruvara-mode { background: var(--guruvara-teal); }
+  .names-top-bar.vigil-mode { background: var(--vigil-indigo); }
+  .names-event-label { font-size: 14px; font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .change-btn { font-size: 14px; font-weight: 700; background: rgba(255,255,255,0.9); border: none; color: var(--burgundy); padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+  .names-top-bar.guruvara-mode .change-btn { color: var(--guruvara-teal); }
+  .names-top-bar.vigil-mode .change-btn { color: var(--vigil-indigo); }
+  .home-btn { font-size: 13px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.45); color: white; padding: 8px 14px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+
+  /* ACTION BANNER */
+  .action-banner { padding: 14px 16px 12px; border-bottom: 3px solid transparent; transition: background 0.2s; }
+  .action-banner.arrive { background: var(--green-light); color: var(--green); border-color: #81C784; }
+  .action-banner.depart { background: var(--amber-light); color: var(--amber); border-color: #FFB74D; }
+  .action-banner-event { font-size: 22px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
+  .action-banner-row2 { display: flex; align-items: center; gap: 10px; }
+  .action-banner-icon { font-size: 20px; flex-shrink: 0; }
+  .action-banner-text { font-size: 18px; font-weight: 700; letter-spacing: 0.04em; }
+  .action-banner-change { font-size: 13px; font-weight: 600; padding: 5px 13px; border-radius: 20px; border: 2px solid currentColor; background: transparent; color: inherit; cursor: pointer; margin-left: auto; opacity: 0.75; flex-shrink: 0; -webkit-appearance: none; }
+
+  .today-bar { background: var(--surface); border-bottom: 1px solid #EEE; padding: 7px 16px; display: flex; gap: 16px; font-size: 13px; color: var(--text-muted); }
+  .today-bar strong { color: var(--text); }
+
+  /* SEARCH */
+  .search-wrap { position: relative; margin: 12px 0 10px; }
+  .search-input { width: 100%; padding: 12px 16px 12px 40px; font-size: 16px; border: 1.5px solid #DDD; border-radius: var(--radius); background: var(--surface); color: var(--text); -webkit-appearance: none; }
+  .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #999; pointer-events: none; }
+
+  /* NAME BUTTONS */
+  .name-grid { column-count: 3; column-gap: 8px; }
+  .name-btn { display: block; width: 100%; margin-bottom: 8px; break-inside: avoid; background: var(--surface); border: 1.5px solid #DDD; border-radius: var(--radius); padding: 12px 6px; font-size: 14px; font-weight: 500; color: var(--text); cursor: pointer; text-align: center; -webkit-appearance: none; line-height: 1.2; }
+  .name-btn:active { transform: scale(0.96); }
+  .name-btn.arrived { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .name-btn.arrived::after { content: ' ✓'; font-weight: 700; }
+  .name-btn.departed { background: var(--amber-light); border-color: var(--amber); color: var(--amber); }
+  .name-btn.departed::after { content: ' ↩'; font-weight: 700; }
+  .name-btn.hidden { display: none; }
+
+  /* CONFIRMATION */
+  .confirm-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; padding: 2rem; }
+  .confirm-icon { font-size: 80px; margin-bottom: 16px; animation: pop 0.3s ease-out; }
+  @keyframes pop { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+  .confirm-name { font-size: 28px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
+  .confirm-name.depart-color { color: var(--amber); }
+  .confirm-detail { font-size: 17px; color: var(--text-muted); margin-bottom: 6px; }
+  .confirm-time { font-size: 15px; color: var(--text-muted); margin-bottom: 32px; }
+  .back-btn { background: var(--surface); border: 1.5px solid #DDD; border-radius: var(--radius); padding: 14px 32px; font-size: 17px; font-weight: 600; color: var(--text); cursor: pointer; -webkit-appearance: none; margin-bottom: 12px; }
+  .home-btn-confirm { background: transparent; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; padding: 8px; text-decoration: underline; }
+
+  /* SESSIONS */
+  .admin-section { background: var(--surface); border: 1px solid #DDD; border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+  .admin-section h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+  .session-item { display: flex; align-items: flex-start; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #EEE; gap: 8px; }
+  .session-item:last-child { border-bottom: none; }
+  .session-item-info { flex: 1; min-width: 0; }
+  .session-item-title { font-size: 14px; font-weight: 600; }
+  .session-item-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+  .session-item-actions { display: flex; gap: 5px; flex-shrink: 0; }
+  .mini-btn { font-size: 12px; padding: 5px 9px; border-radius: 8px; border: 1px solid #DDD; background: var(--surface); cursor: pointer; -webkit-appearance: none; }
+  .mini-btn.export { background: #E8F5E9; border-color: #A5D6A7; color: var(--green); font-weight: 600; }
+  .mini-btn.delete { background: #FFEBEE; border-color: #FFCDD2; color: #C62828; }
+  .pending-dot { width:7px; height:7px; border-radius:50%; background:#E6A817; display:inline-block; margin-right:5px; vertical-align:middle; }
+  .synced-dot  { width:7px; height:7px; border-radius:50%; background:var(--green); display:inline-block; margin-right:5px; vertical-align:middle; }
+  .admin-btn { width: 100%; padding: 13px; font-size: 15px; font-weight: 600; border-radius: var(--radius); border: none; cursor: pointer; margin-bottom: 10px; -webkit-appearance: none; }
+  .admin-btn.export-all { background: var(--green); color: white; }
+  .admin-btn.back { background: #EEE; color: var(--text); }
+  .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 14px; }
+
+  /* BOTTOM NAV */
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid #DDD; display: flex; padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 20; }
+  .nav-wrap { position: relative; flex: 1; display: flex; }
+  .nav-btn { flex: 1; padding: 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: #999; border: none; background: transparent; cursor: pointer; }
+  .nav-btn.active { color: var(--burgundy); }
+  .nav-icon { font-size: 22px; }
+  .pending-badge { position: absolute; top: 6px; right: calc(25% - 8px); background: #E6A817; color: white; font-size: 10px; font-weight: 700; border-radius: 10px; padding: 1px 5px; min-width: 18px; text-align: center; }
+  .event-screen-inner { max-width: 520px; margin: 0 auto; }
+</style>
+</head>
+<body>
+
+<div class="header" id="main-header">
+  <div class="header-title">Temple Adi Da — Sign-In</div>
+  <div class="header-sub" id="header-date"></div>
+</div>
+
+<div class="content-area">
+
+  <!-- SCREEN: EVENT + ACTION -->
+  <div class="screen active" id="screen-event">
+    <div class="event-screen-inner">
+
+      <div class="section-label">Schedule</div>
+      <div class="schedule-cards">
+        <button class="sched-card active-weekday" id="btn-weekday" onclick="setSchedule('weekday')">
+          <span class="sched-card-icon">☀️</span>Weekday
+        </button>
+        <button class="sched-card" id="btn-guruvara" onclick="setSchedule('guruvara')">
+          <span class="sched-card-icon">🌕</span>Guruvara
+        </button>
+        <button class="sched-card" id="btn-vigil" onclick="setSchedule('vigil')">
+          <span class="sched-card-icon">🕯️</span>Temple Vigil
+        </button>
+      </div>
+
+      <div class="section-label">I am…</div>
+      <div class="action-toggle">
+        <button class="action-btn arrive selected" id="btn-arrive" onclick="selectAction('arrive')">
+          <span class="action-icon">🙏</span>
+          <span class="action-label">Arriving</span>
+        </button>
+        <button class="action-btn depart" id="btn-depart" onclick="selectAction('depart')">
+          <span class="action-icon">🚶</span>
+          <span class="action-label">Departing</span>
+        </button>
+      </div>
+
+      <div class="section-label">Event</div>
+      <div class="event-grid">
+
+        <!-- WEEKDAY events -->
+        <div class="event-set active" id="events-weekday">
+          <button class="event-btn" onclick="selectEvent(this,'AM Meditation')">AM Meditation</button>
+          <button class="event-btn" onclick="selectEvent(this,'Morning Puja')">Morning Puja</button>
+          <button class="event-btn" onclick="selectEvent(this,'AM Meditation after Puja')">AM Meditation after Puja</button>
+          <button class="event-btn" onclick="selectEvent(this,'PM Meditation')">PM Meditation</button>
+          <button class="event-btn" onclick="selectEvent(this,'Evening Arati')">Evening Arati</button>
+          <button class="event-btn" onclick="selectEvent(this,'PM Meditation after Arati')">PM Meditation after Arati</button>
+        </div>
+
+        <!-- GURUVARA events -->
+        <div class="event-set" id="events-guruvara">
+          <button class="event-btn" onclick="selectEvent(this,'Saturday Evening: Chanting and Darshan')">Saturday Evening: Chanting and Darshan</button>
+          <button class="event-btn" onclick="selectEvent(this,'4:15am Meditation')">4:15am Meditation</button>
+          <button class="event-btn" onclick="selectEvent(this,'6:00am Ruchira Avatara Murti and Paduka Pujas')">6:00am Ruchira Avatara Murti and Paduka Pujas</button>
+          <button class="event-btn" onclick="selectEvent(this,'10:00am Recitation and Da-Om Chanting')">10:00am Recitation and Da-Om Chanting</button>
+          <button class="event-btn" onclick="selectEvent(this,'10:50am Meditation')">10:50am Meditation</button>
+          <button class="event-btn" onclick="selectEvent(this,'2:30pm Full Cycle of Devotions')">2:30pm Full Cycle of Devotions</button>
+          <button class="event-btn" onclick="selectEvent(this,'4:00pm Meditation')">4:00pm Meditation</button>
+          <button class="event-btn" onclick="selectEvent(this,'Arati Puja')">Arati Puja</button>
+          <button class="event-btn" onclick="selectEvent(this,'PM Meditation after Arati')">PM Meditation after Arati</button>
+        </div>
+
+        <!-- TEMPLE VIGIL events -->
+        <div class="event-set" id="events-vigil">
+          <button class="event-btn" onclick="selectEvent(this,'12:00am – 1:30am')">12:00am – 1:30am</button>
+          <button class="event-btn" onclick="selectEvent(this,'1:30am – 3:00am')">1:30am – 3:00am</button>
+          <button class="event-btn" onclick="selectEvent(this,'3:00am – 4:15am')">3:00am – 4:15am</button>
+          <button class="event-btn" onclick="selectEvent(this,'8:00am – 9:00am')">8:00am – 9:00am</button>
+          <button class="event-btn" onclick="selectEvent(this,'7:00pm – 8:30pm')">7:00pm – 8:30pm</button>
+          <button class="event-btn" onclick="selectEvent(this,'8:30pm – 10:00pm')">8:30pm – 10:00pm</button>
+          <button class="event-btn" onclick="selectEvent(this,'10:00pm – 11:00pm')">10:00pm – 11:00pm</button>
+          <button class="event-btn" onclick="selectEvent(this,'11:00pm – 12:00am')">11:00pm – 12:00am</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: NAMES -->
+  <div class="screen" id="screen-names">
+    <div class="names-top-bar" id="names-top-bar">
+      <div class="names-event-label" id="names-event-label"></div>
+      <button class="change-btn" onclick="showScreen('event')">Change event</button>
+      <button class="home-btn"   onclick="showScreen('event')">🏠 Home</button>
+    </div>
+    <div class="action-banner arrive" id="action-banner">
+      <div class="action-banner-event" id="action-banner-event"></div>
+      <div class="action-banner-row2">
+        <span class="action-banner-icon" id="action-banner-icon">🙏</span>
+        <span class="action-banner-text" id="action-banner-text">ARRIVING</span>
+        <button class="action-banner-change" onclick="flipAction()">Switch to Departing</button>
+      </div>
+    </div>
+    <div class="today-bar">
+      <span>Today: <strong id="today-count">0</strong></span>
+      <span>This event: <strong id="event-count">0</strong></span>
+    </div>
+    <div style="padding: 0 0 12px;">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="search-input" type="text" placeholder="Search name…"
+          oninput="filterNames()" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
+      </div>
+      <div class="name-grid">
+        <button class="name-btn" id="nb-Ann Walsh"            onclick="recordAction('Ann Walsh')">Ann Walsh</button>
+        <button class="name-btn" id="nb-Beatrys de Ligt"      onclick="recordAction('Beatrys de Ligt')">Beatrys de Ligt</button>
+        <button class="name-btn" id="nb-Blythe Massey"        onclick="recordAction('Blythe Massey')">Blythe Massey</button>
+        <button class="name-btn" id="nb-Bob DeLollis"         onclick="recordAction('Bob DeLollis')">Bob DeLollis</button>
+        <button class="name-btn" id="nb-Bruce Burnham"        onclick="recordAction('Bruce Burnham')">Bruce Burnham</button>
+        <button class="name-btn" id="nb-Carol Smith"          onclick="recordAction('Carol Smith')">Carol Smith</button>
+        <button class="name-btn" id="nb-Caroline Lindsay"     onclick="recordAction('Caroline Lindsay')">Caroline Lindsay</button>
+        <button class="name-btn" id="nb-Chris Beaver"         onclick="recordAction('Chris Beaver')">Chris Beaver</button>
+        <button class="name-btn" id="nb-Chris Merz"           onclick="recordAction('Chris Merz')">Chris Merz</button>
+        <button class="name-btn" id="nb-Cynthia Mancor"       onclick="recordAction('Cynthia Mancor')">Cynthia Mancor</button>
+        <button class="name-btn" id="nb-Da-vid Forsythe"      onclick="recordAction('Da-vid Forsythe')">Da-vid Forsythe</button>
+        <button class="name-btn" id="nb-Diane Bryan"          onclick="recordAction('Diane Bryan')">Diane Bryan</button>
+        <button class="name-btn" id="nb-Elise Bady"           onclick="recordAction('Elise Bady')">Elise Bady</button>
+        <button class="name-btn" id="nb-Greg Wells"           onclick="recordAction('Greg Wells')">Greg Wells</button>
+        <button class="name-btn" id="nb-Hoi Ngo"              onclick="recordAction('Hoi Ngo')">Hoi Ngo</button>
+        <button class="name-btn" id="nb-Inca Hincape"         onclick="recordAction('Inca Hincape')">Inca Hincape</button>
+        <button class="name-btn" id="nb-Jana Divisova"        onclick="recordAction('Jana Divisova')">Jana Divisova</button>
+        <button class="name-btn" id="nb-Julian Butler"        onclick="recordAction('Julian Butler')">Julian Butler</button>
+        <button class="name-btn" id="nb-Kristien Otten"       onclick="recordAction('Kristien Otten')">Kristien Otten</button>
+        <button class="name-btn" id="nb-Krysia Banachowski"   onclick="recordAction('Krysia Banachowski')">Krysia Banachowski</button>
+        <button class="name-btn" id="nb-Leo Burke"            onclick="recordAction('Leo Burke')">Leo Burke</button>
+        <button class="name-btn" id="nb-Linda Oppenheimer"    onclick="recordAction('Linda Oppenheimer')">Linda Oppenheimer</button>
+        <button class="name-btn" id="nb-Lisa Lurie"           onclick="recordAction('Lisa Lurie')">Lisa Lurie</button>
+        <button class="name-btn" id="nb-Madhuka Ranmuthu"     onclick="recordAction('Madhuka Ranmuthu')">Madhuka Ranmuthu</button>
+        <button class="name-btn" id="nb-Malcolm Burke"        onclick="recordAction('Malcolm Burke')">Malcolm Burke</button>
+        <button class="name-btn" id="nb-Michael Shaw"         onclick="recordAction('Michael Shaw')">Michael Shaw</button>
+        <button class="name-btn" id="nb-Michiel Vos"          onclick="recordAction('Michiel Vos')">Michiel Vos</button>
+        <button class="name-btn" id="nb-Miki Malinka"         onclick="recordAction('Miki Malinka')">Miki Malinka</button>
+        <button class="name-btn" id="nb-Nancy Piotrowski"     onclick="recordAction('Nancy Piotrowski')">Nancy Piotrowski</button>
+        <button class="name-btn" id="nb-Pamela Gray"          onclick="recordAction('Pamela Gray')">Pamela Gray</button>
+        <button class="name-btn" id="nb-Radha Webley"         onclick="recordAction('Radha Webley')">Radha Webley</button>
+        <button class="name-btn" id="nb-Robin Temple"         onclick="recordAction('Robin Temple')">Robin Temple</button>
+        <button class="name-btn" id="nb-Siegerdina Mandema"   onclick="recordAction('Siegerdina Mandema')">Siegerdina Mandema</button>
+        <button class="name-btn" id="nb-Vanessa Kenoyer"      onclick="recordAction('Vanessa Kenoyer')">Vanessa Kenoyer</button>
+        <button class="name-btn" id="nb-Yvonne Slayman"       onclick="recordAction('Yvonne Slayman')">Yvonne Slayman</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: CONFIRMATION -->
+  <div class="screen" id="screen-confirm">
+    <div class="confirm-wrap">
+      <div class="confirm-icon" id="confirm-icon">✅</div>
+      <div class="confirm-name" id="confirm-name"></div>
+      <div class="confirm-detail" id="confirm-detail"></div>
+      <div class="confirm-detail" id="confirm-event-label"></div>
+      <div class="confirm-time"   id="confirm-time"></div>
+      <button class="back-btn" onclick="showScreen('names')">← Back to Names</button>
+      <button class="home-btn-confirm" onclick="showScreen('event')">Return to home screen</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: SESSIONS -->
+  <div class="screen" id="screen-admin">
+    <p style="font-size:18px;font-weight:600;margin-bottom:16px">Saved Sessions</p>
+    <button class="admin-btn export-all" onclick="exportAll()">⬇ Export All to CSV</button>
+    <div class="admin-section">
+      <h3>Sessions <span style="color:#999;font-weight:400" id="pending-label"></span></h3>
+      <div id="sessions-list"></div>
+    </div>
+    <button class="admin-btn back" onclick="showScreen('event')">← Back to Sign-In</button>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-wrap">
+    <button class="nav-btn active" id="nav-signin" onclick="showScreen('event')">
+      <span class="nav-icon">✍️</span><span>Sign In</span>
+    </button>
+  </div>
+  <div class="nav-wrap" style="position:relative">
+    <button class="nav-btn" id="nav-admin" onclick="showScreen('admin');renderSessions()">
+      <span class="nav-icon">📋</span><span>Sessions</span>
+    </button>
+    <span class="pending-badge" id="pending-badge" style="display:none">0</span>
+  </div>
+</div>
+
+<script>
+const DEVOTEES = ["Ann Walsh","Beatrys de Ligt","Blythe Massey","Bob DeLollis","Bruce Burnham","Carol Smith","Caroline Lindsay","Chris Beaver","Chris Merz","Cynthia Mancor","Da-vid Forsythe","Diane Bryan","Elise Bady","Greg Wells","Hoi Ngo","Inca Hincape","Jana Divisova","Julian Butler","Kristien Otten","Krysia Banachowski","Leo Burke","Linda Oppenheimer","Lisa Lurie","Madhuka Ranmuthu","Malcolm Burke","Michael Shaw","Michiel Vos","Miki Malinka","Nancy Piotrowski","Pamela Gray","Radha Webley","Robin Temple","Siegerdina Mandema","Vanessa Kenoyer","Yvonne Slayman"];
+
+let schedule     = 'weekday';
+let currentAction = 'arrive';
+let currentEvent  = null;
+let currentScreen = 'event';
+let autoResetTimer = null;
+let allSignIns = [];
+try { allSignIns = JSON.parse(localStorage.getItem('signins') || '[]'); } catch(e) {}
+
+function init() {
+  const day = new Date().getDay();
+  if (day === 4) setSchedule('guruvara'); else setSchedule('weekday');
+  updateHeaderDate();
+  updatePendingBadge();
+  setInterval(updateHeaderDate, 60000);
+}
+
+function updateHeaderDate() {
+  const now = new Date();
+  document.getElementById('header-date').textContent =
+    now.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' });
+}
+
+function setSchedule(s) {
+  schedule = s;
+  document.getElementById('main-header').className = 'header' + (s !== 'weekday' ? ' ' + s + '-mode' : '');
+  ['weekday','guruvara','vigil'].forEach(k => {
+    document.getElementById('btn-' + k).className = 'sched-card' + (k === s ? ' active-' + k : '');
+    document.getElementById('events-' + k).className = 'event-set' + (k === s ? ' active' : '');
+  });
+  document.getElementById('names-top-bar').className =
+    'names-top-bar' + (s !== 'weekday' ? ' ' + s + '-mode' : '');
+  // Clear selected event if it was from a different schedule
+  document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
+  currentEvent = null;
+}
+
+function selectAction(action) {
+  currentAction = action;
+  document.getElementById('btn-arrive').classList.toggle('selected', action === 'arrive');
+  document.getElementById('btn-depart').classList.toggle('selected', action === 'depart');
+  if (currentEvent) goToNames();
+}
+
+function selectEvent(btn, eventName) {
+  document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  currentEvent = eventName;
+  goToNames();
+}
+
+function goToNames() {
+  document.getElementById('names-event-label').textContent = currentEvent;
+  updateActionBanner();
+  document.getElementById('search-input').value = '';
+  filterNames();
+  updateNameStates();
+  updateCounts();
+  showScreen('names');
+}
+
+function updateActionBanner() {
+  const isArrive = currentAction === 'arrive';
+  const banner = document.getElementById('action-banner');
+  banner.className = 'action-banner ' + (isArrive ? 'arrive' : 'depart');
+  document.getElementById('action-banner-event').textContent = currentEvent || '';
+  document.getElementById('action-banner-icon').textContent  = isArrive ? '🙏' : '🚶';
+  document.getElementById('action-banner-text').textContent  = isArrive ? 'ARRIVING' : 'DEPARTING';
+  banner.querySelector('.action-banner-change').textContent  =
+    isArrive ? 'Switch to Departing' : 'Switch to Arriving';
+}
+
+function flipAction() {
+  currentAction = currentAction === 'arrive' ? 'depart' : 'arrive';
+  document.getElementById('btn-arrive').classList.toggle('selected', currentAction === 'arrive');
+  document.getElementById('btn-depart').classList.toggle('selected', currentAction === 'depart');
+  currentEvent = null;
+  document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
+  showScreen('event');
+}
+
+function filterNames() {
+  const q = document.getElementById('search-input').value.toLowerCase().trim();
+  DEVOTEES.forEach(name => {
+    const btn = document.getElementById('nb-' + name);
+    if (btn) btn.classList.toggle('hidden', q !== '' && !name.toLowerCase().includes(q));
+  });
+}
+
+function updateNameStates() {
+  const todayStr = todayDate();
+  const latest = {};
+  allSignIns.filter(r => r.date === todayStr && r.event === currentEvent)
+    .forEach(r => { latest[r.name] = r.action; });
+  DEVOTEES.forEach(name => {
+    const btn = document.getElementById('nb-' + name);
+    if (!btn) return;
+    btn.classList.remove('arrived','departed');
+    if (latest[name] === 'arrive') btn.classList.add('arrived');
+    if (latest[name] === 'depart') btn.classList.add('departed');
+  });
+}
+
+function recordAction(name) {
+  const now = new Date();
+  allSignIns.push({ name, event: currentEvent, action: currentAction,
+    date: todayDate(), time: formatTime(now), timestamp: now.toISOString() });
+  try { localStorage.setItem('signins', JSON.stringify(allSignIns)); } catch(e) {}
+  updatePendingBadge();
+  updateNameStates();
+  updateCounts();
+  const isArrive = currentAction === 'arrive';
+  document.getElementById('confirm-icon').textContent   = isArrive ? '✅' : '👋';
+  document.getElementById('confirm-name').textContent   = name;
+  document.getElementById('confirm-name').className     = 'confirm-name' + (isArrive ? '' : ' depart-color');
+  document.getElementById('confirm-detail').textContent = isArrive ? 'Signed in' : 'Signed out';
+  document.getElementById('confirm-event-label').textContent = currentEvent;
+  document.getElementById('confirm-time').textContent   = formatTime(now);
+  showScreen('confirm');
+  setTimeout(() => { if (currentScreen === 'confirm') showScreen('names'); }, 2500);
+}
+
+function updateCounts() {
+  const t = todayDate();
+  const all = allSignIns.filter(r => r.date === t);
+  const evt = all.filter(r => r.event === currentEvent && r.action === 'arrive');
+  document.getElementById('today-count').textContent = new Set(all.map(r=>r.name)).size;
+  document.getElementById('event-count').textContent = new Set(evt.map(r=>r.name)).size;
+}
+
+function showScreen(name) {
+  currentScreen = name;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (['event','names','confirm'].includes(name)) document.getElementById('nav-signin').classList.add('active');
+  else if (name === 'admin') document.getElementById('nav-admin').classList.add('active');
+  if (name === 'names') resetAutoTimer();
+  if (name === 'event') clearAutoTimer();
+}
+
+function resetAutoTimer() {
+  clearAutoTimer();
+  autoResetTimer = setTimeout(() => showScreen('event'), 10 * 60 * 1000);
+}
+function clearAutoTimer() {
+  if (autoResetTimer) { clearTimeout(autoResetTimer); autoResetTimer = null; }
+}
+document.addEventListener('touchstart', () => { if (currentScreen==='names') resetAutoTimer(); }, {passive:true});
+
+function getSessions() {
+  const map = {};
+  allSignIns.forEach(r => {
+    const key = r.date+'||'+r.event;
+    if (!map[key]) map[key] = { date:r.date, event:r.event, records:[] };
+    map[key].records.push(r);
+  });
+  return Object.values(map).sort((a,b) => b.date.localeCompare(a.date));
+}
+
+function renderSessions() {
+  const sessions = getSessions();
+  const list = document.getElementById('sessions-list');
+  const exported = JSON.parse(localStorage.getItem('exported_keys') || '[]');
+  if (!sessions.length) { list.innerHTML='<div class="empty-state">No sessions yet.</div>'; document.getElementById('pending-label').textContent=''; return; }
+  const pending = sessions.filter(s => !exported.includes(s.date+'||'+s.event)).length;
+  document.getElementById('pending-label').textContent = pending > 0 ? '('+pending+' not yet exported)' : '(all exported)';
+  list.innerHTML = '';
+  sessions.forEach(s => {
+    const key = s.date+'||'+s.event;
+    const done = exported.includes(key);
+    const arr  = [...new Set(s.records.filter(r=>r.action==='arrive').map(r=>r.name))];
+    const dep  = [...new Set(s.records.filter(r=>r.action==='depart').map(r=>r.name))];
+    const item = document.createElement('div');
+    item.className = 'session-item';
+    item.innerHTML = '<div class="session-item-info"><div class="session-item-title"><span class="'+(done?'synced-dot':'pending-dot')+'"></span>'+s.event+' — '+formatDisplayDate(s.date)+'</div><div class="session-item-meta">Arrivals ('+arr.length+'): '+(arr.join(', ')||'—')+'<br>Departures ('+dep.length+'): '+(dep.join(', ')||'—')+'</div></div><div class="session-item-actions"><button class="mini-btn export" onclick="exportSession(\''+key+'\')">CSV</button><button class="mini-btn delete" onclick="deleteSession(\''+key+'\')">✕</button></div>';
+    list.appendChild(item);
+  });
+}
+
+function exportSession(key) {
+  const s = getSessions().find(x => x.date+'||'+x.event === key);
+  if (!s) return;
+  const lines = ['Name,Action,Event,Date,Time'];
+  s.records.forEach(r => lines.push('"'+r.name+'","'+r.action+'","'+r.event+'","'+r.date+'","'+r.time+'"'));
+  downloadCSV(lines.join('\n'), 'signin_'+s.date+'_'+s.event.replace(/[^a-z0-9]/gi,'_')+'.csv');
+  markExported([key]);
+}
+
+function exportAll() {
+  const sessions = getSessions();
+  if (!sessions.length) { alert('No sessions to export.'); return; }
+  const lines = ['Name,Action,Event,Date,Time'];
+  sessions.forEach(s => s.records.forEach(r => lines.push('"'+r.name+'","'+r.action+'","'+r.event+'","'+r.date+'","'+r.time+'"')));
+  downloadCSV(lines.join('\n'), 'all_signins_export.csv');
+  markExported(sessions.map(s => s.date+'||'+s.event));
+}
+
+function markExported(keys) {
+  const stored = JSON.parse(localStorage.getItem('exported_keys') || '[]');
+  keys.forEach(k => { if (!stored.includes(k)) stored.push(k); });
+  try { localStorage.setItem('exported_keys', JSON.stringify(stored)); } catch(e) {}
+  updatePendingBadge(); renderSessions();
+}
+
+function deleteSession(key) {
+  if (!confirm('Delete all records for this session?')) return;
+  const [date, event] = key.split('||');
+  allSignIns = allSignIns.filter(r => !(r.date===date && r.event===event));
+  try { localStorage.setItem('signins', JSON.stringify(allSignIns)); } catch(e) {}
+  updatePendingBadge(); renderSessions();
+}
+
+function updatePendingBadge() {
+  const pending = getSessions().filter(s => !JSON.parse(localStorage.getItem('exported_keys')||'[]').includes(s.date+'||'+s.event)).length;
+  const badge = document.getElementById('pending-badge');
+  badge.textContent = pending;
+  badge.style.display = pending > 0 ? 'inline-block' : 'none';
+}
+
+function downloadCSV(csv, filename) {
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function todayDate() {
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function formatTime(d) {
+  return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
+function formatDisplayDate(str) {
+  const [y,m,d] = str.split('-');
+  return parseInt(d)+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m)-1]+' '+y;
+}
+
+init();
+</script>
+</body>
+</html>
