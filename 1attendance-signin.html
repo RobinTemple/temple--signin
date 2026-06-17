@@ -1,4 +1,5 @@
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,23 +7,31 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#121214">
 <meta name="apple-mobile-web-app-title" content="Sign In">
 <title>Ashram Sign-In</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   :root {
-    --burgundy: #6B1F2A; --gold: #C9A84C;
-    --guruvara-teal: #0E4D4D; --vigil-indigo: #1E2A5E;
-    --bg: #F5F0E8; --surface: #FFFFFF;
-    --text: #1A1A1A; --text-muted: #666;
-    --green: #2D6A35; --green-light: #E8F5E9;
-    --amber: #B8620A; --amber-light: #FFF3E0;
+    /* Header colour for each schedule mode — kept clearly distinct from amber/depart */
+    --primary: #3A5A7D; --primary-text: #8FB7E3; --primary-light: #233244;
+    --gold: #C9A84C; --gold-light: #332B16;
+    --guruvara-teal: #0E4D4D; --guruvara-text: #5FCFC4; --guruvara-light: #16302F;
+    --vigil-indigo: #1E2A5E; --vigil-text: #93A6F2; --vigil-light: #1A2140;
+
+    --bg: #121214; --surface: #1C1C20; --surface-2: #26262B;
+    --border: #3A3A40; --border-light: #2A2A2F;
+    --text: #ECECEE; --text-muted: #9B9BA2;
+
+    --green: #5BC169; --green-solid: #2E6B38; --green-light: #1B2E1E; --green-border: #355C39;
+    --amber: #E0974B; --amber-solid: #8C540F; --amber-light: #332416; --amber-border: #5C4422;
+    --red: #E98880; --red-light: #332020; --red-border: #5C3232;
     --radius: 12px;
   }
   body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); min-height: 100vh; color: var(--text); overflow-x: hidden; }
 
   /* HEADER */
-  .header { background: var(--burgundy); color: white; padding: 12px 16px 10px; position: sticky; top: 0; z-index: 10; }
+  .header { background: var(--primary); color: white; padding: 12px 16px 10px; position: sticky; top: 0; z-index: 10; }
   .header.guruvara-mode { background: var(--guruvara-teal); }
   .header.vigil-mode { background: var(--vigil-indigo); }
   .header-title { font-size: 17px; font-weight: 600; }
@@ -36,60 +45,60 @@
   /* SCHEDULE CARDS */
   .section-label { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
   .schedule-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
-  .sched-card { padding: 14px 6px; border-radius: var(--radius); border: 2.5px solid #DDD; background: var(--surface); color: var(--text-muted); font-size: 14px; font-weight: 600; text-align: center; cursor: pointer; -webkit-appearance: none; line-height: 1.3; transition: all 0.15s; }
+  .sched-card { padding: 14px 6px; border-radius: var(--radius); border: 2.5px solid var(--border); background: var(--surface); color: var(--text-muted); font-size: 14px; font-weight: 600; text-align: center; cursor: pointer; -webkit-appearance: none; line-height: 1.3; transition: all 0.15s; }
   .sched-card-icon { font-size: 22px; display: block; margin-bottom: 4px; }
-  .sched-card.active-weekday  { background: #FDF0F2; border-color: var(--burgundy); color: var(--burgundy); }
-  .sched-card.active-guruvara { background: #EEF7F7; border-color: var(--guruvara-teal); color: var(--guruvara-teal); }
-  .sched-card.active-vigil    { background: #EEEEF8; border-color: var(--vigil-indigo); color: var(--vigil-indigo); }
+  .sched-card.active-weekday  { background: var(--primary-light); border-color: var(--primary-text); color: var(--primary-text); }
+  .sched-card.active-guruvara { background: var(--guruvara-light); border-color: var(--guruvara-text); color: var(--guruvara-text); }
+  .sched-card.active-vigil    { background: var(--vigil-light); border-color: var(--vigil-text); color: var(--vigil-text); }
 
   /* ACTION BUTTONS */
   .action-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
   .action-btn { padding: 18px 10px; font-size: 20px; font-weight: 700; border-radius: var(--radius); border: 2.5px solid transparent; cursor: pointer; text-align: center; -webkit-appearance: none; transition: all 0.12s; }
   .action-btn .action-icon { font-size: 28px; display: block; margin-bottom: 4px; }
   .action-btn .action-label { font-size: 18px; }
-  .action-btn.arrive { background: var(--green-light); border-color: #A5D6A7; color: var(--green); }
-  .action-btn.depart { background: var(--amber-light); border-color: #FFCC80; color: var(--amber); }
-  .action-btn.arrive.selected { background: var(--green); border-color: var(--green); color: white; }
-  .action-btn.depart.selected { background: var(--amber); border-color: var(--amber); color: white; }
+  .action-btn.arrive { background: var(--green-light); border-color: var(--green-border); color: var(--green); }
+  .action-btn.depart { background: var(--amber-light); border-color: var(--amber-border); color: var(--amber); }
+  .action-btn.arrive.selected { background: var(--green-solid); border-color: var(--green-solid); color: white; }
+  .action-btn.depart.selected { background: var(--amber-solid); border-color: var(--amber-solid); color: white; }
 
   /* EVENT LISTS — show/hide by schedule */
   .event-grid { display: grid; grid-template-columns: 1fr; gap: 8px; }
   .event-set { display: none; }
   .event-set.active { display: contents; }
-  .event-btn { background: var(--surface); border: 1.5px solid #DDD; border-radius: var(--radius); padding: 16px 20px; font-size: 17px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; -webkit-appearance: none; transition: all 0.12s; }
-  .event-btn:active, .event-btn.selected { background: #F0E8D0; border-color: var(--gold); border-width: 2px; font-weight: 700; }
+  .event-btn { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px 20px; font-size: 17px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; -webkit-appearance: none; transition: all 0.12s; }
+  .event-btn:active, .event-btn.selected { background: var(--gold-light); border-color: var(--gold); border-width: 2px; font-weight: 700; }
 
   /* NAMES SCREEN */
-  .names-top-bar { background: var(--burgundy); color: white; padding: 10px 16px; margin: -16px -16px 0 -16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .names-top-bar { background: var(--primary); color: white; padding: 10px 16px; margin: -16px -16px 0 -16px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
   .names-top-bar.guruvara-mode { background: var(--guruvara-teal); }
   .names-top-bar.vigil-mode { background: var(--vigil-indigo); }
   .names-event-label { font-size: 14px; font-weight: 700; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .change-btn { font-size: 14px; font-weight: 700; background: rgba(255,255,255,0.9); border: none; color: var(--burgundy); padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+  .change-btn { font-size: 14px; font-weight: 700; background: rgba(255,255,255,0.9); border: none; color: var(--primary); padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
   .names-top-bar.guruvara-mode .change-btn { color: var(--guruvara-teal); }
   .names-top-bar.vigil-mode .change-btn { color: var(--vigil-indigo); }
   .home-btn { font-size: 13px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.45); color: white; padding: 8px 14px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 
   /* ACTION BANNER */
   .action-banner { padding: 14px 16px 12px; border-bottom: 3px solid transparent; transition: background 0.2s; }
-  .action-banner.arrive { background: var(--green-light); color: var(--green); border-color: #81C784; }
-  .action-banner.depart { background: var(--amber-light); color: var(--amber); border-color: #FFB74D; }
+  .action-banner.arrive { background: var(--green-light); color: var(--green); border-color: var(--green-border); }
+  .action-banner.depart { background: var(--amber-light); color: var(--amber); border-color: var(--amber-border); }
   .action-banner-event { font-size: 22px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
   .action-banner-row2 { display: flex; align-items: center; gap: 10px; }
   .action-banner-icon { font-size: 20px; flex-shrink: 0; }
   .action-banner-text { font-size: 18px; font-weight: 700; letter-spacing: 0.04em; }
   .action-banner-change { font-size: 13px; font-weight: 600; padding: 5px 13px; border-radius: 20px; border: 2px solid currentColor; background: transparent; color: inherit; cursor: pointer; margin-left: auto; opacity: 0.75; flex-shrink: 0; -webkit-appearance: none; }
 
-  .today-bar { background: var(--surface); border-bottom: 1px solid #EEE; padding: 7px 16px; display: flex; gap: 16px; font-size: 13px; color: var(--text-muted); }
+  .today-bar { background: var(--surface); border-bottom: 1px solid var(--border-light); padding: 7px 16px; display: flex; gap: 16px; font-size: 13px; color: var(--text-muted); }
   .today-bar strong { color: var(--text); }
 
   /* SEARCH */
   .search-wrap { position: relative; margin: 12px 0 10px; }
-  .search-input { width: 100%; padding: 12px 16px 12px 40px; font-size: 16px; border: 1.5px solid #DDD; border-radius: var(--radius); background: var(--surface); color: var(--text); -webkit-appearance: none; }
-  .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 18px; color: #999; pointer-events: none; }
+  .search-input { width: 100%; padding: 12px 16px 12px 40px; font-size: 16px; border: 1.5px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text); -webkit-appearance: none; }
+  .search-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 18px; color: var(--text-muted); pointer-events: none; }
 
   /* NAME BUTTONS */
-  .name-grid { column-count: 3; column-gap: 8px; }
-  .name-btn { display: block; width: 100%; margin-bottom: 8px; break-inside: avoid; background: var(--surface); border: 1.5px solid #DDD; border-radius: var(--radius); padding: 12px 6px; font-size: 14px; font-weight: 500; color: var(--text); cursor: pointer; text-align: center; -webkit-appearance: none; line-height: 1.2; }
+  .name-grid { column-count: 4; column-gap: 6px; }
+  .name-btn { display: block; width: 100%; margin-bottom: 6px; break-inside: avoid; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 10px 4px; font-size: 16px; font-weight: 600; color: var(--text); cursor: pointer; text-align: center; -webkit-appearance: none; line-height: 1.15; }
   .name-btn:active { transform: scale(0.96); }
   .name-btn.arrived { background: var(--green-light); border-color: var(--green); color: var(--green); }
   .name-btn.arrived::after { content: ' ✓'; font-weight: 700; }
@@ -105,33 +114,33 @@
   .confirm-name.depart-color { color: var(--amber); }
   .confirm-detail { font-size: 17px; color: var(--text-muted); margin-bottom: 6px; }
   .confirm-time { font-size: 15px; color: var(--text-muted); margin-bottom: 32px; }
-  .back-btn { background: var(--surface); border: 1.5px solid #DDD; border-radius: var(--radius); padding: 14px 32px; font-size: 17px; font-weight: 600; color: var(--text); cursor: pointer; -webkit-appearance: none; margin-bottom: 12px; }
+  .back-btn { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 14px 32px; font-size: 17px; font-weight: 600; color: var(--text); cursor: pointer; -webkit-appearance: none; margin-bottom: 12px; }
   .home-btn-confirm { background: transparent; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; padding: 8px; text-decoration: underline; }
 
   /* SESSIONS */
-  .admin-section { background: var(--surface); border: 1px solid #DDD; border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+  .admin-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
   .admin-section h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
-  .session-item { display: flex; align-items: flex-start; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #EEE; gap: 8px; }
+  .session-item { display: flex; align-items: flex-start; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-light); gap: 8px; }
   .session-item:last-child { border-bottom: none; }
   .session-item-info { flex: 1; min-width: 0; }
   .session-item-title { font-size: 14px; font-weight: 600; }
   .session-item-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
   .session-item-actions { display: flex; gap: 5px; flex-shrink: 0; }
-  .mini-btn { font-size: 12px; padding: 5px 9px; border-radius: 8px; border: 1px solid #DDD; background: var(--surface); cursor: pointer; -webkit-appearance: none; }
-  .mini-btn.export { background: #E8F5E9; border-color: #A5D6A7; color: var(--green); font-weight: 600; }
-  .mini-btn.delete { background: #FFEBEE; border-color: #FFCDD2; color: #C62828; }
+  .mini-btn { font-size: 12px; padding: 5px 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; -webkit-appearance: none; }
+  .mini-btn.export { background: var(--green-light); border-color: var(--green-border); color: var(--green); font-weight: 600; }
+  .mini-btn.delete { background: var(--red-light); border-color: var(--red-border); color: var(--red); }
   .pending-dot { width:7px; height:7px; border-radius:50%; background:#E6A817; display:inline-block; margin-right:5px; vertical-align:middle; }
   .synced-dot  { width:7px; height:7px; border-radius:50%; background:var(--green); display:inline-block; margin-right:5px; vertical-align:middle; }
   .admin-btn { width: 100%; padding: 13px; font-size: 15px; font-weight: 600; border-radius: var(--radius); border: none; cursor: pointer; margin-bottom: 10px; -webkit-appearance: none; }
-  .admin-btn.export-all { background: var(--green); color: white; }
-  .admin-btn.back { background: #EEE; color: var(--text); }
+  .admin-btn.export-all { background: var(--green-solid); color: white; }
+  .admin-btn.back { background: var(--surface-2); color: var(--text); }
   .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 14px; }
 
   /* BOTTOM NAV */
-  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid #DDD; display: flex; padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 20; }
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); display: flex; padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 20; }
   .nav-wrap { position: relative; flex: 1; display: flex; }
-  .nav-btn { flex: 1; padding: 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: #999; border: none; background: transparent; cursor: pointer; }
-  .nav-btn.active { color: var(--burgundy); }
+  .nav-btn { flex: 1; padding: 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: var(--text-muted); border: none; background: transparent; cursor: pointer; }
+  .nav-btn.active { color: var(--primary-text); }
   .nav-icon { font-size: 22px; }
   .pending-badge { position: absolute; top: 6px; right: calc(25% - 8px); background: #E6A817; color: white; font-size: 10px; font-weight: 700; border-radius: 10px; padding: 1px 5px; min-width: 18px; text-align: center; }
   .event-screen-inner { max-width: 520px; margin: 0 auto; }
@@ -300,7 +309,7 @@
     <p style="font-size:18px;font-weight:600;margin-bottom:16px">Saved Sessions</p>
     <button class="admin-btn export-all" onclick="exportAll()">⬇ Export All to CSV</button>
     <div class="admin-section">
-      <h3>Sessions <span style="color:#999;font-weight:400" id="pending-label"></span></h3>
+      <h3>Sessions <span style="color:var(--text-muted);font-weight:400" id="pending-label"></span></h3>
       <div id="sessions-list"></div>
     </div>
     <button class="admin-btn back" onclick="showScreen('event')">← Back to Sign-In</button>
