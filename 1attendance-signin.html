@@ -98,16 +98,13 @@
   .name-btn.departed { background: var(--amber-light); border-color: var(--amber); color: var(--amber); }
   .name-btn.departed::after { content: ' ↩'; font-weight: 700; }
 
-  /* CONFIRMATION */
-  .confirm-wrap { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; padding: 2rem; }
-  .confirm-icon { font-size: 80px; margin-bottom: 16px; animation: pop 0.3s ease-out; }
-  @keyframes pop { 0%{transform:scale(0.5);opacity:0} 70%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
-  .confirm-name { font-size: 28px; font-weight: 700; color: var(--green); margin-bottom: 8px; }
-  .confirm-name.depart-color { color: var(--amber); }
-  .confirm-detail { font-size: 17px; color: var(--text-muted); margin-bottom: 6px; }
-  .confirm-time { font-size: 15px; color: var(--text-muted); margin-bottom: 32px; }
-  .back-btn { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 14px 32px; font-size: 17px; font-weight: 600; color: var(--text); cursor: pointer; -webkit-appearance: none; margin-bottom: 12px; }
-  .home-btn-confirm { background: transparent; border: none; color: var(--text-muted); font-size: 14px; cursor: pointer; padding: 8px; text-decoration: underline; }
+  /* CONFIRMATION TOAST — flashes briefly over the names screen, no screen change */
+  .confirm-toast { position: fixed; left: 16px; right: 16px; bottom: 84px; z-index: 30; display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: var(--radius); box-shadow: 0 4px 16px rgba(0,0,0,0.4); opacity: 0; transform: translateY(12px); transition: opacity 0.15s, transform 0.15s; pointer-events: none; background: var(--green-solid); color: white; }
+  .confirm-toast.show { opacity: 1; transform: translateY(0); }
+  .confirm-toast.depart-color { background: var(--amber-solid); }
+  .confirm-toast-icon { font-size: 24px; flex-shrink: 0; }
+  .confirm-toast-text { font-size: 16px; font-weight: 700; line-height: 1.25; }
+  .confirm-toast-time { font-size: 13px; font-weight: 500; opacity: 0.85; }
 
   /* SESSIONS */
   .admin-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
@@ -186,22 +183,22 @@
         <div class="event-set active" id="events-weekday">
           <button class="event-btn" onclick="selectEvent(this,'AM Meditation')">AM Meditation</button>
           <button class="event-btn" onclick="selectEvent(this,'Morning Puja')">Morning Puja</button>
-          <button class="event-btn" onclick="selectEvent(this,'AM Meditation after Puja')">AM Meditation after Puja</button>
+          <button class="event-btn" onclick="selectEvent(this,'Meditation after Puja')">Meditation after Puja</button>
           <button class="event-btn" onclick="selectEvent(this,'PM Meditation')">PM Meditation</button>
-          <button class="event-btn" onclick="selectEvent(this,'Evening Arati')">Evening Arati</button>
-          <button class="event-btn" onclick="selectEvent(this,'PM Meditation after Arati')">PM Meditation after Arati</button>
+          <button class="event-btn" onclick="selectEvent(this,'Arati')">Arati</button>
+          <button class="event-btn" onclick="selectEvent(this,'Meditation after Arati')">Meditation after Arati</button>
         </div>
 
         <!-- GURUVARA events -->
         <div class="event-set" id="events-guruvara">
           <button class="event-btn" onclick="selectEvent(this,'Saturday Evening: Chanting and Darshan')">Saturday Evening: Chanting and Darshan</button>
-          <button class="event-btn" onclick="selectEvent(this,'4:15am Meditation')">4:15am Meditation</button>
-          <button class="event-btn" onclick="selectEvent(this,'6:00am Ruchira Avatara Murti and Paduka Pujas')">6:00am Ruchira Avatara Murti and Paduka Pujas</button>
+          <button class="event-btn" onclick="selectEvent(this,'AM Meditation')">AM Meditation</button>
+          <button class="event-btn" onclick="selectEvent(this,'Morning Puja')">Morning Puja</button>
           <button class="event-btn" onclick="selectEvent(this,'10:00am Recitation and Da-Om Chanting')">10:00am Recitation and Da-Om Chanting</button>
           <button class="event-btn" onclick="selectEvent(this,'10:50am Meditation')">10:50am Meditation</button>
-          <button class="event-btn" onclick="selectEvent(this,'2:30pm Full Cycle of Devotions')">2:30pm Full Cycle of Devotions</button>
-          <button class="event-btn" onclick="selectEvent(this,'4:00pm Meditation')">4:00pm Meditation</button>
-          <button class="event-btn" onclick="selectEvent(this,'Arati Puja')">Arati Puja</button>
+          <button class="event-btn" onclick="selectEvent(this,'Full Cycle')">Full Cycle</button>
+          <button class="event-btn" onclick="selectEvent(this,'PM Meditation')">PM Meditation</button>
+          <button class="event-btn" onclick="selectEvent(this,'Arati')">Arati</button>
           <button class="event-btn" onclick="selectEvent(this,'PM Meditation after Arati')">PM Meditation after Arati</button>
         </div>
 
@@ -274,18 +271,12 @@
         <button class="name-btn" id="nb-Yvonne Slayman"       onclick="recordAction('Yvonne Slayman')">Yvonne Slayman</button>
       </div>
     </div>
-  </div>
-
-  <!-- SCREEN: CONFIRMATION -->
-  <div class="screen" id="screen-confirm">
-    <div class="confirm-wrap">
-      <div class="confirm-icon" id="confirm-icon">✅</div>
-      <div class="confirm-name" id="confirm-name"></div>
-      <div class="confirm-detail" id="confirm-detail"></div>
-      <div class="confirm-detail" id="confirm-event-label"></div>
-      <div class="confirm-time"   id="confirm-time"></div>
-      <button class="back-btn" onclick="showScreen('names')">← Back to Names</button>
-      <button class="home-btn-confirm" onclick="showScreen('event')">Return to home screen</button>
+    <div class="confirm-toast" id="confirm-toast">
+      <span class="confirm-toast-icon" id="confirm-toast-icon">✅</span>
+      <div>
+        <div class="confirm-toast-text" id="confirm-toast-text"></div>
+        <div class="confirm-toast-time" id="confirm-toast-time"></div>
+      </div>
     </div>
   </div>
 
@@ -416,15 +407,22 @@ function recordAction(name) {
   updatePendingBadge();
   updateNameStates();
   updateCounts();
-  const isArrive = currentAction === 'arrive';
-  document.getElementById('confirm-icon').textContent   = isArrive ? '✅' : '👋';
-  document.getElementById('confirm-name').textContent   = name;
-  document.getElementById('confirm-name').className     = 'confirm-name' + (isArrive ? '' : ' depart-color');
-  document.getElementById('confirm-detail').textContent = isArrive ? 'Signed in' : 'Signed out';
-  document.getElementById('confirm-event-label').textContent = currentEvent;
-  document.getElementById('confirm-time').textContent   = formatTime(now);
-  showScreen('confirm');
-  setTimeout(() => { if (currentScreen === 'confirm') showScreen('names'); }, 2500);
+  showConfirmToast(name, currentAction === 'arrive', formatTime(now));
+}
+
+let toastHideTimer = null;
+function showConfirmToast(name, isArrive, timeStr) {
+  const toast = document.getElementById('confirm-toast');
+  document.getElementById('confirm-toast-icon').textContent = isArrive ? '✅' : '👋';
+  document.getElementById('confirm-toast-text').textContent =
+    name + ' — ' + (isArrive ? 'Signed in' : 'Signed out');
+  document.getElementById('confirm-toast-time').textContent = timeStr;
+  toast.classList.toggle('depart-color', !isArrive);
+  toast.classList.remove('show');
+  // restart the animation even if a previous toast is still fading
+  requestAnimationFrame(() => toast.classList.add('show'));
+  clearTimeout(toastHideTimer);
+  toastHideTimer = setTimeout(() => toast.classList.remove('show'), 1100);
 }
 
 function updateCounts() {
@@ -440,7 +438,7 @@ function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  if (['event','names','confirm'].includes(name)) document.getElementById('nav-signin').classList.add('active');
+  if (['event','names'].includes(name)) document.getElementById('nav-signin').classList.add('active');
   else if (name === 'admin') document.getElementById('nav-admin').classList.add('active');
   document.getElementById('header-actions').classList.toggle('visible', name === 'names');
   updateHeaderSub();
