@@ -97,6 +97,7 @@
   .name-btn.arrived::after { content: ' ✓'; font-weight: 700; }
   .name-btn.departed { background: var(--amber-light); border-color: var(--amber); color: var(--amber); }
   .name-btn.departed::after { content: ' ↩'; font-weight: 700; }
+  .name-btn.other-btn { border-style: dashed; color: var(--text-muted); font-weight: 500; }
 
   /* CONFIRMATION TOAST — flashes briefly over the names screen, no screen change */
   .confirm-toast { position: fixed; left: 16px; right: 16px; bottom: 84px; z-index: 30; display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: var(--radius); box-shadow: 0 4px 16px rgba(0,0,0,0.4); opacity: 0; transform: translateY(12px); transition: opacity 0.15s, transform 0.15s; pointer-events: none; background: var(--green-solid); color: white; }
@@ -140,8 +141,8 @@
 <div class="header" id="main-header">
   <div class="header-sub" id="header-date"></div>
   <div class="header-actions" id="header-actions">
-    <button class="change-btn" onclick="showScreen('event')">Change event</button>
-    <button class="home-btn"   onclick="showScreen('event')">🏠 Home</button>
+    <button class="change-btn" onclick="resetToEventScreen()">Change event</button>
+    <button class="home-btn"   onclick="resetToEventScreen()">🏠 Home</button>
   </div>
 </div>
 
@@ -269,14 +270,19 @@
         <button class="name-btn" id="nb-Siegerdina Mandema"   onclick="recordAction('Siegerdina Mandema')">Siegerdina Mandema</button>
         <button class="name-btn" id="nb-Vanessa Kenoyer"      onclick="recordAction('Vanessa Kenoyer')">Vanessa Kenoyer</button>
         <button class="name-btn" id="nb-Yvonne Slayman"       onclick="recordAction('Yvonne Slayman')">Yvonne Slayman</button>
+        <button class="name-btn other-btn" id="nb-other-link" onclick="showScreen('other')">+ Other</button>
       </div>
     </div>
-    <div class="confirm-toast" id="confirm-toast">
-      <span class="confirm-toast-icon" id="confirm-toast-icon">✅</span>
-      <div>
-        <div class="confirm-toast-text" id="confirm-toast-text"></div>
-        <div class="confirm-toast-time" id="confirm-toast-time"></div>
-      </div>
+  </div>
+
+  <!-- SCREEN: OTHER (occasional attendees) -->
+  <div class="screen" id="screen-other">
+    <button class="admin-btn back" onclick="showScreen('names')" style="margin-bottom:16px">← Back to Names</button>
+    <p style="font-size:18px;font-weight:600;margin-bottom:16px">Occasional Attendees</p>
+    <div class="name-grid">
+      <button class="name-btn" id="nb-Caroline" onclick="recordAction('Caroline')">Caroline</button>
+      <button class="name-btn" id="nb-Gilbert"  onclick="recordAction('Gilbert')">Gilbert</button>
+      <button class="name-btn" id="nb-Carol"    onclick="recordAction('Carol')">Carol</button>
     </div>
   </div>
 
@@ -289,6 +295,14 @@
       <div id="sessions-list"></div>
     </div>
     <button class="admin-btn back" onclick="showScreen('event')">← Back to Sign-In</button>
+  </div>
+
+  <div class="confirm-toast" id="confirm-toast">
+    <span class="confirm-toast-icon" id="confirm-toast-icon">✅</span>
+    <div>
+      <div class="confirm-toast-text" id="confirm-toast-text"></div>
+      <div class="confirm-toast-time" id="confirm-toast-time"></div>
+    </div>
   </div>
 
 </div>
@@ -309,6 +323,7 @@
 
 <script>
 const DEVOTEES = ["Ann Walsh","Beatrys de Ligt","Blythe Massey","Bob DeLollis","Bruce Burnham","Carol Smith","Caroline Lindsay","Chris Beaver","Chris Merz","Cynthia Mancor","Da-vid Forsythe","Diane Bryan","Elise Bady","Greg Wells","Hoi Ngo","Inca Hincape","Jana Divisova","Julian Butler","Kristien Otten","Krysia Banachowski","Leo Burke","Linda Oppenheimer","Lisa Lurie","Madhuka Ranmuthu","Malcolm Burke","Michael Shaw","Michiel Vos","Miki Malinka","Nancy Piotrowski","Pamela Gray","Radha Webley","Robin Temple","Siegerdina Mandema","Vanessa Kenoyer","Yvonne Slayman"];
+const OTHER_DEVOTEES = ["Caroline","Gilbert","Carol"];
 
 let schedule     = 'weekday';
 let currentAction = 'arrive';
@@ -377,9 +392,23 @@ function updateActionBanner() {
 }
 
 function flipAction() {
-  currentAction = currentAction === 'arrive' ? 'depart' : 'arrive';
+  const wasArrive = currentAction === 'arrive';
+  currentAction = wasArrive ? 'depart' : 'arrive';
   document.getElementById('btn-arrive').classList.toggle('selected', currentAction === 'arrive');
   document.getElementById('btn-depart').classList.toggle('selected', currentAction === 'depart');
+
+  if (wasArrive) {
+    // Arriving -> Departing: stay on the same event, jump straight to its names screen
+    goToNames();
+  } else {
+    // Departing -> Arriving: no logical "same event" link, so go choose an event afresh
+    currentEvent = null;
+    document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
+    showScreen('event');
+  }
+}
+
+function resetToEventScreen() {
   currentEvent = null;
   document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
   showScreen('event');
@@ -390,7 +419,7 @@ function updateNameStates() {
   const latest = {};
   allSignIns.filter(r => r.date === todayStr && r.event === currentEvent)
     .forEach(r => { latest[r.name] = r.action; });
-  DEVOTEES.forEach(name => {
+  DEVOTEES.concat(OTHER_DEVOTEES).forEach(name => {
     const btn = document.getElementById('nb-' + name);
     if (!btn) return;
     btn.classList.remove('arrived','departed');
@@ -438,11 +467,11 @@ function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  if (['event','names'].includes(name)) document.getElementById('nav-signin').classList.add('active');
+  if (['event','names','other'].includes(name)) document.getElementById('nav-signin').classList.add('active');
   else if (name === 'admin') document.getElementById('nav-admin').classList.add('active');
-  document.getElementById('header-actions').classList.toggle('visible', name === 'names');
+  document.getElementById('header-actions').classList.toggle('visible', name === 'names' || name === 'other');
   updateHeaderSub();
-  if (name === 'names') resetAutoTimer();
+  if (name === 'names' || name === 'other') resetAutoTimer();
   if (name === 'event') clearAutoTimer();
 }
 
@@ -453,7 +482,7 @@ function resetAutoTimer() {
 function clearAutoTimer() {
   if (autoResetTimer) { clearTimeout(autoResetTimer); autoResetTimer = null; }
 }
-document.addEventListener('touchstart', () => { if (currentScreen==='names') resetAutoTimer(); }, {passive:true});
+document.addEventListener('touchstart', () => { if (currentScreen==='names' || currentScreen==='other') resetAutoTimer(); }, {passive:true});
 
 function getSessions() {
   const map = {};
