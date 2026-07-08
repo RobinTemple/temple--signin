@@ -1,5 +1,6 @@
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -68,6 +69,7 @@
   .event-set.active { display: contents; }
   .event-btn { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px 16px; font-size: 21px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; -webkit-appearance: none; transition: all 0.12s; line-height: 1.25; }
   .event-btn:active, .event-btn.selected { background: var(--gold-light); border-color: var(--gold); border-width: 2px; font-weight: 700; }
+  .event-btn.event-btn-other { border-style: dashed; color: var(--text-muted); }
 
   /* NAMES SCREEN */
   .change-btn { font-size: 14px; font-weight: 700; background: rgba(255,255,255,0.9); border: none; color: var(--primary); padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
@@ -142,7 +144,7 @@
   <div class="header-sub" id="header-date"></div>
   <div class="header-actions" id="header-actions">
     <button class="change-btn" onclick="resetToEventScreen()">Change event</button>
-    <button class="home-btn"   onclick="resetToEventScreen()">🏠 Home</button>
+    <button class="home-btn"   onclick="goHome()">🏠 Home</button>
   </div>
 </div>
 
@@ -185,9 +187,9 @@
           <button class="event-btn" onclick="selectEvent(this,'AM Meditation')">AM Meditation</button>
           <button class="event-btn" onclick="selectEvent(this,'Morning Puja')">Morning Puja</button>
           <button class="event-btn" onclick="selectEvent(this,'Meditation after Puja')">Meditation after Puja</button>
-          <button class="event-btn" onclick="selectEvent(this,'PM Meditation')">PM Meditation</button>
           <button class="event-btn" onclick="selectEvent(this,'Arati')">Arati</button>
-          <button class="event-btn" onclick="selectEvent(this,'Meditation after Arati')">Meditation after Arati</button>
+          <button class="event-btn" onclick="selectEvent(this,'Evening Meditation')">Evening Meditation</button>
+          <button class="event-btn event-btn-other" onclick="showScreen('weekday-other')">+ Other events</button>
         </div>
 
         <!-- GURUVARA events -->
@@ -272,6 +274,18 @@
         <button class="name-btn" id="nb-Yvonne Slayman"       onclick="recordAction('Yvonne Slayman')">Yvonne Slayman</button>
         <button class="name-btn other-btn" id="nb-other-link" onclick="showScreen('other')">+ Other</button>
       </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: WEEKDAY OTHER EVENTS -->
+  <div class="screen" id="screen-weekday-other">
+    <button class="admin-btn back" onclick="showScreen('event')" style="margin-bottom:16px">← Back to Events</button>
+    <p style="font-size:18px;font-weight:600;margin-bottom:16px">Other Weekday Events</p>
+    <div class="event-grid">
+      <button class="event-btn" onclick="selectEvent(this,'Paduka Mandir Puja')">Paduka Mandir Puja</button>
+      <button class="event-btn" onclick="selectEvent(this,'Alternate Puja Temple')">Alternate Puja Temple</button>
+      <button class="event-btn" onclick="selectEvent(this,'Celebration 1')">Celebration 1</button>
+      <button class="event-btn" onclick="selectEvent(this,'Celebration 2')">Celebration 2</button>
     </div>
   </div>
 
@@ -409,6 +423,18 @@ function flipAction() {
 }
 
 function resetToEventScreen() {
+  // "Change event" — flip to opposite action since that's why you're changing
+  const newAction = currentAction === 'arrive' ? 'depart' : 'arrive';
+  currentAction = newAction;
+  document.getElementById('btn-arrive').classList.toggle('selected', newAction === 'arrive');
+  document.getElementById('btn-depart').classList.toggle('selected', newAction === 'depart');
+  currentEvent = null;
+  document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
+  showScreen('event');
+}
+
+function goHome() {
+  // "🏠 Home" — keep current action, just clear the event (e.g. wrong event selected)
   currentEvent = null;
   document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
   showScreen('event');
@@ -467,7 +493,7 @@ function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  if (['event','names','other'].includes(name)) document.getElementById('nav-signin').classList.add('active');
+  if (['event','names','other','weekday-other'].includes(name)) document.getElementById('nav-signin').classList.add('active');
   else if (name === 'admin') document.getElementById('nav-admin').classList.add('active');
   document.getElementById('header-actions').classList.toggle('visible', name === 'names' || name === 'other');
   updateHeaderSub();
