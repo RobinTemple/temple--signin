@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Personal Fixed Exemptions — Adidam Samrajashram</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f4f0;padding:20px;color:#1a1a1a}
+a{text-decoration:none}
+.wrapper{max-width:820px;margin:0 auto;border:1px solid #ddd;border-radius:10px;overflow:hidden;background:#fff}
+.topbar{background:#6b1a1a;padding:16px 20px 14px}
+.topbar-title{color:#fff;font-size:16px;font-weight:600}
+.topbar-meta{color:rgba(255,255,255,.65);font-size:12px;margin-top:3px}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid #e8e6e0}
+.stat{padding:12px 16px;text-align:center;border-right:1px solid #e8e6e0;background:#faf9f7}
+.stat:last-child{border-right:none}
+.stat-n{font-size:22px;font-weight:600;color:#6b1a1a}
+.stat-l{font-size:10px;color:#888;margin-top:2px;text-transform:uppercase;letter-spacing:.05em}
+.section-label{font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.06em;padding:14px 20px 8px;border-bottom:1px solid #e8e6e0;background:#faf9f7}
+.roster{display:grid;grid-template-columns:repeat(3,1fr);border-bottom:1px solid #e8e6e0}
+.roster-item{border-right:1px solid #e8e6e0;border-bottom:1px solid #e8e6e0;padding:11px 15px;background:#fff}
+.roster-item:hover{background:#faf9f7}
+.roster-item:nth-child(3n){border-right:none}
+.roster-link{font-size:13px;font-weight:600;color:#6b1a1a;display:block;margin-bottom:5px}
+.roster-link:hover{text-decoration:underline}
+.pills{display:flex;gap:4px;flex-wrap:wrap}
+.pill{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500}
+.p-med{background:#FCEBEB;color:#A32D2D}
+.p-new{background:#FEF3E2;color:#854F0B}
+.p-exp{background:#EEEDFE;color:#534AB7}
+.p-count{background:#f0ede8;color:#666;border:1px solid #ddd}
+.p-ok{background:#EAF3DE;color:#3B6D11}
+.detail-section{padding:16px 20px 20px}
+.person-card{border:1px solid #ddd;border-radius:10px;margin-bottom:14px;overflow:hidden;scroll-margin-top:16px}
+.person-head{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#faf9f7;border-bottom:1px solid #e8e6e0}
+.avatar{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;color:#fff}
+.person-name{font-size:14px;font-weight:600;color:#1a1a1a;flex:1}
+.back-link{font-size:11px;color:#999;margin-left:auto}
+.back-link:hover{color:#6b1a1a}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{background:#faf9f7;color:#888;font-weight:600;padding:7px 14px;text-align:left;font-size:10px;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #e8e6e0}
+td{padding:9px 14px;border-bottom:1px solid #f0ede8;vertical-align:top;color:#1a1a1a}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even) td{background:#fdfcfb}
+.stripe{display:inline-block;width:3px;height:13px;border-radius:2px;vertical-align:middle;margin-right:7px}
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+<div class="topbar">
+  <div class="topbar-title">Personal fixed exemptions</div>
+  <div class="topbar-meta">Adidam Samrajashram &nbsp;·&nbsp; 14 July 2026</div>
+</div>
+
+<div class="stats-row">
+  <div class="stat"><div class="stat-n">9</div><div class="stat-l">Devotees</div></div>
+  <div class="stat"><div class="stat-n">14</div><div class="stat-l">Exemptions</div></div>
+  <div class="stat"><div class="stat-n" style="color:#854F0B">6</div><div class="stat-l">Awaiting decision</div></div>
+  <div class="stat"><div class="stat-n" style="color:#A32D2D">2</div><div class="stat-l">Medical</div></div>
+</div>
+
+<div class="section-label" id="roster">Devotees — click a name to jump to details</div>
+
+<div class="roster">
+  <div class="roster-item">
+    <a class="roster-link" href="#p-ann">Ann Walsh</a>
+    <div class="pills"><span class="pill p-count">1</span></div>
+  </div>
+  <div class="roster-item">
+    <a class="roster-link" href="#p-chris">Chris Beaver</a>
+    <div class="pills"><span class="pill p-count">1</span></div>
+  </div>
+  <div class="roster-item">
+    <a class="roster-link" href="#p-inca">Inca Hincape</a>
+    <div class="pills"><span class="pill p-count">1</span><span class="pill p-exp">Expiring</span></div>
+  </div>
+  <div class="roster-item">
+    <a class="roster-link" href="#p-julian">Julian Butler</a>
+    <div class="pills"><span class="pill p-count">2</span></div>
+  </div>
+  <div class="roster-item">
+    <a class="roster-link" href="#p-kristien">Kristien Otten</a>
+    <div class="pills"><span class="pill p-count">1</span><span class="pill p-new">Action needed</span></div>
+  </div>
+  <div class="roster-item">
+    <a class="roster-link" href="#p-leo">Leo Burke</a>
+    <div class="pills"><span class="pill p-count">2</span><span class="pill p-new">Action needed</span></div>
+  </div>
+  <div class="roster-item">
+    <a class="roster-link" href="#p-michiel">Michiel Vos</a>
+    <div class="pills"><span class="pill p-count">4</span><span class="pill p-med">Medical</span><span class="pill p-new">Action needed</span></div>
+  </div>
+  <div class="roster-item">
+    <a class="roster-link" href="#p-miki">Miki Malinka</a>
+    <div class="pills"><span class="pill p-count">1</span><span class="pill p-new">Action needed</span></div>
+  </div>
+  <div class="roster-item">
+    <a class="roster-link" href="#p-yvonne">Yvonne Slayman</a>
+    <div class="pills"><span class="pill p-count">1</span></div>
+  </div>
+</div>
+
+<div class="detail-section">
+
+  <div class="person-card" id="p-ann">
+    <div class="person-head">
+      <div class="avatar" style="background:#E6F1FB;color:#0C447C">AW</div>
+      <div class="person-name">Ann Walsh</div>
+      <a class="back-link" href="#roster">Back to top</a>
+    </div>
+    <table>
+      <thead><tr><th>Exempt from</th><th>When</th><th>Reason</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="stripe" style="background:#378ADD"></span>AM Meditation</td>
+          <td style="color:#666">Ongoing</td>
+          <td style="color:#666;font-size:11px">Meditates after puja</td>
+          <td><span class="pill p-ok">Existing</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="person-card" id="p-chris">
+    <div class="person-head">
+      <div class="avatar" style="background:#E1F5EE;color:#085041">CB</div>
+      <div class="person-name">Chris Beaver</div>
+      <a class="back-link" href="#roster">Back to top</a>
+    </div>
+    <table>
+      <thead><tr><th>Exempt from</th><th>When</th><th>Reason</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="stripe" style="background:#378ADD"></span>AM Meditation</td>
+          <td style="color:#666">Ongoing</td>
+          <td style="color:#666;font-size:11px">Meditates after puja</td>
+          <td><span class="pill p-ok">Existing</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="person-card" id="p-inca">
+    <div class="person-head">
+      <div class="avatar" style="background:#EEEDFE;color:#3C3489">IH</div>
+      <div class="person-name">Inca Hincape</div>
+      <span class="pill p-exp" style="margin-right:8px">Expiring soon</span>
+      <a class="back-link" href="#roster">Back to top</a>
+    </div>
+    <table>
+      <thead><tr><th>Exempt from</th><th>When</th><th>Reason</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="stripe" style="background:#378ADD"></span>11am Guruvara Meditation</td>
+          <td style="color:#666">Sunday only</td>
+          <td style="color:#666;font-size:11px">RSO service</td>
+          <td><span class="pill p-exp">Expiring soon</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="person-card" id="p-julian">
+    <div class="person-head">
+      <div class="avatar" style="background:#FAEEDA;color:#633806">JB</div>
+      <div class="person-name">Julian Butler</div>
+      <a class="back-link" href="#roster">Back to top</a>
+    </div>
+    <table>
+      <thead><tr><th>Exempt from</th><th>When</th><th>Reason</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="stripe" style="background:#378ADD"></span>AM Puja</td>
+          <td style="color:#666">Ongoing</td>
+          <td style="color:#666;font-size:11px">RSO transcribing</td>
+          <td><span class="pill p-ok">Existing</span></td>
+        </tr>
+        <tr>
+          <td><span class="stripe" style="background:#378ADD"></span>Gates Occasion</td>
+          <td style="color:#666">Sunday only</td>
+          <td style="color:#666;font-size:11px">RSO Comm</td>
+          <td><span class="pill p-ok">Existing</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="person-card" id="p-kristien">
+    <div class="person-head">
+      <div class="avatar" style="background:#FAECE7;color:#712B13">KO</div>
+      <div class="person-name">Kristien Otten</div>
+      <span class="pill p-new" style="margin-right:8px">Action needed</span>
+      <a class="back-link" href="#roster">Back to top</a>
+    </div>
+    <table>
+      <thead><tr><th>Exempt from</th><th>When</th><th>Reason</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="stripe" style="background:#378ADD"></span>AM Puja</td>
+          <td style="color:#666">Friday (tent occasions)</td>
+          <td style="color:#666;font-size:11px">Required in kitchen by 6am</td>
+          <td><span class="pill p-new">New request</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="person-card" id="p-leo">
+    <div class="person-head">
+      <div class="avatar" style="background:#EAF3DE;color:#27500A">LB</div>
+      <div class="person-name">Leo Burke</div>
+      <span class="pill p-new" style="margin-right:8px">Action needed</span>
+      <a class="back-link" href="#roster">Back to top</a>
+    </div>
+    <table>
+      <thead><tr><th>Exempt from</th><th>When</th><th>Reason</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="stripe" style="background:#378ADD"></span>AM Meditation</td>
+          <td style="color:#666">Ongoing</td>
+          <td style="color:#666;font-size:11px">Emissarial service</td>
+          <td><span class="pill p-ok">Existing</span></td>
+        </tr>
+        <tr>
+          <td><span class="stripe" style="background:#378ADD"></span>AM Meditation (late start)</td>
+          <td style="color:#666">Monday only</td>
+          <td style="color:#666;font-size:11px">723 Fire priest duties from 4:30am</td>
+          <td><span class="pill p-new">New request</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="person-card" id="p-michiel">
+    <div class="person-head">
+      <div class="avatar" style="background:#FBEAF0;color:#72243E">MV</div>
+      <div class="person-name">Michiel Vos</div>
+      <span class="pill p-med" style="margin-right:4px">Medical</span>
+      <span class="pill p-new" style="margin-right:8px">Action needed</span>
+      <a class="back-link" href="#roster">Back to top</a>
+    </div>
+    <table>
+      <thead><tr><th>Exempt from</th><th>When</th><th>Reason</th><th>Status</th></tr></thead>
+      <tbody>
