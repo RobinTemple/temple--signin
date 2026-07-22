@@ -75,8 +75,8 @@
   .event-btn { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 13px 14px; font-size: 18px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; -webkit-appearance: none; transition: all 0.12s; line-height: 1.25; }
   .event-btn:active, .event-btn.selected { background: var(--gold-light); border-color: var(--gold); border-width: 2px; font-weight: 700; }
   .event-btn.event-btn-other { border-style: dashed; color: var(--text-muted); }
-  .event-btn.combined-btn { grid-column: 1 / -1; background: var(--primary-light); border-color: var(--primary-text); color: var(--primary-text); font-weight: 600; text-align: center; }
-  .event-btn.combined-btn:active, .event-btn.combined-btn.selected { background: var(--primary); border-color: var(--primary-text); color: white; }
+  .event-btn.combined-btn { grid-column: 1 / -1; background: var(--amber-light); border-color: var(--amber); color: var(--amber); font-weight: 500; text-align: center; }
+  .event-btn.combined-btn:active, .event-btn.combined-btn.selected { background: var(--amber-solid); border-color: var(--amber); color: white; }
 
   /* NAMES SCREEN */
   .change-btn { font-size: 14px; font-weight: 700; background: rgba(255,255,255,0.9); border: none; color: var(--primary); padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
@@ -202,6 +202,7 @@
           <button class="event-btn" onclick="selectEvent(this,'AM Meditation')">AM Meditation</button>
           <button class="event-btn" onclick="selectEvent(this,'Morning Puja')">Morning Puja</button>
           <button class="event-btn" onclick="selectEvent(this,'Meditation after Puja')">Meditation after Puja</button>
+          <button class="event-btn" onclick="selectEvent(this,'4pm Meditation')">4pm Meditation</button>
           <button class="event-btn" onclick="selectEvent(this,'Arati')">Arati</button>
           <button class="event-btn" onclick="selectEvent(this,'Evening Meditation')">Evening Meditation</button>
           <button class="event-btn event-btn-other" onclick="showScreen('weekday-other')">+ Other events</button>
@@ -209,15 +210,17 @@
 
         <!-- GURUVARA events -->
         <div class="event-set" id="events-guruvara">
+          <button class="event-btn combined-btn" onclick="selectCombined(this,'AM Meditation','Morning Puja')">AM Meditation + Puja</button>
+          <button class="event-btn combined-btn" onclick="selectCombined(this,'Arati','Evening Meditation')">Arati + Evening Meditation</button>
           <button class="event-btn" onclick="selectEvent(this,'Saturday Evening: Chanting and Darshan')">Saturday Evening: Chanting and Darshan</button>
           <button class="event-btn" onclick="selectEvent(this,'AM Meditation')">AM Meditation</button>
           <button class="event-btn" onclick="selectEvent(this,'Morning Puja')">Morning Puja</button>
           <button class="event-btn" onclick="selectEvent(this,'10:00am Recitation and Da-Om Chanting')">10:00am Recitation and Da-Om Chanting</button>
           <button class="event-btn" onclick="selectEvent(this,'10:50am Meditation')">10:50am Meditation</button>
           <button class="event-btn" onclick="selectEvent(this,'Full Cycle')">Full Cycle</button>
-          <button class="event-btn" onclick="selectEvent(this,'PM Meditation')">PM Meditation</button>
+          <button class="event-btn" onclick="selectEvent(this,'4pm Meditation')">4pm Meditation</button>
           <button class="event-btn" onclick="selectEvent(this,'Arati')">Arati</button>
-          <button class="event-btn" onclick="selectEvent(this,'PM Meditation after Arati')">PM Meditation after Arati</button>
+          <button class="event-btn" onclick="selectEvent(this,'Evening Meditation')">Evening Meditation</button>
         </div>
 
         <!-- TEMPLE VIGIL events -->
