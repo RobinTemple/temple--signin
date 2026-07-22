@@ -1,6 +1,7 @@
 
 
 
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -65,11 +66,17 @@
 
   /* EVENT LISTS — show/hide by schedule */
   .event-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .event-grid.vigil-cols   { grid-template-columns: repeat(3, 1fr); }
+  .event-grid.guruvara-cols { grid-template-columns: repeat(4, 1fr); }
+  .event-grid.guruvara-cols .event-btn { font-size: 15px; padding: 10px 6px; }
+  .event-grid.vigil-cols    .event-btn { font-size: 15px; padding: 10px 6px; }
   .event-set { display: none; }
   .event-set.active { display: contents; }
-  .event-btn { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px 16px; font-size: 21px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; -webkit-appearance: none; transition: all 0.12s; line-height: 1.25; }
+  .event-btn { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 13px 14px; font-size: 18px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; -webkit-appearance: none; transition: all 0.12s; line-height: 1.25; }
   .event-btn:active, .event-btn.selected { background: var(--gold-light); border-color: var(--gold); border-width: 2px; font-weight: 700; }
   .event-btn.event-btn-other { border-style: dashed; color: var(--text-muted); }
+  .event-btn.combined-btn { grid-column: 1 / -1; background: var(--primary-light); border-color: var(--primary-text); color: var(--primary-text); font-weight: 600; text-align: center; }
+  .event-btn.combined-btn:active, .event-btn.combined-btn.selected { background: var(--primary); border-color: var(--primary-text); color: white; }
 
   /* NAMES SCREEN */
   .change-btn { font-size: 14px; font-weight: 700; background: rgba(255,255,255,0.9); border: none; color: var(--primary); padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
@@ -81,6 +88,7 @@
   .action-banner { padding: 14px 16px 12px; border-bottom: 3px solid transparent; transition: background 0.2s; }
   .action-banner.arrive { background: var(--green-light); color: var(--green); border-color: var(--green-border); }
   .action-banner.depart { background: var(--amber-light); color: var(--amber); border-color: var(--amber-border); }
+  .action-banner.combined { background: var(--primary-light); color: var(--primary-text); border-color: #3A5A7D; }
   .action-banner-event { font-size: 22px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
   .action-banner-row2 { display: flex; align-items: center; gap: 10px; }
   .action-banner-icon { font-size: 20px; flex-shrink: 0; }
@@ -90,6 +98,11 @@
 
   .today-bar { background: var(--surface); border-bottom: 1px solid var(--border-light); padding: 7px 16px; display: flex; gap: 16px; font-size: 13px; color: var(--text-muted); }
   .today-bar strong { color: var(--text); }
+  .undo-bar { display: none; align-items: center; gap: 10px; padding: 8px 16px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
+  .undo-bar.visible { display: flex; }
+  .undo-bar-text { font-size: 14px; color: var(--text-muted); flex: 1; }
+  .undo-bar-text strong { color: var(--text); }
+  .undo-btn { font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--amber); background: var(--amber-light); color: var(--amber); cursor: pointer; white-space: nowrap; flex-shrink: 0; -webkit-appearance: none; }
 
   /* NAME BUTTONS */
   .name-grid { column-count: 4; column-gap: 6px; }
@@ -184,6 +197,8 @@
 
         <!-- WEEKDAY events -->
         <div class="event-set active" id="events-weekday">
+          <button class="event-btn combined-btn" onclick="selectCombined(this,'AM Meditation','Morning Puja')">AM Meditation + Puja</button>
+          <button class="event-btn combined-btn" onclick="selectCombined(this,'Arati','Evening Meditation')">Arati + Evening Meditation</button>
           <button class="event-btn" onclick="selectEvent(this,'AM Meditation')">AM Meditation</button>
           <button class="event-btn" onclick="selectEvent(this,'Morning Puja')">Morning Puja</button>
           <button class="event-btn" onclick="selectEvent(this,'Meditation after Puja')">Meditation after Puja</button>
@@ -211,6 +226,16 @@
           <button class="event-btn" onclick="selectEvent(this,'1:30am – 3:00am')">1:30am – 3:00am</button>
           <button class="event-btn" onclick="selectEvent(this,'3:00am – 4:15am')">3:00am – 4:15am</button>
           <button class="event-btn" onclick="selectEvent(this,'8:00am – 9:00am')">8:00am – 9:00am</button>
+          <button class="event-btn" onclick="selectEvent(this,'9:00am – 10:00am')">9:00am – 10:00am</button>
+          <button class="event-btn" onclick="selectEvent(this,'10:00am – 10:30am')">10:00am – 10:30am</button>
+          <button class="event-btn" onclick="selectEvent(this,'10:30am – 11:45am')">10:30am – 11:45am</button>
+          <button class="event-btn" onclick="selectEvent(this,'11:45am – 12:15pm')">11:45am – 12:15pm</button>
+          <button class="event-btn" onclick="selectEvent(this,'12:15pm – 1:30pm')">12:15pm – 1:30pm</button>
+          <button class="event-btn" onclick="selectEvent(this,'1:30pm – 2:30pm')">1:30pm – 2:30pm</button>
+          <button class="event-btn" onclick="selectEvent(this,'2:30pm – 4:00pm')">2:30pm – 4:00pm</button>
+          <button class="event-btn" onclick="selectEvent(this,'4:00pm – 5:00pm')">4:00pm – 5:00pm</button>
+          <button class="event-btn" onclick="selectEvent(this,'5:00pm – 5:45pm')">5:00pm – 5:45pm</button>
+          <button class="event-btn" onclick="selectEvent(this,'5:45pm – 7:00pm')">5:45pm – 7:00pm</button>
           <button class="event-btn" onclick="selectEvent(this,'7:00pm – 8:30pm')">7:00pm – 8:30pm</button>
           <button class="event-btn" onclick="selectEvent(this,'8:30pm – 10:00pm')">8:30pm – 10:00pm</button>
           <button class="event-btn" onclick="selectEvent(this,'10:00pm – 11:00pm')">10:00pm – 11:00pm</button>
@@ -234,6 +259,10 @@
     <div class="today-bar">
       <span>Today: <strong id="today-count">0</strong></span>
       <span>This event: <strong id="event-count">0</strong></span>
+    </div>
+    <div class="undo-bar" id="undo-bar">
+      <span class="undo-bar-text" id="undo-bar-text"></span>
+      <button class="undo-btn" onclick="undoLast()">↩ Undo</button>
     </div>
     <div style="padding: 12px 0 12px;">
       <div class="name-grid">
@@ -302,6 +331,7 @@
 
   <!-- SCREEN: SESSIONS -->
   <div class="screen" id="screen-admin">
+    <button class="admin-btn export-all" onclick="showScreen('event')" style="background:var(--primary);margin-bottom:20px">▶ Return to Sign-In</button>
     <p style="font-size:18px;font-weight:600;margin-bottom:16px">Saved Sessions</p>
     <button class="admin-btn export-all" onclick="exportAll()">⬇ Export All to CSV</button>
     <div class="admin-section">
@@ -324,7 +354,7 @@
 <div class="bottom-nav">
   <div class="nav-wrap">
     <button class="nav-btn active" id="nav-signin" onclick="showScreen('event')">
-      <span class="nav-icon">✍️</span><span>Sign In</span>
+      <span class="nav-icon">🗓️</span><span>Schedule</span>
     </button>
   </div>
   <div class="nav-wrap" style="position:relative">
@@ -368,6 +398,8 @@ function setSchedule(s) {
     document.getElementById('btn-' + k).className = 'sched-card' + (k === s ? ' active-' + k : '');
     document.getElementById('events-' + k).className = 'event-set' + (k === s ? ' active' : '');
   });
+  document.querySelector('.event-grid').classList.toggle('vigil-cols',    s === 'vigil');
+  document.querySelector('.event-grid').classList.toggle('guruvara-cols', s === 'guruvara');
   // Clear selected event if it was from a different schedule
   document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
   currentEvent = null;
@@ -380,10 +412,24 @@ function selectAction(action) {
   if (currentEvent) goToNames();
 }
 
+let combinedEvents = null; // [{event, action}, {event, action}] when in combined mode
+
 function selectEvent(btn, eventName) {
+  combinedEvents = null;
   document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   currentEvent = eventName;
+  goToNames();
+}
+
+function selectCombined(btn, event1, event2) {
+  combinedEvents = [
+    { event: event1, action: 'arrive' },
+    { event: event2, action: 'depart'  },
+  ];
+  currentEvent = event1 + ' + ' + event2;
+  document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
   goToNames();
 }
 
@@ -395,8 +441,16 @@ function goToNames() {
 }
 
 function updateActionBanner() {
-  const isArrive = currentAction === 'arrive';
   const banner = document.getElementById('action-banner');
+  if (combinedEvents) {
+    banner.className = 'action-banner combined';
+    document.getElementById('action-banner-event').textContent = combinedEvents[0].event + ' + ' + combinedEvents[1].event;
+    document.getElementById('action-banner-icon').textContent  = '🔄';
+    document.getElementById('action-banner-text').textContent  = 'ARRIVE & SIGN OUT';
+    banner.querySelector('.action-banner-change').textContent  = 'Change event';
+    return;
+  }
+  const isArrive = currentAction === 'arrive';
   banner.className = 'action-banner ' + (isArrive ? 'arrive' : 'depart');
   document.getElementById('action-banner-event').textContent = currentEvent || '';
   document.getElementById('action-banner-icon').textContent  = isArrive ? '🙏' : '🚶';
@@ -423,7 +477,7 @@ function flipAction() {
 }
 
 function resetToEventScreen() {
-  // "Change event" — flip to opposite action since that's why you're changing
+  combinedEvents = null;
   const newAction = currentAction === 'arrive' ? 'depart' : 'arrive';
   currentAction = newAction;
   document.getElementById('btn-arrive').classList.toggle('selected', newAction === 'arrive');
@@ -434,7 +488,7 @@ function resetToEventScreen() {
 }
 
 function goHome() {
-  // "🏠 Home" — keep current action, just clear the event (e.g. wrong event selected)
+  combinedEvents = null;
   currentEvent = null;
   document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
   showScreen('event');
@@ -454,27 +508,71 @@ function updateNameStates() {
   });
 }
 
+let lastAction = null;
+let undoTimer  = null;
+
 function recordAction(name) {
   const now = new Date();
-  allSignIns.push({ name, event: currentEvent, action: currentAction,
-    date: todayDate(), time: formatTime(now), timestamp: now.toISOString() });
+  const entries = combinedEvents
+    ? combinedEvents.map(p => ({ name, event: p.event, action: p.action,
+        date: todayDate(), time: formatTime(now), timestamp: now.toISOString() }))
+    : [{ name, event: currentEvent, action: currentAction,
+        date: todayDate(), time: formatTime(now), timestamp: now.toISOString() }];
+  entries.forEach(e => allSignIns.push(e));
+  lastAction = entries; // store array so undo can remove all of them
   try { localStorage.setItem('signins', JSON.stringify(allSignIns)); } catch(e) {}
   updatePendingBadge();
   updateNameStates();
   updateCounts();
-  showConfirmToast(name, currentAction === 'arrive', formatTime(now));
+  const label = combinedEvents
+    ? name + ' — signed in & out'
+    : name + (currentAction === 'arrive' ? ' — signed in' : ' — signed out');
+  showConfirmToast(name, !combinedEvents && currentAction === 'arrive', formatTime(now), combinedEvents ? 'combined' : null);
+  showUndoBar(name, !combinedEvents && currentAction === 'arrive', !!combinedEvents);
+}
+
+function showUndoBar(name, isArrive, isCombined) {
+  clearTimeout(undoTimer);
+  const bar = document.getElementById('undo-bar');
+  const txt = document.getElementById('undo-bar-text');
+  txt.innerHTML = 'Last: <strong>' + name + '</strong> — ' +
+    (isCombined ? 'signed in &amp; out' : (isArrive ? 'signed in' : 'signed out'));
+  bar.classList.add('visible');
+  undoTimer = setTimeout(hideUndoBar, 20000);
+}
+
+function hideUndoBar() {
+  document.getElementById('undo-bar').classList.remove('visible');
+  lastAction = null;
+}
+
+function undoLast() {
+  if (!lastAction) return;
+  const entries = Array.isArray(lastAction) ? lastAction : [lastAction];
+  entries.forEach(target => {
+    const idx = allSignIns.findLastIndex(r =>
+      r.name === target.name && r.event === target.event &&
+      r.action === target.action && r.timestamp === target.timestamp
+    );
+    if (idx !== -1) allSignIns.splice(idx, 1);
+  });
+  try { localStorage.setItem('signins', JSON.stringify(allSignIns)); } catch(e) {}
+  clearTimeout(undoTimer);
+  hideUndoBar();
+  updateNameStates();
+  updateCounts();
+  updatePendingBadge();
 }
 
 let toastHideTimer = null;
-function showConfirmToast(name, isArrive, timeStr) {
+function showConfirmToast(name, isArrive, timeStr, mode) {
   const toast = document.getElementById('confirm-toast');
-  document.getElementById('confirm-toast-icon').textContent = isArrive ? '✅' : '👋';
+  document.getElementById('confirm-toast-icon').textContent = mode === 'combined' ? '🔄' : (isArrive ? '✅' : '👋');
   document.getElementById('confirm-toast-text').textContent =
-    name + ' — ' + (isArrive ? 'Signed in' : 'Signed out');
+    name + (mode === 'combined' ? ' — signed in & out' : (isArrive ? ' — Signed in' : ' — Signed out'));
   document.getElementById('confirm-toast-time').textContent = timeStr;
-  toast.classList.toggle('depart-color', !isArrive);
+  toast.classList.toggle('depart-color', !isArrive && mode !== 'combined');
   toast.classList.remove('show');
-  // restart the animation even if a previous toast is still fading
   requestAnimationFrame(() => toast.classList.add('show'));
   clearTimeout(toastHideTimer);
   toastHideTimer = setTimeout(() => toast.classList.remove('show'), 1100);
@@ -496,6 +594,7 @@ function showScreen(name) {
   if (['event','names','other','weekday-other'].includes(name)) document.getElementById('nav-signin').classList.add('active');
   else if (name === 'admin') document.getElementById('nav-admin').classList.add('active');
   document.getElementById('header-actions').classList.toggle('visible', name === 'names' || name === 'other');
+  if (name !== 'names') hideUndoBar();
   updateHeaderSub();
   if (name === 'names' || name === 'other') resetAutoTimer();
   if (name === 'event') clearAutoTimer();
