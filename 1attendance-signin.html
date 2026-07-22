@@ -67,11 +67,9 @@
   /* EVENT LISTS — show/hide by schedule */
   .event-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
   .event-grid.vigil-cols   { grid-template-columns: repeat(3, 1fr); }
+  .event-grid.vigil-cols    .event-btn { font-size: 15px; padding: 10px 6px; }
   .event-grid.guruvara-cols { grid-template-columns: repeat(4, 1fr); }
   .event-grid.guruvara-cols .event-btn { font-size: 15px; padding: 10px 6px; }
-  .event-grid.vigil-cols    .event-btn { font-size: 15px; padding: 10px 6px; }
-  .event-set { display: none; }
-  .event-set.active { display: contents; }
   .event-btn { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 13px 14px; font-size: 18px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; -webkit-appearance: none; transition: all 0.12s; line-height: 1.25; }
   .event-btn:active, .event-btn.selected { background: var(--gold-light); border-color: var(--gold); border-width: 2px; font-weight: 700; }
   .event-btn.event-btn-other { border-style: dashed; color: var(--text-muted); }
@@ -193,59 +191,56 @@
       </div>
 
       <div class="section-label">Event</div>
-      <div class="event-grid">
-
-        <!-- WEEKDAY events -->
-        <div class="event-set active" id="events-weekday">
-          <button class="event-btn combined-btn" onclick="selectCombined(this,'AM Meditation','Morning Puja')">AM Meditation + Puja</button>
-          <button class="event-btn combined-btn" onclick="selectCombined(this,'Arati','Evening Meditation')">Arati + Evening Meditation</button>
-          <button class="event-btn" onclick="selectEvent(this,'AM Meditation')">AM Meditation</button>
-          <button class="event-btn" onclick="selectEvent(this,'Morning Puja')">Morning Puja</button>
-          <button class="event-btn" onclick="selectEvent(this,'Meditation after Puja')">Meditation after Puja</button>
-          <button class="event-btn" onclick="selectEvent(this,'4pm Meditation')">4pm Meditation</button>
-          <button class="event-btn" onclick="selectEvent(this,'Arati')">Arati</button>
-          <button class="event-btn" onclick="selectEvent(this,'Evening Meditation')">Evening Meditation</button>
-          <button class="event-btn event-btn-other" onclick="showScreen('weekday-other')">+ Other events</button>
-        </div>
-
-        <!-- GURUVARA events -->
-        <div class="event-set" id="events-guruvara">
-          <button class="event-btn combined-btn" onclick="selectCombined(this,'AM Meditation','Morning Puja')">AM Meditation + Puja</button>
-          <button class="event-btn combined-btn" onclick="selectCombined(this,'Arati','Evening Meditation')">Arati + Evening Meditation</button>
-          <button class="event-btn" onclick="selectEvent(this,'Saturday Evening: Chanting and Darshan')">Saturday Evening: Chanting and Darshan</button>
-          <button class="event-btn" onclick="selectEvent(this,'AM Meditation')">AM Meditation</button>
-          <button class="event-btn" onclick="selectEvent(this,'Morning Puja')">Morning Puja</button>
-          <button class="event-btn" onclick="selectEvent(this,'10:00am Recitation and Da-Om Chanting')">10:00am Recitation and Da-Om Chanting</button>
-          <button class="event-btn" onclick="selectEvent(this,'10:50am Meditation')">10:50am Meditation</button>
-          <button class="event-btn" onclick="selectEvent(this,'Full Cycle')">Full Cycle</button>
-          <button class="event-btn" onclick="selectEvent(this,'4pm Meditation')">4pm Meditation</button>
-          <button class="event-btn" onclick="selectEvent(this,'Arati')">Arati</button>
-          <button class="event-btn" onclick="selectEvent(this,'Evening Meditation')">Evening Meditation</button>
-        </div>
-
-        <!-- TEMPLE VIGIL events -->
-        <div class="event-set" id="events-vigil">
-          <button class="event-btn" onclick="selectEvent(this,'12:00am – 1:30am')">12:00am – 1:30am</button>
-          <button class="event-btn" onclick="selectEvent(this,'1:30am – 3:00am')">1:30am – 3:00am</button>
-          <button class="event-btn" onclick="selectEvent(this,'3:00am – 4:15am')">3:00am – 4:15am</button>
-          <button class="event-btn" onclick="selectEvent(this,'8:00am – 9:00am')">8:00am – 9:00am</button>
-          <button class="event-btn" onclick="selectEvent(this,'9:00am – 10:00am')">9:00am – 10:00am</button>
-          <button class="event-btn" onclick="selectEvent(this,'10:00am – 10:30am')">10:00am – 10:30am</button>
-          <button class="event-btn" onclick="selectEvent(this,'10:30am – 11:45am')">10:30am – 11:45am</button>
-          <button class="event-btn" onclick="selectEvent(this,'11:45am – 12:15pm')">11:45am – 12:15pm</button>
-          <button class="event-btn" onclick="selectEvent(this,'12:15pm – 1:30pm')">12:15pm – 1:30pm</button>
-          <button class="event-btn" onclick="selectEvent(this,'1:30pm – 2:30pm')">1:30pm – 2:30pm</button>
-          <button class="event-btn" onclick="selectEvent(this,'2:30pm – 4:00pm')">2:30pm – 4:00pm</button>
-          <button class="event-btn" onclick="selectEvent(this,'4:00pm – 5:00pm')">4:00pm – 5:00pm</button>
-          <button class="event-btn" onclick="selectEvent(this,'5:00pm – 5:45pm')">5:00pm – 5:45pm</button>
-          <button class="event-btn" onclick="selectEvent(this,'5:45pm – 7:00pm')">5:45pm – 7:00pm</button>
-          <button class="event-btn" onclick="selectEvent(this,'7:00pm – 8:30pm')">7:00pm – 8:30pm</button>
-          <button class="event-btn" onclick="selectEvent(this,'8:30pm – 10:00pm')">8:30pm – 10:00pm</button>
-          <button class="event-btn" onclick="selectEvent(this,'10:00pm – 11:00pm')">10:00pm – 11:00pm</button>
-          <button class="event-btn" onclick="selectEvent(this,'11:00pm – 12:00am')">11:00pm – 12:00am</button>
-        </div>
-
+      <!-- WEEKDAY events -->
+      <div class="event-grid" id="events-weekday">
+        <button class="event-btn combined-btn" onclick="selectCombined(this,'AM Meditation','Morning Puja')">AM Meditation + Puja</button>
+        <button class="event-btn combined-btn" onclick="selectCombined(this,'Arati','Evening Meditation')">Arati + Evening Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'AM Meditation')">AM Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'Morning Puja')">Morning Puja</button>
+        <button class="event-btn" onclick="selectEvent(this,'Meditation after Puja')">Meditation after Puja</button>
+        <button class="event-btn" onclick="selectEvent(this,'4pm Meditation')">4pm Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'Arati')">Arati</button>
+        <button class="event-btn" onclick="selectEvent(this,'Evening Meditation')">Evening Meditation</button>
+        <button class="event-btn event-btn-other" onclick="showScreen('weekday-other')">+ Other events</button>
       </div>
+
+      <!-- GURUVARA events -->
+      <div class="event-grid guruvara-cols" id="events-guruvara" style="display:none">
+        <button class="event-btn combined-btn" onclick="selectCombined(this,'AM Meditation','Morning Puja')">AM Meditation + Puja</button>
+        <button class="event-btn combined-btn" onclick="selectCombined(this,'Arati','Evening Meditation')">Arati + Evening Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'Saturday Evening: Chanting and Darshan')">Saturday Evening: Chanting and Darshan</button>
+        <button class="event-btn" onclick="selectEvent(this,'AM Meditation')">AM Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'Morning Puja')">Morning Puja</button>
+        <button class="event-btn" onclick="selectEvent(this,'10:00am Recitation and Da-Om Chanting')">10:00am Recitation and Da-Om Chanting</button>
+        <button class="event-btn" onclick="selectEvent(this,'10:50am Meditation')">10:50am Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'Full Cycle')">Full Cycle</button>
+        <button class="event-btn" onclick="selectEvent(this,'4pm Meditation')">4pm Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'Arati')">Arati</button>
+        <button class="event-btn" onclick="selectEvent(this,'Evening Meditation')">Evening Meditation</button>
+      </div>
+
+      <!-- TEMPLE VIGIL events -->
+      <div class="event-grid vigil-cols" id="events-vigil" style="display:none">
+        <button class="event-btn" onclick="selectEvent(this,'12:00am – 1:30am')">12:00am – 1:30am</button>
+        <button class="event-btn" onclick="selectEvent(this,'1:30am – 3:00am')">1:30am – 3:00am</button>
+        <button class="event-btn" onclick="selectEvent(this,'3:00am – 4:15am')">3:00am – 4:15am</button>
+        <button class="event-btn" onclick="selectEvent(this,'8:00am – 9:00am')">8:00am – 9:00am</button>
+        <button class="event-btn" onclick="selectEvent(this,'9:00am – 10:00am')">9:00am – 10:00am</button>
+        <button class="event-btn" onclick="selectEvent(this,'10:00am – 10:30am')">10:00am – 10:30am</button>
+        <button class="event-btn" onclick="selectEvent(this,'10:30am – 11:45am')">10:30am – 11:45am</button>
+        <button class="event-btn" onclick="selectEvent(this,'11:45am – 12:15pm')">11:45am – 12:15pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'12:15pm – 1:30pm')">12:15pm – 1:30pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'1:30pm – 2:30pm')">1:30pm – 2:30pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'2:30pm – 4:00pm')">2:30pm – 4:00pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'4:00pm – 5:00pm')">4:00pm – 5:00pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'5:00pm – 5:45pm')">5:00pm – 5:45pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'5:45pm – 7:00pm')">5:45pm – 7:00pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'7:00pm – 8:30pm')">7:00pm – 8:30pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'8:30pm – 10:00pm')">8:30pm – 10:00pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'10:00pm – 11:00pm')">10:00pm – 11:00pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'11:00pm – 12:00am')">11:00pm – 12:00am</button>
+      </div>
+
     </div>
   </div>
 
@@ -399,10 +394,8 @@ function setSchedule(s) {
   document.getElementById('main-header').className = 'header' + (s !== 'weekday' ? ' ' + s + '-mode' : '');
   ['weekday','guruvara','vigil'].forEach(k => {
     document.getElementById('btn-' + k).className = 'sched-card' + (k === s ? ' active-' + k : '');
-    document.getElementById('events-' + k).className = 'event-set' + (k === s ? ' active' : '');
+    document.getElementById('events-' + k).style.display = k === s ? 'grid' : 'none';
   });
-  document.querySelector('.event-grid').classList.toggle('vigil-cols',    s === 'vigil');
-  document.querySelector('.event-grid').classList.toggle('guruvara-cols', s === 'guruvara');
   // Clear selected event if it was from a different schedule
   document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
   currentEvent = null;
