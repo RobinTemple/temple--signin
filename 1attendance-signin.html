@@ -86,7 +86,6 @@
   .action-banner { padding: 14px 16px 12px; border-bottom: 3px solid transparent; transition: background 0.2s; }
   .action-banner.arrive  { background: var(--green-light); color: var(--green); border-color: var(--green-border); }
   .action-banner.depart { background: var(--amber-light); color: var(--amber); border-color: var(--amber-border); }
-  .action-banner.combined { background: var(--amber-light); color: var(--amber); border-color: var(--amber-border); }
   .action-banner-event { font-size: 22px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
   .action-banner-row2 { display: flex; align-items: center; gap: 10px; }
   .action-banner-icon { font-size: 20px; flex-shrink: 0; }
@@ -407,10 +406,7 @@ function selectAction(action) {
   if (currentEvent) goToNames();
 }
 
-let combinedEvents = null; // [{event, action}, {event, action}] when in combined mode
-
 function selectEvent(btn, eventName) {
-  combinedEvents = null;
   document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   currentEvent = eventName;
@@ -418,11 +414,11 @@ function selectEvent(btn, eventName) {
 }
 
 function selectCombined(btn, event1, event2) {
-  combinedEvents = [
-    { event: event1, action: 'arrive' },
-    { event: event2, action: 'depart'  },
-  ];
+  // Records one arrive with the combined name — person taps green name on departing screen later to sign out
+  currentAction = 'arrive';
   currentEvent = event1 + ' + ' + event2;
+  document.getElementById('btn-arrive').classList.add('selected');
+  document.getElementById('btn-depart').classList.remove('selected');
   document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   goToNames();
@@ -436,16 +432,8 @@ function goToNames() {
 }
 
 function updateActionBanner() {
-  const banner = document.getElementById('action-banner');
-  if (combinedEvents) {
-    banner.className = 'action-banner combined';
-    document.getElementById('action-banner-event').textContent = combinedEvents[0].event + ' + ' + combinedEvents[1].event;
-    document.getElementById('action-banner-icon').textContent  = '🔄';
-    document.getElementById('action-banner-text').textContent  = 'ARRIVE & SIGN OUT';
-    banner.querySelector('.action-banner-change').textContent  = 'Change event';
-    return;
-  }
   const isArrive = currentAction === 'arrive';
+  const banner = document.getElementById('action-banner');
   banner.className = 'action-banner ' + (isArrive ? 'arrive' : 'depart');
   document.getElementById('action-banner-event').textContent = currentEvent || '';
   document.getElementById('action-banner-icon').textContent  = isArrive ? '🙏' : '🚶';
@@ -454,9 +442,7 @@ function updateActionBanner() {
     isArrive ? 'Switch to Departing' : 'Switch to Arriving';
 }
 
-function handleBannerBtn() {
-  if (combinedEvents) { resetToEventScreen(); } else { flipAction(); }
-}
+function handleBannerBtn() { flipAction(); }
 
 function flipAction() {
   const wasArrive = currentAction === 'arrive';
@@ -465,10 +451,8 @@ function flipAction() {
   document.getElementById('btn-depart').classList.toggle('selected', currentAction === 'depart');
 
   if (wasArrive) {
-    // Arriving -> Departing: stay on the same event, jump straight to its names screen
     goToNames();
   } else {
-    // Departing -> Arriving: no logical "same event" link, so go choose an event afresh
     currentEvent = null;
     document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
     showScreen('event');
@@ -476,7 +460,6 @@ function flipAction() {
 }
 
 function resetToEventScreen() {
-  combinedEvents = null;
   const newAction = currentAction === 'arrive' ? 'depart' : 'arrive';
   currentAction = newAction;
   document.getElementById('btn-arrive').classList.toggle('selected', newAction === 'arrive');
@@ -487,7 +470,6 @@ function resetToEventScreen() {
 }
 
 function goHome() {
-  combinedEvents = null;
   currentEvent = null;
   document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
   showScreen('event');
@@ -512,30 +494,23 @@ let undoTimer  = null;
 
 function recordAction(name) {
   const now = new Date();
-  const entries = combinedEvents
-    ? combinedEvents.map(p => ({ name, event: p.event, action: p.action,
-        date: todayDate(), time: formatTime(now), timestamp: now.toISOString() }))
-    : [{ name, event: currentEvent, action: currentAction,
-        date: todayDate(), time: formatTime(now), timestamp: now.toISOString() }];
-  entries.forEach(e => allSignIns.push(e));
-  lastAction = entries; // store array so undo can remove all of them
+  const entry = { name, event: currentEvent, action: currentAction,
+    date: todayDate(), time: formatTime(now), timestamp: now.toISOString() };
+  allSignIns.push(entry);
+  lastAction = entry;
   try { localStorage.setItem('signins', JSON.stringify(allSignIns)); } catch(e) {}
   updatePendingBadge();
   updateNameStates();
   updateCounts();
-  const label = combinedEvents
-    ? name + ' — signed in & out'
-    : name + (currentAction === 'arrive' ? ' — signed in' : ' — signed out');
-  showConfirmToast(name, !combinedEvents && currentAction === 'arrive', formatTime(now), combinedEvents ? 'combined' : null);
-  showUndoBar(name, !combinedEvents && currentAction === 'arrive', !!combinedEvents);
+  showConfirmToast(name, currentAction === 'arrive', formatTime(now));
+  showUndoBar(name, currentAction === 'arrive');
 }
 
-function showUndoBar(name, isArrive, isCombined) {
+function showUndoBar(name, isArrive) {
   clearTimeout(undoTimer);
   const bar = document.getElementById('undo-bar');
   const txt = document.getElementById('undo-bar-text');
-  txt.innerHTML = 'Last: <strong>' + name + '</strong> — ' +
-    (isCombined ? 'signed in &amp; out' : (isArrive ? 'signed in' : 'signed out'));
+  txt.innerHTML = 'Last: <strong>' + name + '</strong> — ' + (isArrive ? 'signed in' : 'signed out');
   bar.classList.add('visible');
   undoTimer = setTimeout(hideUndoBar, 20000);
 }
@@ -547,14 +522,11 @@ function hideUndoBar() {
 
 function undoLast() {
   if (!lastAction) return;
-  const entries = Array.isArray(lastAction) ? lastAction : [lastAction];
-  entries.forEach(target => {
-    const idx = allSignIns.findLastIndex(r =>
-      r.name === target.name && r.event === target.event &&
-      r.action === target.action && r.timestamp === target.timestamp
-    );
-    if (idx !== -1) allSignIns.splice(idx, 1);
-  });
+  const idx = allSignIns.findLastIndex(r =>
+    r.name === lastAction.name && r.event === lastAction.event &&
+    r.action === lastAction.action && r.timestamp === lastAction.timestamp
+  );
+  if (idx !== -1) allSignIns.splice(idx, 1);
   try { localStorage.setItem('signins', JSON.stringify(allSignIns)); } catch(e) {}
   clearTimeout(undoTimer);
   hideUndoBar();
@@ -564,13 +536,13 @@ function undoLast() {
 }
 
 let toastHideTimer = null;
-function showConfirmToast(name, isArrive, timeStr, mode) {
+function showConfirmToast(name, isArrive, timeStr) {
   const toast = document.getElementById('confirm-toast');
-  document.getElementById('confirm-toast-icon').textContent = mode === 'combined' ? '🔄' : (isArrive ? '✅' : '👋');
+  document.getElementById('confirm-toast-icon').textContent = isArrive ? '✅' : '👋';
   document.getElementById('confirm-toast-text').textContent =
-    name + (mode === 'combined' ? ' — signed in & out' : (isArrive ? ' — Signed in' : ' — Signed out'));
+    name + (isArrive ? ' — Signed in' : ' — Signed out');
   document.getElementById('confirm-toast-time').textContent = timeStr;
-  toast.classList.toggle('depart-color', !isArrive && mode !== 'combined');
+  toast.classList.toggle('depart-color', !isArrive);
   toast.classList.remove('show');
   requestAnimationFrame(() => toast.classList.add('show'));
   clearTimeout(toastHideTimer);
