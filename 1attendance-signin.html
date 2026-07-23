@@ -84,9 +84,9 @@
 
   /* ACTION BANNER */
   .action-banner { padding: 14px 16px 12px; border-bottom: 3px solid transparent; transition: background 0.2s; }
-  .action-banner.arrive { background: var(--green-light); color: var(--green); border-color: var(--green-border); }
+  .action-banner.arrive  { background: var(--green-light); color: var(--green); border-color: var(--green-border); }
   .action-banner.depart { background: var(--amber-light); color: var(--amber); border-color: var(--amber-border); }
-  .action-banner.combined { background: var(--primary-light); color: var(--primary-text); border-color: #3A5A7D; }
+  .action-banner.combined { background: var(--amber-light); color: var(--amber); border-color: var(--amber-border); }
   .action-banner-event { font-size: 22px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
   .action-banner-row2 { display: flex; align-items: center; gap: 10px; }
   .action-banner-icon { font-size: 20px; flex-shrink: 0; }
@@ -104,7 +104,7 @@
 
   /* NAME BUTTONS */
   .name-grid { column-count: 4; column-gap: 6px; }
-  .name-btn { display: block; width: 100%; margin-bottom: 6px; break-inside: avoid; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 11px 3px; font-size: 20px; font-weight: 500; color: var(--text); cursor: pointer; text-align: center; -webkit-appearance: none; line-height: 1.12; }
+  .name-btn { display: block; width: 100%; margin-bottom: 6px; break-inside: avoid; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 8px 3px; font-size: 16px; font-weight: 500; color: var(--text); cursor: pointer; text-align: center; -webkit-appearance: none; line-height: 1.12; }
   .name-btn:active { transform: scale(0.96); }
   .name-btn.arrived { background: var(--green-light); border-color: var(--green); color: var(--green); }
   .name-btn.arrived::after { content: ' ✓'; font-weight: 700; }
@@ -251,7 +251,7 @@
       <div class="action-banner-row2">
         <span class="action-banner-icon" id="action-banner-icon">🙏</span>
         <span class="action-banner-text" id="action-banner-text">ARRIVING</span>
-        <button class="action-banner-change" onclick="flipAction()">Switch to Departing</button>
+        <button class="action-banner-change" onclick="handleBannerBtn()">Switch to Departing</button>
       </div>
     </div>
     <div class="today-bar">
@@ -376,8 +376,7 @@ let allSignIns = [];
 try { allSignIns = JSON.parse(localStorage.getItem('signins') || '[]'); } catch(e) {}
 
 function init() {
-  const day = new Date().getDay();
-  if (day === 4) setSchedule('guruvara'); else setSchedule('weekday');
+  setSchedule('weekday');
   updateHeaderSub();
   updatePendingBadge();
   setInterval(updateHeaderSub, 60000);
@@ -453,6 +452,10 @@ function updateActionBanner() {
   document.getElementById('action-banner-text').textContent  = isArrive ? 'ARRIVING' : 'DEPARTING';
   banner.querySelector('.action-banner-change').textContent  =
     isArrive ? 'Switch to Departing' : 'Switch to Arriving';
+}
+
+function handleBannerBtn() {
+  if (combinedEvents) { resetToEventScreen(); } else { flipAction(); }
 }
 
 function flipAction() {
