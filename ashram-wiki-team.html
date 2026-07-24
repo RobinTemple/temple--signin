@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Service Directory — Naitauba Ashram</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:#f0ede8;height:100vh;overflow:hidden;display:flex;flex-direction:column}
+.hdr{background:#2a5c3f;color:#fff;padding:11px 20px;display:flex;align-items:center;gap:14px;flex-shrink:0}
+.hdr-title{font-size:15px;font-weight:700}
+.hdr-sub{font-size:10px;color:#a8d5b5;letter-spacing:1.5px;text-transform:uppercase}
+.app{display:flex;flex:1;overflow:hidden}
+.sb{width:230px;flex-shrink:0;background:#224d35;display:flex;flex-direction:column;overflow:hidden}
+.sb-top{padding:12px 12px 8px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.sb-top input{width:100%;padding:7px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.1);color:#fff;font-size:13px;outline:none}
+.sb-top input::placeholder{color:rgba(255,255,255,0.35)}
+.togs{display:flex;gap:4px;padding:7px 10px;border-bottom:1px solid rgba(255,255,255,0.1)}
+.tog{flex:1;padding:5px 0;font-size:11px;border-radius:5px;border:1px solid rgba(255,255,255,0.2);cursor:pointer;font-family:inherit;font-weight:500}
+.tog.on{background:#a8d5b5;color:#1a3d28;border-color:#a8d5b5}
+.tog:not(.on){background:transparent;color:rgba(255,255,255,0.5)}
+.sl{flex:1;overflow-y:auto}
+.sl::-webkit-scrollbar{width:3px}
+.sl::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);border-radius:2px}
+.ni{padding:8px 12px;cursor:pointer;border-left:3px solid transparent;display:flex;align-items:center;gap:6px;font-size:13px;color:rgba(255,255,255,0.62)}
+.ni:hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.9)}
+.ni.on{background:rgba(168,213,181,0.18);border-left-color:#a8d5b5;color:#d4f0dc}
+.gl{padding:10px 12px 3px;font-size:9px;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.3);font-weight:600}
+.sft{padding:7px 12px;border-top:1px solid rgba(255,255,255,0.1);font-size:10px;color:rgba(255,255,255,0.3)}
+.mbdg{font-size:9px;background:#a8d5b5;color:#1a3d28;border-radius:7px;padding:2px 6px;font-weight:700;flex-shrink:0}
+.main{flex:1;overflow-y:auto;background:#f7f5f2}
+.home{padding:28px 30px 20px}
+.home h2{font-size:20px;font-weight:700;color:#1a3d28;margin-bottom:6px}
+.home p{font-size:13px;color:#7a7060;line-height:1.7;margin-bottom:24px}
+.sec-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#a09070;margin-bottom:9px}
+.mgr-card{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;background:#fff;border:1px solid #d4e8d8;border-radius:18px;cursor:pointer;font-size:13px;color:#1a3d28;font-weight:500;margin:0 6px 6px 0}
+.mgr-card:hover{border-color:#2a5c3f;box-shadow:0 2px 6px rgba(0,0,0,.07)}
+.rpt-b{font-size:10px;background:#2a5c3f;color:#d4f0dc;border-radius:8px;padding:2px 7px;font-weight:600}
+.ph{padding:20px 30px 14px;background:#fff;border-bottom:1px solid #e4dece}
+.bb{display:flex;align-items:center;gap:4px;background:none;border:none;padding:0;cursor:pointer;color:#a09070;font-size:10px;margin-bottom:7px;font-family:inherit;font-weight:600;letter-spacing:0.5px;text-transform:uppercase}
+.bb:hover{color:#1a3d28}
+.pn{font-size:20px;font-weight:700;color:#1a3d28}
+.pb{padding:20px 30px}
+.sec{margin-bottom:20px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:5px 13px;border-radius:16px;font-size:13px;font-weight:500;margin-bottom:4px;margin-right:4px}
+.cm{background:#dcfce7;color:#166534;border:1px solid #86efac;cursor:pointer}.cm:hover{background:#bbf7d0}
+.cr{background:#ede9fe;color:#4c1d95;border:1px solid #c4b5fd;cursor:pointer}.cr:hover{background:#ddd6fe}
+.cp{background:#f1f0eb;color:#7a7060;border:1px solid #e5dece;cursor:default}
+.srow{padding:9px 14px;background:#fff;border:1px solid #e8e4dc;border-left:3px solid #2a5c3f;border-radius:0 8px 8px 0;font-size:13px;color:#2d2820;line-height:1.5;margin-bottom:4px}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div>
+    <div class="hdr-sub">Naitauba Ashram</div>
+    <div class="hdr-title">Service Directory</div>
+  </div>
+</div>
+<div class="app">
+  <div class="sb">
+    <div class="sb-top"><input id="si" type="text" placeholder="Search by name or service…"></div>
+    <div class="togs">
+      <button class="tog on" id="ta">A–Z</button>
+      <button class="tog" id="tm">By manager</button>
+    </div>
+    <div class="sl" id="sl"></div>
+    <div class="sft" id="sft"></div>
+  </div>
+  <div class="main" id="main"></div>
+</div>
+<script>
+const ALL=[
+  {id:"beatrys",name:"Beatrys",services:[],managedBy:[],manages:["Elise Bady"]},
+  {id:"ben-grisso",name:"Ben Grisso",services:[],managedBy:[],manages:["Diane Bryan"]},
+  {id:"bruce-burnham",name:"Bruce Burnham",services:[],managedBy:[],manages:["Greg Wells","Chris Beaver"]},
+  {id:"carol-smith",name:"Carol Smith",services:["Sukra Kendra and Silver Hall — priest and shodana","Matrix Divine Domain — priest and shodana (ADAS Bedroom, Indigo Swan, Marble Hall, Picture Perfect, RNK environments)","Ruchiradama Nadikanta assistant","Mumtaz 'M' — care and attendant","Co-manage Matrix Divine Domain","Dental Clinic"],managedBy:["Krysia Banachowski"],manages:["Da-vid Forsythe","Siegerdina Mandema","Linda Oppenheimer"]},
+  {id:"caroline-lindsay",name:"Caroline Lindsay",services:["Cultural service to ashram and retreats","Divine Domain — Indefinable, management of DLAC, gifting, management of Bhagavan's grooming worldwide","Back-up Sukra Kendra priest"],managedBy:["Malcolm Burke","Lisa Lurie","Krysia Banachowski"],manages:["Diane Bryan","Jana Divisova"]},
+  {id:"chris-beaver",name:"Chris Beaver",services:["Internet maintenance, Naitauba network and cyber-security","Phone systems","AV support"],managedBy:["Chris Merz","Michiel Vos","Bob DeLollis","Bruce Burnham"],manages:[]},
+  {id:"chris-merz",name:"Chris Merz",services:["Island management (garage, marine crew, roads crew, emergency inventory, ~80 staff, Ciqomi village)","Patron"],managedBy:["Michiel Vos"],manages:["Chris Beaver","Cynthia Morris-Mancor","Joy Harland","Robin Temple"]},
+  {id:"cynthia-morris-mancor",name:"Cynthia Morris-Mancor",services:["Island Management","Blessing Pujarist","Reciter","Shipping Manager","Ciqomi Manager for women (and men sometimes)","Attendant at Da Saptanath Bhavan","Fire Attendant","Emporium / Housekeeping Manager","Attendance Keeper for Mindless Company"],managedBy:["Chris Merz"],manages:["Diane Bryan","Pamela Gray"]},
+  {id:"da-vid-forsythe",name:"Da-vid Forsythe",services:["Matrix male attendant / Day Manager","Water system manager","Service to 723 Puja and Prayer","Primary Matrix reciter and chanter for Pujas and Arati","Ciqomi Guild"],managedBy:["Carol Smith","Gilbert Evans"],manages:[]},
+  {id:"diane-bryan",name:"Diane Bryan",services:["Divine Image Art Preservation Project Manager","Divine Image Art Usage projects","Graphics projects for RSO","Hermitage Educators Guild","Practice Consideration Group guide (7 Second Congregation ladies)","Retreats — cultural guide","Hermitage Dharma group co-facilitator","Priestly service at Temple Adi Da","Chanting and Darshan events priest","Paduka Mandir Puja","Priestly service at Swoon of Faith","Matrix cleaning and Puja on Veranda","Runner's shift","Attendance recording for Swoon of Faith"],managedBy:["Ben Grisso","Caroline Lindsay","Malcolm Burke","Gilbert Evans","Carol Smith","Cynthia Morris-Mancor"],manages:[]},
+  {id:"elise-bady",name:"Elise Bady",services:["Priest for Hymns to Me","Care for Sukha Dham","Open Samraj Mahal twice a week and cleaning projects","Assistant to Beatrys at Sacramental Services"],managedBy:["Beatrys","Maja"],manages:[]},
+  {id:"gilbert-evans",name:"Gilbert Evans",services:["Lion's Lap","Head Priest and Sacramental Services monthly disclosures","Ashram overview schedules (daily, weekly, Celebrations)","Samrajya Hermitage Advisory Board","Ruchira Secretariat"],managedBy:["Krysia Banachowski","Joseph Taylor","Hoi Ngo"],manages:["Da-vid Forsythe","Malcolm Burke"]},
+  {id:"greg-wells",name:"Greg Wells",services:["Administrator for Mercury, Local Network and Firewall","Media Services","Darshan and Audio/Visual presenter","Computer Help Desk","Chanting Guild — Ashram Drummer and Chanting"],managedBy:["Bruce Burnham","Stephanie Eichleay"],manages:[]},
+  {id:"hoi-ngo",name:"Hoi Ngo",services:["Service for the Ruchira Secretariat","Service to the ADL Foundation","Full Disclosure Compilation, Annual Plans and Annual Accomplishments","Fiscal service (Naitauba Fiscal Office) and retreat fees collection","Legal service — Samrajya Legal Review Committee","Fire Vigil management (jointly with Pamela Gray)","Immigration service for new and current residents","Monthly fuel inventory"],managedBy:["Joseph Taylor","Gilbert Evans"],manages:["Pamela Gray"]},
+  {id:"inca-hincapie",name:"Inca Hincapie",services:["Ruchiradama Quandra Sukhapur's day-to-day attendant","Setting The Brightness apart from disturbances and managing day-to-day services","Gifting for Bhagavan Adi Da and Ruchiradama Quandra Sukhapur","Considering needs and purchasing for other Divine Domains","Drumming during Sacred worshipping"],managedBy:[],manages:[]},
+  {id:"jana-divisova",name:"Jana Divisova",services:["Practical retreat manager","Development and design department","Sacred History (every day for RSO)","Matrix service — Inner Courtyard (1x per week)","Sacramental Services (pujarist, attendant)","Translation of materials to Czech","Other services (wrapping gifts, sewing, Laying on of Hands, hair-cuts)"],managedBy:["Malcolm Burke","Caroline Lindsay","Miki Malinka"],manages:[]},
+  {id:"joseph-taylor",name:"Joseph Taylor",services:["Brightness male server"],managedBy:[],manages:["Hoi Ngo"]},
+  {id:"joy-harland",name:"Joy Harland",services:["Grounds care and working with grounds crew","Nursery — management and maintenance","Daily fresh flower vases to Brightness (7 days per week)","Gifting via Flowers and Meals"],managedBy:["Chris Merz","Joseph Taylor","Miki Malinka"],manages:[]},
+  {id:"kristien-otten",name:"Kristien Otten",services:["RSO Kitchen manager (daily)","Adornments for the Brightness (monthly)","Indefinable (daily)","No Doubt of God (sometimes)","Service to Ruchiradama Nadikanta (one afternoon per week)"],managedBy:[],manages:[]},
+  {id:"krysia-banachowski",name:"Krysia Banachowski",services:["Currently covering Matrix — daily openings/closings and Pujas","Two active projects for Ruchiradama Quandra Sukhapur","Samrajya Hermitage Advisory Board","Oversee women's service in Divine Domains and Sukra Kendras (here and worldwide), Divine Domain storages"],managedBy:[],manages:["Carol Smith","Caroline Lindsay"]},
+  {id:"linda-oppenheimer",name:"Linda Oppenheimer",services:["Design for Ruchiradama Quandra Sukhapur projects and Holy Sites","Fabrication, framing, cleaning and restoring things from Beloved's Domains","Decoration for special pujas","Cleaning for Ruchiradama Nadikanta","Daily and weekly Shadonna","Organise and manage WW cards and Resident cards"],managedBy:["Carol Smith"],manages:[]},
+  {id:"lisa-lurie",name:"Lisa Lurie",services:[],managedBy:[],manages:["Caroline Lindsay","Robin Temple","Malcolm Burke"]},
+  {id:"maja",name:"Maja",services:[],managedBy:[],manages:["Elise Bady","Robin Temple"]},
+  {id:"malcolm-burke",name:"Malcolm Burke",services:["Retreat manager","Hermitage Dharma project","Cultural Overview Guild","1.1 men's devotional group (co-guide with Bob DeLollis and Leo Burke)","2C men's devotional group guide","Right Life Guild","Massage Guild","Mindless Company head priest (not fully taken on)","RSO Communications (2 mornings per week and backup)"],managedBy:["Lisa Lurie","Radha Webley","Yvonne Slayman","Gilbert Evans"],manages:["Caroline Lindsay","Diane Bryan","Jana Divisova"]},
+  {id:"michiel-vos",name:"Michiel Vos",services:[],managedBy:[],manages:["Chris Merz","Miki Malinka"]},
+  {id:"miki-malinka",name:"Miki Malinka",services:["Designing architect","Development manager","Construction crew supervision","Woodshop manager and supervision","Photography and AV","Drone pilot","Photo and AV archive storage administrator (RSO)","Computer management","RSO driver","Bus driver","Cow Catcher service — trains and AV"],managedBy:["Chris Merz","Michiel Vos","Krysia Banachowski"],manages:["Jana Divisova","Joy Harland"]},
+  {id:"pamela-gray",name:"Pamela Gray",services:["Gifting","Treasure Keeper — manage contents","Prepare LRO and RSO requests every month","Fire shift scheduling (jointly with Hoi Ngo)","Prepare Beloved's Daily News (twice per week)","Beloved's Tide-cards and Weather","Assist with shipment receiving and delivering","Training in Blessing Pujas","Temple chanting service","Assist with preparing Celebration offerings","Residents' Library","Assist with media services","Grooming services for the Ashram","Dawn Horse Press management for the Ashram"],managedBy:["Radha Webley","Hoi Ngo","Cynthia Morris-Mancor"],manages:["Randa Sununu"]},
+  {id:"radha-webley",name:"Radha Webley",services:["Root Office support for Ruchiradama Quandra Sukhapur","Da Ashvamedhanath Bhavan"],managedBy:[],manages:["Stephanie Eichleay","Malcolm Burke","Pamela Gray"]},
+  {id:"randa-sununu",name:"Randa Sununu",services:["Temple Adi Da schedule oversight","Supporting Pamela Gray (4 afternoons per week)"],managedBy:["Pamela Gray"],manages:[]},
+  {id:"robin-temple",name:"Robin Temple",services:["Divine Domain Manager, Matrix","Cultural Overview Guild","Silver Hall Sittings administration","Education Guild","Back-up service at Lion's Lap for Gilbert Evans","Farm manager"],managedBy:["Carol Smith","Maja","Lisa Lurie","Malcolm Burke","Gilbert Evans","Chris Merz"],manages:[]},
+  {id:"siegerdina-mandema",name:"Siegerdina Mandema",services:["Support for Ruchiradama Nadikanta","Mumtaz","Divine Domain services","Birds","Other non-human services, including bees"],managedBy:["Carol Smith","Malcolm Burke"],manages:[]},
+  {id:"stephanie-eichleay",name:"Stephanie Eichleay",services:["Samrajya Publications, journal, research and Dharmic projects for Ruchiradama Quandra Sukhapur","Kitchen management","Ciqomi Guild","Sacred offerings","Recitation Guild","Chanting Guild"],managedBy:["Radha Webley"],manages:["Greg Wells"]},
+  {id:"yvonne-slayman",name:"Yvonne Slayman",services:["RSO Communications administrator","Murti and Photo printing","Admin for RSO Local Media Archives","Manage access to Naitauba Photo and Video archives","Review and Processing of Media","Administrator — ADS Broadcast Services (website)","IP agreements administration (with Samrajya Legal)","Samrajya Art Board administrator","Art screenings tech support","Global Ashram Photography coverage","Co-manage Emporium","Cooperative Food Guild / Kitchen Board","CAS attendance entries","Co-manage Recitation Guild","Enter Samrajya POs and Vendor Orders","Devotee point person for Laundry staff","Salusalu/mala service on celebration day-eve"],managedBy:[],manages:["Malcolm Burke"]}
+];
+// Only show devotees who have services OR manage someone
+const D=ALL.filter(d=>d.services.length>0||d.manages.length>0);
+let sel=null,srch="",grp="alpha";
+const byName=n=>D.find(d=>d.name===n);
+const goto=n=>{const d=byName(n);if(d){sel=d.id;render()}};
+function getF(){const q=srch.toLowerCase().trim();if(!q)return D;return D.filter(d=>d.name.toLowerCase().includes(q)||d.services.some(s=>s.toLowerCase().includes(q))||[...d.managedBy,...d.manages].some(m=>m.toLowerCase().includes(q)));}
+function mkChip(name,type){const d=byName(name),isLink=!!d;const el=document.createElement("span");el.className="chip "+(isLink?(type==="m"?"cm":"cr"):"cp");el.innerHTML=name+(isLink?" →":"");if(isLink)el.onclick=()=>goto(name);return el;}
+function renderSB(){
+  const f=getF();const sl=document.getElementById("sl");let h="";
+  if(grp==="alpha"){
+    [...f].sort((a,b)=>a.name.localeCompare(b.name)).forEach(d=>{h+=`<div class="ni${sel===d.id?" on":""}" data-id="${d.id}"><span style="flex:1">${d.name}</span>${d.manages.length?'<span class="mbdg">MGR</span>':''}</div>`;});
+  } else {
+    const groups={};
+    f.forEach(d=>{const ks=d.managedBy.filter(m=>byName(m));const keys=ks.length?ks:["No manager listed"];keys.forEach(k=>{if(!groups[k])groups[k]=[];if(!groups[k].find(x=>x.id===d.id))groups[k].push(d)});});
+    Object.entries(groups).sort(([a],[b])=>a==="No manager listed"?1:b==="No manager listed"?-1:a.localeCompare(b)).forEach(([mgr,devs])=>{h+=`<div class="gl">${mgr}</div>`;[...devs].sort((a,b)=>a.name.localeCompare(b.name)).forEach(d=>{h+=`<div class="ni${sel===d.id?" on":""}" data-id="${d.id}" style="padding-left:18px"><span style="flex:1">${d.name}</span></div>`;});});
+  }
+  sl.innerHTML=h;
+  document.getElementById("sft").innerHTML=`${D.length} devotees`;
+}
+function renderMain(){
+  const main=document.getElementById("main");const d=sel?D.find(x=>x.id===sel):null;
+  if(!d){
+    let h=`<div class="home"><h2>Service directory</h2><p>Select a devotee from the sidebar to see their service areas and who they report to. Green chips are manager links, purple chips are direct reports — click any to navigate.</p><div class="sec-lbl">Key managers</div><div id="mc"></div></div>`;
+    main.innerHTML=h;
+    const mc=main.querySelector("#mc");D.filter(x=>x.manages.length>0).sort((a,b)=>a.name.localeCompare(b.name)).forEach(m=>{const el=document.createElement("div");el.className="mgr-card";el.dataset.nav=m.id;el.innerHTML=`${m.name} <span class="rpt-b">${m.manages.length} report${m.manages.length>1?"s":""}</span>`;el.onclick=()=>{sel=m.id;render()};mc.appendChild(el);});
+  } else {
+    let h=`<div class="ph"><button class="bb" id="bb">← Directory</button><div class="pn">${d.name}</div></div><div class="pb">`;
+    if(d.managedBy.length){h+=`<div class="sec"><div class="sec-lbl">Accountable to</div><div id="pc" style="display:flex;flex-wrap:wrap;gap:6px"></div></div>`;}
+    if(d.manages.length){h+=`<div class="sec"><div class="sec-lbl">Manages</div><div id="rc" style="display:flex;flex-wrap:wrap;gap:6px"></div></div>`;}
+    if(d.services.length){h+=`<div class="sec"><div class="sec-lbl">Service areas · ${d.services.length}</div>`;d.services.forEach(s=>{h+=`<div class="srow">${s}</div>`;});h+=`</div>`;}
+    h+=`</div>`;main.innerHTML=h;
+    const pc=main.querySelector("#pc");if(pc)d.managedBy.forEach(m=>pc.appendChild(mkChip(m,"m")));
+    const rc=main.querySelector("#rc");if(rc)d.manages.forEach(m=>rc.appendChild(mkChip(m,"r")));
+    main.querySelector("#bb").onclick=()=>{sel=null;render()};
+  }
+}
+function render(){renderSB();renderMain();document.getElementById("sl").addEventListener("click",e=>{const it=e.target.closest("[data-id]");if(it){sel=it.dataset.id;render()}});document.getElementById("ta").onclick=()=>{grp="alpha";render()};document.getElementById("ta").className="tog"+(grp==="alpha"?" on":"");document.getElementById("tm").onclick=()=>{grp="mgr";render()};document.getElementById("tm").className="tog"+(grp==="mgr"?" on":"");document.getElementById("si").value=srch;document.getElementById("si").oninput=e=>{srch=e.target.value;renderSB();document.getElementById("sl").addEventListener("click",ev=>{const it=ev.target.closest("[data-id]");if(it){sel=it.dataset.id;render()}});};}
+render();
+</script>
+</body>
+</html>
