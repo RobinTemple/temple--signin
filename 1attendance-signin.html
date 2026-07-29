@@ -102,8 +102,8 @@
   .undo-btn { font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--amber); background: var(--amber-light); color: var(--amber); cursor: pointer; white-space: nowrap; flex-shrink: 0; -webkit-appearance: none; }
 
   /* NAME BUTTONS */
-  .name-grid { column-count: 4; column-gap: 6px; }
-  .name-btn { display: block; width: 100%; margin-bottom: 6px; break-inside: avoid; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 8px 3px; font-size: 16px; font-weight: 500; color: var(--text); cursor: pointer; text-align: center; -webkit-appearance: none; line-height: 1.12; }
+  .name-grid { column-count: 3; column-gap: 12px; padding: 0 4px; }
+  .name-btn { display: block; width: 100%; margin-bottom: 12px; break-inside: avoid; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px 6px; font-size: 22px; font-weight: 300; color: var(--text); cursor: pointer; text-align: center; -webkit-appearance: none; line-height: 1.2; }
   .name-btn:active { transform: scale(0.96); }
   .name-btn.arrived { background: var(--green-light); border-color: var(--green); color: var(--green); }
   .name-btn.arrived::after { content: ' ✓'; font-weight: 700; }
@@ -200,6 +200,7 @@
         <button class="event-btn" onclick="selectEvent(this,'4pm Meditation')">4pm Meditation</button>
         <button class="event-btn" onclick="selectEvent(this,'Arati')">Arati</button>
         <button class="event-btn" onclick="selectEvent(this,'Evening Meditation')">Evening Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'Teaching Manual')">📖 Teaching Manual</button>
         <button class="event-btn event-btn-other" onclick="showScreen('weekday-other')">+ Other events</button>
       </div>
 
@@ -263,41 +264,26 @@
     </div>
     <div style="padding: 12px 0 12px;">
       <div class="name-grid">
-        <button class="name-btn" id="nb-Ann Walsh"            onclick="recordAction('Ann Walsh')">Ann Walsh</button>
-        <button class="name-btn" id="nb-Beatrys de Ligt"      onclick="recordAction('Beatrys de Ligt')">Beatrys de Ligt</button>
-        <button class="name-btn" id="nb-Blythe Massey"        onclick="recordAction('Blythe Massey')">Blythe Massey</button>
-        <button class="name-btn" id="nb-Bob DeLollis"         onclick="recordAction('Bob DeLollis')">Bob DeLollis</button>
-        <button class="name-btn" id="nb-Bruce Burnham"        onclick="recordAction('Bruce Burnham')">Bruce Burnham</button>
-        <button class="name-btn" id="nb-Carol Smith"          onclick="recordAction('Carol Smith')">Carol Smith</button>
-        <button class="name-btn" id="nb-Caroline Lindsay"     onclick="recordAction('Caroline Lindsay')">Caroline Lindsay</button>
-        <button class="name-btn" id="nb-Chris Beaver"         onclick="recordAction('Chris Beaver')">Chris Beaver</button>
-        <button class="name-btn" id="nb-Chris Merz"           onclick="recordAction('Chris Merz')">Chris Merz</button>
-        <button class="name-btn" id="nb-Cynthia Mancor"       onclick="recordAction('Cynthia Mancor')">Cynthia Mancor</button>
-        <button class="name-btn" id="nb-Da-vid Forsythe"      onclick="recordAction('Da-vid Forsythe')">Da-vid Forsythe</button>
-        <button class="name-btn" id="nb-Diane Bryan"          onclick="recordAction('Diane Bryan')">Diane Bryan</button>
-        <button class="name-btn" id="nb-Elise Bady"           onclick="recordAction('Elise Bady')">Elise Bady</button>
-        <button class="name-btn" id="nb-Greg Wells"           onclick="recordAction('Greg Wells')">Greg Wells</button>
-        <button class="name-btn" id="nb-Hoi Ngo"              onclick="recordAction('Hoi Ngo')">Hoi Ngo</button>
-        <button class="name-btn" id="nb-Inca Hincape"         onclick="recordAction('Inca Hincape')">Inca Hincape</button>
-        <button class="name-btn" id="nb-Jana Divisova"        onclick="recordAction('Jana Divisova')">Jana Divisova</button>
-        <button class="name-btn" id="nb-Julian Butler"        onclick="recordAction('Julian Butler')">Julian Butler</button>
-        <button class="name-btn" id="nb-Kristien Otten"       onclick="recordAction('Kristien Otten')">Kristien Otten</button>
-        <button class="name-btn" id="nb-Krysia Banachowski"   onclick="recordAction('Krysia Banachowski')">Krysia Banachowski</button>
-        <button class="name-btn" id="nb-Leo Burke"            onclick="recordAction('Leo Burke')">Leo Burke</button>
-        <button class="name-btn" id="nb-Linda Oppenheimer"    onclick="recordAction('Linda Oppenheimer')">Linda Oppenheimer</button>
-        <button class="name-btn" id="nb-Lisa Lurie"           onclick="recordAction('Lisa Lurie')">Lisa Lurie</button>
-        <button class="name-btn" id="nb-Madhuka Ranmuthu"     onclick="recordAction('Madhuka Ranmuthu')">Madhuka Ranmuthu</button>
-        <button class="name-btn" id="nb-Malcolm Burke"        onclick="recordAction('Malcolm Burke')">Malcolm Burke</button>
-        <button class="name-btn" id="nb-Michael Shaw"         onclick="recordAction('Michael Shaw')">Michael Shaw</button>
-        <button class="name-btn" id="nb-Michiel Vos"          onclick="recordAction('Michiel Vos')">Michiel Vos</button>
-        <button class="name-btn" id="nb-Miki Malinka"         onclick="recordAction('Miki Malinka')">Miki Malinka</button>
-        <button class="name-btn" id="nb-Nancy Piotrowski"     onclick="recordAction('Nancy Piotrowski')">Nancy Piotrowski</button>
-        <button class="name-btn" id="nb-Pamela Gray"          onclick="recordAction('Pamela Gray')">Pamela Gray</button>
-        <button class="name-btn" id="nb-Radha Webley"         onclick="recordAction('Radha Webley')">Radha Webley</button>
-        <button class="name-btn" id="nb-Robin Temple"         onclick="recordAction('Robin Temple')">Robin Temple</button>
-        <button class="name-btn" id="nb-Siegerdina Mandema"   onclick="recordAction('Siegerdina Mandema')">Siegerdina Mandema</button>
-        <button class="name-btn" id="nb-Vanessa Kenoyer"      onclick="recordAction('Vanessa Kenoyer')">Vanessa Kenoyer</button>
-        <button class="name-btn" id="nb-Yvonne Slayman"       onclick="recordAction('Yvonne Slayman')">Yvonne Slayman</button>
+        <button class="name-btn" id="nb-Ann Walsh"            onclick="recordAction('Ann Walsh')">Ann</button>
+        <button class="name-btn" id="nb-Beatrys de Ligt"      onclick="recordAction('Beatrys de Ligt')">Beatrys</button>
+        <button class="name-btn" id="nb-Blythe Massey"        onclick="recordAction('Blythe Massey')">Blythe</button>
+        <button class="name-btn" id="nb-Cynthia Mancor"       onclick="recordAction('Cynthia Mancor')">Cynthia</button>
+        <button class="name-btn" id="nb-Diane Bryan"          onclick="recordAction('Diane Bryan')">Diane</button>
+        <button class="name-btn" id="nb-Elise Bady"           onclick="recordAction('Elise Bady')">Elise</button>
+        <button class="name-btn" id="nb-Inca Hincape"         onclick="recordAction('Inca Hincape')">Inca</button>
+        <button class="name-btn" id="nb-Jana Divisova"        onclick="recordAction('Jana Divisova')">Jana</button>
+        <button class="name-btn" id="nb-Kristien Otten"       onclick="recordAction('Kristien Otten')">Kristien</button>
+        <button class="name-btn" id="nb-Krysia Banachowski"   onclick="recordAction('Krysia Banachowski')">Krysia</button>
+        <button class="name-btn" id="nb-Linda Oppenheimer"    onclick="recordAction('Linda Oppenheimer')">Linda</button>
+        <button class="name-btn" id="nb-Lisa Lurie"           onclick="recordAction('Lisa Lurie')">Lisa</button>
+        <button class="name-btn" id="nb-Madhuka Ranmuthu"     onclick="recordAction('Madhuka Ranmuthu')">Madhuka</button>
+        <button class="name-btn" id="nb-Marie Masek"          onclick="recordAction('Marie Masek')">Marie</button>
+        <button class="name-btn" id="nb-Nancy Petrowski"      onclick="recordAction('Nancy Petrowski')">Nancy</button>
+        <button class="name-btn" id="nb-Pamela Gray"          onclick="recordAction('Pamela Gray')">Pamela</button>
+        <button class="name-btn" id="nb-Radha Webley"         onclick="recordAction('Radha Webley')">Radha</button>
+        <button class="name-btn" id="nb-Siegerdina Mandema"   onclick="recordAction('Siegerdina Mandema')">Siegerdina</button>
+        <button class="name-btn" id="nb-Vanessa Kenoyer"      onclick="recordAction('Vanessa Kenoyer')">Vanessa</button>
+        <button class="name-btn" id="nb-Yvonne Slayman"       onclick="recordAction('Yvonne Slayman')">Yvonne</button>
         <button class="name-btn other-btn" id="nb-other-link" onclick="showScreen('other')">+ Other</button>
       </div>
     </div>
@@ -363,7 +349,7 @@
 </div>
 
 <script>
-const DEVOTEES = ["Ann Walsh","Beatrys de Ligt","Blythe Massey","Bob DeLollis","Bruce Burnham","Carol Smith","Caroline Lindsay","Chris Beaver","Chris Merz","Cynthia Mancor","Da-vid Forsythe","Diane Bryan","Elise Bady","Greg Wells","Hoi Ngo","Inca Hincape","Jana Divisova","Julian Butler","Kristien Otten","Krysia Banachowski","Leo Burke","Linda Oppenheimer","Lisa Lurie","Madhuka Ranmuthu","Malcolm Burke","Michael Shaw","Michiel Vos","Miki Malinka","Nancy Piotrowski","Pamela Gray","Radha Webley","Robin Temple","Siegerdina Mandema","Vanessa Kenoyer","Yvonne Slayman"];
+const DEVOTEES = ["Ann Walsh","Beatrys de Ligt","Blythe Massey","Cynthia Mancor","Diane Bryan","Elise Bady","Inca Hincape","Jana Divisova","Kristien Otten","Krysia Banachowski","Linda Oppenheimer","Lisa Lurie","Madhuka Ranmuthu","Marie Masek","Nancy Petrowski","Pamela Gray","Radha Webley","Siegerdina Mandema","Vanessa Kenoyer","Yvonne Slayman"];
 const OTHER_DEVOTEES = ["Caroline","Gilbert","Carol"];
 
 let schedule     = 'weekday';
