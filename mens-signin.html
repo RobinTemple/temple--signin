@@ -1,0 +1,652 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#121214">
+<meta name="apple-mobile-web-app-title" content="Men's Sign In">
+<title>Temple Sign-In — Men's Side</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  :root {
+    /* Header colour for each schedule mode — kept clearly distinct from amber/depart */
+    --primary: #3A5A7D; --primary-text: #8FB7E3; --primary-light: #233244;
+    --gold: #C9A84C; --gold-light: #332B16;
+    --guruvara-teal: #0E4D4D; --guruvara-text: #5FCFC4; --guruvara-light: #16302F;
+    --vigil-indigo: #1E2A5E; --vigil-text: #93A6F2; --vigil-light: #1A2140;
+
+    --bg: #121214; --surface: #1C1C20; --surface-2: #26262B;
+    --border: #3A3A40; --border-light: #2A2A2F; --border-strong: #56565F;
+    --text: #ECECEE; --text-muted: #9B9BA2;
+
+    --green: #5BC169; --green-solid: #2E6B38; --green-light: #1B2E1E; --green-border: #355C39;
+    --amber: #E0974B; --amber-solid: #8C540F; --amber-light: #332416; --amber-border: #5C4422;
+    --red: #E98880; --red-light: #332020; --red-border: #5C3232;
+    --radius: 12px;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); min-height: 100vh; color: var(--text); overflow-x: hidden; }
+
+  /* HEADER */
+  .header { background: var(--primary); color: white; padding: 8px 16px; position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+  .header.guruvara-mode { background: var(--guruvara-teal); }
+  .header.vigil-mode { background: var(--vigil-indigo); }
+  .header-sub { font-size: 15px; font-weight: 500; opacity: 0.92; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .header-actions { display: none; align-items: center; gap: 8px; flex-shrink: 0; }
+  .header-actions.visible { display: flex; }
+
+  /* SCREENS */
+  .screen { display: none; padding: 16px; }
+  .screen.active { display: block; }
+  .content-area { padding-bottom: 70px; }
+
+  /* SCHEDULE CARDS */
+  .section-label { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 10px; }
+  .schedule-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 20px; }
+  .sched-card { padding: 16px 8px; border-radius: var(--radius); border: 2.5px solid var(--border-strong); background: var(--surface-2); color: var(--text); font-size: 15px; font-weight: 700; text-align: center; cursor: pointer; -webkit-appearance: none; line-height: 1.3; transition: all 0.15s; }
+  .sched-card-icon { font-size: 26px; display: block; margin-bottom: 5px; }
+  .sched-card.active-weekday  { background: var(--primary-light); border-color: var(--primary-text); color: var(--primary-text); }
+  .sched-card.active-guruvara { background: var(--guruvara-light); border-color: var(--guruvara-text); color: var(--guruvara-text); }
+  .sched-card.active-vigil    { background: var(--vigil-light); border-color: var(--vigil-text); color: var(--vigil-text); }
+
+  /* ACTION BUTTONS */
+  .action-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+  .action-btn { padding: 18px 10px; font-size: 20px; font-weight: 700; border-radius: var(--radius); border: 2.5px solid transparent; cursor: pointer; text-align: center; -webkit-appearance: none; transition: all 0.12s; }
+  .action-btn .action-icon { font-size: 28px; display: block; margin-bottom: 4px; }
+  .action-btn .action-label { font-size: 18px; }
+  .action-btn.arrive { background: var(--green-light); border-color: var(--green-border); color: var(--green); }
+  .action-btn.depart { background: var(--amber-light); border-color: var(--amber-border); color: var(--amber); }
+  .action-btn.arrive.selected { background: var(--green-solid); border-color: var(--green-solid); color: white; }
+  .action-btn.depart.selected { background: var(--amber-solid); border-color: var(--amber-solid); color: white; }
+
+  /* EVENT LISTS — show/hide by schedule */
+  .event-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .event-grid.vigil-cols   { grid-template-columns: repeat(3, 1fr); }
+  .event-grid.vigil-cols    .event-btn { font-size: 15px; padding: 10px 6px; }
+  .event-grid.guruvara-cols { grid-template-columns: repeat(4, 1fr); }
+  .event-grid.guruvara-cols .event-btn { font-size: 15px; padding: 10px 6px; }
+  .event-btn { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px 16px; font-size: 21px; font-weight: 500; color: var(--text); cursor: pointer; text-align: left; -webkit-appearance: none; transition: all 0.12s; line-height: 1.25; }
+  .event-btn:active, .event-btn.selected { background: var(--gold-light); border-color: var(--gold); border-width: 2px; font-weight: 700; }
+  .event-btn.event-btn-other { border-style: dashed; color: var(--text-muted); }
+  .event-btn.combined-btn { grid-column: 1 / -1; background: var(--amber-light); border-color: var(--amber); color: var(--amber); font-weight: 500; text-align: center; }
+  .event-btn.combined-btn:active, .event-btn.combined-btn.selected { background: var(--amber-solid); border-color: var(--amber); color: white; }
+
+  /* NAMES SCREEN */
+  .change-btn { font-size: 14px; font-weight: 700; background: rgba(255,255,255,0.9); border: none; color: var(--primary); padding: 8px 16px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+  .header.guruvara-mode .change-btn { color: var(--guruvara-teal); }
+  .header.vigil-mode .change-btn { color: var(--vigil-indigo); }
+  .home-btn { font-size: 13px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.45); color: white; padding: 8px 14px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
+
+  /* ACTION BANNER */
+  .action-banner { padding: 14px 16px 12px; border-bottom: 3px solid transparent; transition: background 0.2s; }
+  .action-banner.arrive  { background: var(--green-light); color: var(--green); border-color: var(--green-border); }
+  .action-banner.depart  { background: var(--amber-light); color: var(--amber); border-color: var(--amber-border); }
+  .action-banner-event { font-size: 22px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
+  .action-banner-row2 { display: flex; align-items: center; gap: 10px; }
+  .action-banner-icon { font-size: 20px; flex-shrink: 0; }
+  .action-banner-text { font-size: 18px; font-weight: 700; letter-spacing: 0.04em; }
+  .action-banner-change { font-size: 14px; font-weight: 700; padding: 7px 16px; border-radius: 20px; border: 2px solid rgba(255,255,255,0.85); background: rgba(255,255,255,0.18); color: #FFFFFF; cursor: pointer; margin-left: auto; flex-shrink: 0; -webkit-appearance: none; }
+  .action-banner-change:active { background: rgba(255,255,255,0.28); }
+
+  .today-bar { background: var(--surface); border-bottom: 1px solid var(--border-light); padding: 7px 16px; display: flex; gap: 16px; font-size: 13px; color: var(--text-muted); }
+  .today-bar strong { color: var(--text); }
+  .undo-bar { display: none; align-items: center; gap: 10px; padding: 8px 16px; background: var(--surface-2); border-bottom: 1px solid var(--border); }
+  .undo-bar.visible { display: flex; }
+  .undo-bar-text { font-size: 14px; color: var(--text-muted); flex: 1; }
+  .undo-bar-text strong { color: var(--text); }
+  .undo-btn { font-size: 13px; font-weight: 700; padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--amber); background: var(--amber-light); color: var(--amber); cursor: pointer; white-space: nowrap; flex-shrink: 0; -webkit-appearance: none; }
+
+  /* NAME BUTTONS */
+  .name-grid { column-count: 3; column-gap: 12px; padding: 0 4px; }
+  .name-btn { display: block; width: 100%; margin-bottom: 12px; break-inside: avoid; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px 6px; font-size: 22px; font-weight: 300; color: var(--text); cursor: pointer; text-align: center; -webkit-appearance: none; line-height: 1.2; }
+  .name-btn:active { transform: scale(0.96); }
+  .name-btn.arrived { background: var(--green-light); border-color: var(--green); color: var(--green); }
+  .name-btn.arrived::after { content: ' ✓'; font-weight: 700; }
+  .name-btn.departed { background: var(--amber-light); border-color: var(--amber); color: var(--amber); }
+  .name-btn.departed::after { content: ' ↩'; font-weight: 700; }
+  .name-btn.other-btn { border-style: dashed; color: var(--text-muted); font-weight: 500; }
+
+  /* CONFIRMATION TOAST — flashes briefly over the names screen, no screen change */
+  .confirm-toast { position: fixed; left: 16px; right: 16px; bottom: 84px; z-index: 30; display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: var(--radius); box-shadow: 0 4px 16px rgba(0,0,0,0.4); opacity: 0; transform: translateY(12px); transition: opacity 0.15s, transform 0.15s; pointer-events: none; background: var(--green-solid); color: white; }
+  .confirm-toast.show { opacity: 1; transform: translateY(0); }
+  .confirm-toast.depart-color { background: var(--amber-solid); }
+  .confirm-toast-icon { font-size: 24px; flex-shrink: 0; }
+  .confirm-toast-text { font-size: 16px; font-weight: 700; line-height: 1.25; }
+  .confirm-toast-time { font-size: 13px; font-weight: 500; opacity: 0.85; }
+
+  /* SESSIONS */
+  .admin-section { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 16px; }
+  .admin-section h3 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+  .session-item { display: flex; align-items: flex-start; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border-light); gap: 8px; }
+  .session-item:last-child { border-bottom: none; }
+  .session-item-info { flex: 1; min-width: 0; }
+  .session-item-title { font-size: 14px; font-weight: 600; }
+  .session-item-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+  .session-item-actions { display: flex; gap: 5px; flex-shrink: 0; }
+  .mini-btn { font-size: 12px; padding: 5px 9px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer; -webkit-appearance: none; }
+  .mini-btn.export { background: var(--green-light); border-color: var(--green-border); color: var(--green); font-weight: 600; }
+  .mini-btn.delete { background: var(--red-light); border-color: var(--red-border); color: var(--red); }
+  .pending-dot { width:7px; height:7px; border-radius:50%; background:#E6A817; display:inline-block; margin-right:5px; vertical-align:middle; }
+  .synced-dot  { width:7px; height:7px; border-radius:50%; background:var(--green); display:inline-block; margin-right:5px; vertical-align:middle; }
+  .admin-btn { width: 100%; padding: 13px; font-size: 15px; font-weight: 600; border-radius: var(--radius); border: none; cursor: pointer; margin-bottom: 10px; -webkit-appearance: none; }
+  .admin-btn.export-all { background: var(--green-solid); color: white; }
+  .admin-btn.back { background: var(--surface-2); color: var(--text); }
+  .empty-state { text-align: center; padding: 2rem; color: var(--text-muted); font-size: 14px; }
+
+  /* BOTTOM NAV */
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); display: flex; padding-bottom: env(safe-area-inset-bottom, 0px); z-index: 20; }
+  .nav-wrap { position: relative; flex: 1; display: flex; }
+  .nav-btn { flex: 1; padding: 10px 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; font-size: 11px; color: var(--text-muted); border: none; background: transparent; cursor: pointer; }
+  .nav-btn.active { color: var(--primary-text); }
+  .nav-icon { font-size: 22px; }
+  .pending-badge { position: absolute; top: 6px; right: calc(25% - 8px); background: #E6A817; color: white; font-size: 10px; font-weight: 700; border-radius: 10px; padding: 1px 5px; min-width: 18px; text-align: center; }
+  .event-screen-inner { max-width: 520px; margin: 0 auto; }
+</style>
+</head>
+<body>
+
+<div class="header" id="main-header">
+  <div class="header-sub" id="header-date"></div>
+  <div class="header-actions" id="header-actions">
+    <button class="change-btn" onclick="resetToEventScreen()">Change event</button>
+    <button class="home-btn"   onclick="goHome()">🏠 Home</button>
+  </div>
+</div>
+
+<div class="content-area">
+
+  <!-- SCREEN: EVENT + ACTION -->
+  <div class="screen active" id="screen-event">
+    <div class="event-screen-inner">
+
+      <div class="section-label">Schedule</div>
+      <div class="schedule-cards">
+        <button class="sched-card active-weekday" id="btn-weekday" onclick="setSchedule('weekday')">
+          <span class="sched-card-icon">☀️</span>Weekday
+        </button>
+        <button class="sched-card" id="btn-guruvara" onclick="setSchedule('guruvara')">
+          <span class="sched-card-icon">🌕</span>Guruvara
+        </button>
+        <button class="sched-card" id="btn-vigil" onclick="setSchedule('vigil')">
+          <span class="sched-card-icon">🕯️</span>Temple Vigil
+        </button>
+      </div>
+
+      <div class="section-label">I am…</div>
+      <div class="action-toggle">
+        <button class="action-btn arrive selected" id="btn-arrive" onclick="selectAction('arrive')">
+          <span class="action-icon">🙏</span>
+          <span class="action-label">Arriving</span>
+        </button>
+        <button class="action-btn depart" id="btn-depart" onclick="selectAction('depart')">
+          <span class="action-icon">🚶</span>
+          <span class="action-label">Departing</span>
+        </button>
+      </div>
+
+      <div class="section-label">Event</div>
+
+      <!-- WEEKDAY events -->
+      <div class="event-grid" id="events-weekday">
+        <button class="event-btn combined-btn" onclick="selectCombined(this,'AM Meditation','Morning Puja')">AM Meditation + Puja</button>
+        <button class="event-btn combined-btn" onclick="selectCombined(this,'Arati','Evening Meditation')">Arati + Evening Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'AM Meditation')">AM Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'Morning Puja')">Morning Puja</button>
+        <button class="event-btn" onclick="selectEvent(this,'Meditation after Puja')">Meditation after Puja</button>
+        <button class="event-btn" onclick="selectEvent(this,'4pm Meditation')">4pm Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'Arati')">Arati</button>
+        <button class="event-btn" onclick="selectEvent(this,'Evening Meditation')">Evening Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'Teaching Manual')">📖 Teaching Manual</button>
+        <button class="event-btn event-btn-other" onclick="showScreen('weekday-other')">+ Other events</button>
+      </div>
+
+      <!-- GURUVARA events -->
+      <div class="event-grid guruvara-cols" id="events-guruvara" style="display:none">
+        <button class="event-btn combined-btn" onclick="selectCombined(this,'AM Meditation','Morning Puja')">AM Meditation + Puja</button>
+        <button class="event-btn combined-btn" onclick="selectCombined(this,'Arati','Evening Meditation')">Arati + Evening Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'Saturday Evening: Chanting and Darshan')">Saturday Evening: Chanting and Darshan</button>
+        <button class="event-btn" onclick="selectEvent(this,'AM Meditation')">AM Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'Morning Puja')">Morning Puja</button>
+        <button class="event-btn" onclick="selectEvent(this,'10:00am Recitation and Da-Om Chanting')">10:00am Recitation and Da-Om Chanting</button>
+        <button class="event-btn" onclick="selectEvent(this,'10:50am Meditation')">10:50am Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'Full Cycle')">Full Cycle</button>
+        <button class="event-btn" onclick="selectEvent(this,'4pm Meditation')">4pm Meditation</button>
+        <button class="event-btn" onclick="selectEvent(this,'Arati')">Arati</button>
+        <button class="event-btn" onclick="selectEvent(this,'Evening Meditation')">Evening Meditation</button>
+      </div>
+
+      <!-- TEMPLE VIGIL events -->
+      <div class="event-grid vigil-cols" id="events-vigil" style="display:none">
+        <button class="event-btn" onclick="selectEvent(this,'12:00am – 1:30am')">12:00am – 1:30am</button>
+        <button class="event-btn" onclick="selectEvent(this,'1:30am – 3:00am')">1:30am – 3:00am</button>
+        <button class="event-btn" onclick="selectEvent(this,'3:00am – 4:15am')">3:00am – 4:15am</button>
+        <button class="event-btn" onclick="selectEvent(this,'8:00am – 9:00am')">8:00am – 9:00am</button>
+        <button class="event-btn" onclick="selectEvent(this,'9:00am – 10:00am')">9:00am – 10:00am</button>
+        <button class="event-btn" onclick="selectEvent(this,'10:00am – 10:30am')">10:00am – 10:30am</button>
+        <button class="event-btn" onclick="selectEvent(this,'10:30am – 11:45am')">10:30am – 11:45am</button>
+        <button class="event-btn" onclick="selectEvent(this,'11:45am – 12:15pm')">11:45am – 12:15pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'12:15pm – 1:30pm')">12:15pm – 1:30pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'1:30pm – 2:30pm')">1:30pm – 2:30pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'2:30pm – 4:00pm')">2:30pm – 4:00pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'4:00pm – 5:00pm')">4:00pm – 5:00pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'5:00pm – 5:45pm')">5:00pm – 5:45pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'5:45pm – 7:00pm')">5:45pm – 7:00pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'7:00pm – 8:30pm')">7:00pm – 8:30pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'8:30pm – 10:00pm')">8:30pm – 10:00pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'10:00pm – 11:00pm')">10:00pm – 11:00pm</button>
+        <button class="event-btn" onclick="selectEvent(this,'11:00pm – 12:00am')">11:00pm – 12:00am</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SCREEN: NAMES -->
+  <div class="screen" id="screen-names">
+    <div class="action-banner arrive" id="action-banner">
+      <div class="action-banner-event" id="action-banner-event"></div>
+      <div class="action-banner-row2">
+        <span class="action-banner-icon" id="action-banner-icon">🙏</span>
+        <span class="action-banner-text" id="action-banner-text">ARRIVING</span>
+        <button class="action-banner-change" onclick="handleBannerBtn()">Switch to Departing</button>
+      </div>
+    </div>
+    <div class="today-bar">
+      <span>Today: <strong id="today-count">0</strong></span>
+      <span>This event: <strong id="event-count">0</strong></span>
+    </div>
+    <div class="undo-bar" id="undo-bar">
+      <span class="undo-bar-text" id="undo-bar-text"></span>
+      <button class="undo-btn" onclick="undoLast()">↩ Undo</button>
+    </div>
+    <div style="padding: 12px 0 12px;">
+      <div class="name-grid">
+        <button class="name-btn" id="nb-Bob DeLollis"         onclick="recordAction('Bob DeLollis')">Bob</button>
+        <button class="name-btn" id="nb-Bruce Burnham"        onclick="recordAction('Bruce Burnham')">Bruce</button>
+        <button class="name-btn" id="nb-Chris Beaver"         onclick="recordAction('Chris Beaver')">Chris B.</button>
+        <button class="name-btn" id="nb-Chris Merz"           onclick="recordAction('Chris Merz')">Chris M.</button>
+        <button class="name-btn" id="nb-Da-vid Forsythe"      onclick="recordAction('Da-vid Forsythe')">Da-vid</button>
+        <button class="name-btn" id="nb-Gilbert Evans"        onclick="recordAction('Gilbert Evans')">Gilbert</button>
+        <button class="name-btn" id="nb-Greg Wells"           onclick="recordAction('Greg Wells')">Greg</button>
+        <button class="name-btn" id="nb-Hoi Ngo"              onclick="recordAction('Hoi Ngo')">Hoi</button>
+        <button class="name-btn" id="nb-Joseph Taylor"        onclick="recordAction('Joseph Taylor')">Joseph</button>
+        <button class="name-btn" id="nb-Julian Butler"        onclick="recordAction('Julian Butler')">Julian</button>
+        <button class="name-btn" id="nb-Leo Burke"            onclick="recordAction('Leo Burke')">Leo</button>
+        <button class="name-btn" id="nb-Malcolm Burke"        onclick="recordAction('Malcolm Burke')">Malcolm</button>
+        <button class="name-btn" id="nb-Michael Shaw"         onclick="recordAction('Michael Shaw')">Michael</button>
+        <button class="name-btn" id="nb-Michiel Vos"          onclick="recordAction('Michiel Vos')">Michiel</button>
+        <button class="name-btn" id="nb-Miki Malinka"         onclick="recordAction('Miki Malinka')">Miki</button>
+        <button class="name-btn" id="nb-Robin Temple"         onclick="recordAction('Robin Temple')">Robin</button>
+        <button class="name-btn other-btn" id="nb-other-link" onclick="showScreen('other')">+ Other</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- SCREEN: WEEKDAY OTHER EVENTS -->
+  <div class="screen" id="screen-weekday-other">
+    <button class="admin-btn back" onclick="showScreen('event')" style="margin-bottom:16px">← Back to Events</button>
+    <p style="font-size:18px;font-weight:600;margin-bottom:16px">Other Weekday Events</p>
+    <div class="event-grid">
+      <button class="event-btn" onclick="selectEvent(this,'Paduka Mandir Puja')">Paduka Mandir Puja</button>
+      <button class="event-btn" onclick="selectEvent(this,'Alternate Puja Temple')">Alternate Puja Temple</button>
+      <button class="event-btn" onclick="selectEvent(this,'Celebration 1')">Celebration 1</button>
+      <button class="event-btn" onclick="selectEvent(this,'Celebration 2')">Celebration 2</button>
+    </div>
+  </div>
+
+  <!-- SCREEN: OTHER (occasional attendees) -->
+  <div class="screen" id="screen-other">
+    <button class="admin-btn back" onclick="showScreen('names')" style="margin-bottom:16px">← Back to Names</button>
+    <p style="font-size:18px;font-weight:600;margin-bottom:16px">Occasional Attendees</p>
+    <div class="name-grid">
+    </div>
+  </div>
+
+  <!-- SCREEN: SESSIONS -->
+  <div class="screen" id="screen-admin">
+    <p style="font-size:18px;font-weight:600;margin-bottom:16px">Saved Sessions</p>
+    <button class="admin-btn export-all" onclick="exportAll()">⬇ Export All to CSV</button>
+    <div class="admin-section">
+      <h3>Sessions <span style="color:var(--text-muted);font-weight:400" id="pending-label"></span></h3>
+      <div id="sessions-list"></div>
+    </div>
+    <button class="admin-btn back" onclick="showScreen('event')">← Back to Sign-In</button>
+  </div>
+
+  <div class="confirm-toast" id="confirm-toast">
+    <span class="confirm-toast-icon" id="confirm-toast-icon">✅</span>
+    <div>
+      <div class="confirm-toast-text" id="confirm-toast-text"></div>
+      <div class="confirm-toast-time" id="confirm-toast-time"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="bottom-nav">
+  <div class="nav-wrap">
+    <button class="nav-btn active" id="nav-signin" onclick="showScreen('event')">
+      <span class="nav-icon">✍️</span><span>Sign In</span>
+    </button>
+  </div>
+  <div class="nav-wrap" style="position:relative">
+    <button class="nav-btn" id="nav-admin" onclick="showScreen('admin');renderSessions()">
+      <span class="nav-icon">📋</span><span>Sessions</span>
+    </button>
+    <span class="pending-badge" id="pending-badge" style="display:none">0</span>
+  </div>
+</div>
+
+<script>
+const DEVOTEES = ["Bob DeLollis","Bruce Burnham","Chris Beaver","Chris Merz","Da-vid Forsythe","Gilbert Evans","Greg Wells","Hoi Ngo","Joseph Taylor","Julian Butler","Leo Burke","Malcolm Burke","Michael Shaw","Michiel Vos","Miki Malinka","Robin Temple"];
+const OTHER_DEVOTEES = [];
+
+let schedule     = 'weekday';
+let currentAction = 'arrive';
+let currentEvent  = null;
+let currentScreen = 'event';
+let autoResetTimer = null;
+let allSignIns = [];
+try { allSignIns = JSON.parse(localStorage.getItem('signins_mens') || '[]'); } catch(e) {}
+
+function init() {
+  setSchedule('weekday');
+  updateHeaderSub();
+  updatePendingBadge();
+  setInterval(updateHeaderSub, 60000);
+}
+
+function updateHeaderSub() {
+  const now = new Date();
+  document.getElementById('header-date').textContent =
+    now.toLocaleDateString('en-GB', { weekday:'long', day:'numeric', month:'long' });
+}
+
+function setSchedule(s) {
+  schedule = s;
+  document.getElementById('main-header').className = 'header' + (s !== 'weekday' ? ' ' + s + '-mode' : '');
+  ['weekday','guruvara','vigil'].forEach(k => {
+    document.getElementById('btn-' + k).className = 'sched-card' + (k === s ? ' active-' + k : '');
+    document.getElementById('events-' + k).style.display = k === s ? 'grid' : 'none';
+  });
+  // Clear selected event if it was from a different schedule
+  document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
+  currentEvent = null;
+}
+
+function selectAction(action) {
+  currentAction = action;
+  document.getElementById('btn-arrive').classList.toggle('selected', action === 'arrive');
+  document.getElementById('btn-depart').classList.toggle('selected', action === 'depart');
+  if (currentEvent) goToNames();
+}
+
+function selectEvent(btn, eventName) {
+  document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  currentEvent = eventName;
+  goToNames();
+}
+
+function selectCombined(btn, event1, event2) {
+  currentAction = 'arrive';
+  currentEvent = event1 + ' + ' + event2;
+  document.getElementById('btn-arrive').classList.add('selected');
+  document.getElementById('btn-depart').classList.remove('selected');
+  document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  goToNames();
+}
+
+function goToNames() {
+  updateActionBanner();
+  updateNameStates();
+  updateCounts();
+  showScreen('names');
+}
+
+function updateActionBanner() {
+  const isArrive = currentAction === 'arrive';
+  const banner = document.getElementById('action-banner');
+  banner.className = 'action-banner ' + (isArrive ? 'arrive' : 'depart');
+  document.getElementById('action-banner-event').textContent = currentEvent || '';
+  document.getElementById('action-banner-icon').textContent  = isArrive ? '🙏' : '🚶';
+  document.getElementById('action-banner-text').textContent  = isArrive ? 'ARRIVING' : 'DEPARTING';
+  banner.querySelector('.action-banner-change').textContent  =
+    isArrive ? 'Switch to Departing' : 'Switch to Arriving';
+}
+
+function handleBannerBtn() { flipAction(); }
+
+function flipAction() {
+  const wasArrive = currentAction === 'arrive';
+  currentAction = wasArrive ? 'depart' : 'arrive';
+  document.getElementById('btn-arrive').classList.toggle('selected', currentAction === 'arrive');
+  document.getElementById('btn-depart').classList.toggle('selected', currentAction === 'depart');
+  if (wasArrive) {
+    goToNames();
+  } else {
+    currentEvent = null;
+    document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
+    showScreen('event');
+  }
+}
+
+function resetToEventScreen() {
+  const newAction = currentAction === 'arrive' ? 'depart' : 'arrive';
+  currentAction = newAction;
+  document.getElementById('btn-arrive').classList.toggle('selected', newAction === 'arrive');
+  document.getElementById('btn-depart').classList.toggle('selected', newAction === 'depart');
+  currentEvent = null;
+  document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
+  showScreen('event');
+}
+
+function goHome() {
+  currentEvent = null;
+  document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
+  showScreen('event');
+}
+
+function updateNameStates() {
+  const todayStr = todayDate();
+  const latest = {};
+  allSignIns.filter(r => r.date === todayStr && r.event === currentEvent)
+    .forEach(r => { latest[r.name] = r.action; });
+  DEVOTEES.concat(OTHER_DEVOTEES).forEach(name => {
+    const btn = document.getElementById('nb-' + name);
+    if (!btn) return;
+    btn.classList.remove('arrived','departed');
+    if (latest[name] === 'arrive') btn.classList.add('arrived');
+    if (latest[name] === 'depart') btn.classList.add('departed');
+  });
+}
+
+let lastAction = null;
+let undoTimer  = null;
+
+function recordAction(name) {
+  const now = new Date();
+  const entry = { name, event: currentEvent, action: currentAction,
+    date: todayDate(), time: formatTime(now), timestamp: now.toISOString() };
+  allSignIns.push(entry);
+  lastAction = entry;
+  try { localStorage.setItem('signins_mens', JSON.stringify(allSignIns)); } catch(e) {}
+  updatePendingBadge();
+  updateNameStates();
+  updateCounts();
+  showConfirmToast(name, currentAction === 'arrive', formatTime(now));
+  showUndoBar(name, currentAction === 'arrive');
+}
+
+function showUndoBar(name, isArrive) {
+  clearTimeout(undoTimer);
+  const bar = document.getElementById('undo-bar');
+  const txt = document.getElementById('undo-bar-text');
+  txt.innerHTML = 'Last: <strong>' + name + '</strong> — ' + (isArrive ? 'signed in' : 'signed out');
+  bar.classList.add('visible');
+  undoTimer = setTimeout(hideUndoBar, 20000);
+}
+
+function hideUndoBar() {
+  document.getElementById('undo-bar').classList.remove('visible');
+  lastAction = null;
+}
+
+function undoLast() {
+  if (!lastAction) return;
+  const idx = allSignIns.findLastIndex(r =>
+    r.name === lastAction.name && r.event === lastAction.event &&
+    r.action === lastAction.action && r.timestamp === lastAction.timestamp
+  );
+  if (idx !== -1) allSignIns.splice(idx, 1);
+  try { localStorage.setItem('signins_mens', JSON.stringify(allSignIns)); } catch(e) {}
+  clearTimeout(undoTimer);
+  hideUndoBar();
+  updateNameStates();
+  updateCounts();
+  updatePendingBadge();
+}
+
+let toastHideTimer = null;
+function showConfirmToast(name, isArrive, timeStr) {
+  const toast = document.getElementById('confirm-toast');
+  document.getElementById('confirm-toast-icon').textContent = isArrive ? '✅' : '👋';
+  document.getElementById('confirm-toast-text').textContent =
+    name + (isArrive ? ' — Signed in' : ' — Signed out');
+  document.getElementById('confirm-toast-time').textContent = timeStr;
+  toast.classList.toggle('depart-color', !isArrive);
+  toast.classList.remove('show');
+  requestAnimationFrame(() => toast.classList.add('show'));
+  clearTimeout(toastHideTimer);
+  toastHideTimer = setTimeout(() => toast.classList.remove('show'), 1100);
+}
+
+function updateCounts() {
+  const t = todayDate();
+  const all = allSignIns.filter(r => r.date === t);
+  const evt = all.filter(r => r.event === currentEvent && r.action === 'arrive');
+  document.getElementById('today-count').textContent = new Set(all.map(r=>r.name)).size;
+  document.getElementById('event-count').textContent = new Set(evt.map(r=>r.name)).size;
+}
+
+function showScreen(name) {
+  currentScreen = name;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (['event','names','other','weekday-other'].includes(name)) document.getElementById('nav-signin').classList.add('active');
+  else if (name === 'admin') document.getElementById('nav-admin').classList.add('active');
+  document.getElementById('header-actions').classList.toggle('visible', name === 'names' || name === 'other');
+  if (name !== 'names') hideUndoBar();
+  updateHeaderSub();
+  if (name === 'names' || name === 'other') resetAutoTimer();
+  if (name === 'event') clearAutoTimer();
+}
+
+function resetAutoTimer() {
+  clearAutoTimer();
+  autoResetTimer = setTimeout(() => showScreen('event'), 10 * 60 * 1000);
+}
+function clearAutoTimer() {
+  if (autoResetTimer) { clearTimeout(autoResetTimer); autoResetTimer = null; }
+}
+document.addEventListener('touchstart', () => { if (currentScreen==='names' || currentScreen==='other') resetAutoTimer(); }, {passive:true});
+
+function getSessions() {
+  const map = {};
+  allSignIns.forEach(r => {
+    const key = r.date+'||'+r.event;
+    if (!map[key]) map[key] = { date:r.date, event:r.event, records:[] };
+    map[key].records.push(r);
+  });
+  return Object.values(map).sort((a,b) => b.date.localeCompare(a.date));
+}
+
+function renderSessions() {
+  const sessions = getSessions();
+  const list = document.getElementById('sessions-list');
+  const exported = JSON.parse(localStorage.getItem('exported_keys_mens') || '[]');
+  if (!sessions.length) { list.innerHTML='<div class="empty-state">No sessions yet.</div>'; document.getElementById('pending-label').textContent=''; return; }
+  const pending = sessions.filter(s => !exported.includes(s.date+'||'+s.event)).length;
+  document.getElementById('pending-label').textContent = pending > 0 ? '('+pending+' not yet exported)' : '(all exported)';
+  list.innerHTML = '';
+  sessions.forEach(s => {
+    const key = s.date+'||'+s.event;
+    const done = exported.includes(key);
+    const arr  = [...new Set(s.records.filter(r=>r.action==='arrive').map(r=>r.name))];
+    const dep  = [...new Set(s.records.filter(r=>r.action==='depart').map(r=>r.name))];
+    const item = document.createElement('div');
+    item.className = 'session-item';
+    item.innerHTML = '<div class="session-item-info"><div class="session-item-title"><span class="'+(done?'synced-dot':'pending-dot')+'"></span>'+s.event+' — '+formatDisplayDate(s.date)+'</div><div class="session-item-meta">Arrivals ('+arr.length+'): '+(arr.join(', ')||'—')+'<br>Departures ('+dep.length+'): '+(dep.join(', ')||'—')+'</div></div><div class="session-item-actions"><button class="mini-btn export" onclick="exportSession(\''+key+'\')">CSV</button><button class="mini-btn delete" onclick="deleteSession(\''+key+'\')">✕</button></div>';
+    list.appendChild(item);
+  });
+}
+
+function exportSession(key) {
+  const s = getSessions().find(x => x.date+'||'+x.event === key);
+  if (!s) return;
+  const lines = ['Name,Action,Event,Date,Time'];
+  s.records.forEach(r => lines.push('"'+r.name+'","'+r.action+'","'+r.event+'","'+r.date+'","'+r.time+'"'));
+  downloadCSV(lines.join('\n'), 'signin_'+s.date+'_'+s.event.replace(/[^a-z0-9]/gi,'_')+'.csv');
+  markExported([key]);
+}
+
+function exportAll() {
+  const sessions = getSessions();
+  if (!sessions.length) { alert('No sessions to export.'); return; }
+  const lines = ['Name,Action,Event,Date,Time'];
+  sessions.forEach(s => s.records.forEach(r => lines.push('"'+r.name+'","'+r.action+'","'+r.event+'","'+r.date+'","'+r.time+'"')));
+  downloadCSV(lines.join('\n'), 'all_signins_export.csv');
+  markExported(sessions.map(s => s.date+'||'+s.event));
+}
+
+function markExported(keys) {
+  const stored = JSON.parse(localStorage.getItem('exported_keys_mens') || '[]');
+  keys.forEach(k => { if (!stored.includes(k)) stored.push(k); });
+  try { localStorage.setItem('exported_keys_mens', JSON.stringify(stored)); } catch(e) {}
+  updatePendingBadge(); renderSessions();
+}
+
+function deleteSession(key) {
+  if (!confirm('Delete all records for this session?')) return;
+  const [date, event] = key.split('||');
+  allSignIns = allSignIns.filter(r => !(r.date===date && r.event===event));
+  try { localStorage.setItem('signins_mens', JSON.stringify(allSignIns)); } catch(e) {}
+  updatePendingBadge(); renderSessions();
+}
+
+function updatePendingBadge() {
+  const pending = getSessions().filter(s => !JSON.parse(localStorage.getItem('exported_keys_mens')||'[]').includes(s.date+'||'+s.event)).length;
+  const badge = document.getElementById('pending-badge');
+  badge.textContent = pending;
+  badge.style.display = pending > 0 ? 'inline-block' : 'none';
+}
+
+function downloadCSV(csv, filename) {
+  const blob = new Blob([csv], {type:'text/csv'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename; a.click();
+  URL.revokeObjectURL(url);
+}
+
+function todayDate() {
+  const d = new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function formatTime(d) {
+  return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
+function formatDisplayDate(str) {
+  const [y,m,d] = str.split('-');
+  return parseInt(d)+' '+['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][parseInt(m)-1]+' '+y;
+}
+
+init();
+</script>
+</body>
+</html>
