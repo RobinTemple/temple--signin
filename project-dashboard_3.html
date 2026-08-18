@@ -24,10 +24,10 @@
   --gold:    #8a6d08;
   --gold-bg: rgba(138,109,8,0.07);
 
-  --c-crit: #c52d2d;  --bg-crit: rgba(197,45,45,0.09);  --lt-crit: rgba(197,45,45,0.06);
-  --c-high: #b85c10;  --bg-high: rgba(184,92,16,0.09);  --lt-high: rgba(184,92,16,0.06);
-  --c-med:  #9a7608;  --bg-med:  rgba(154,118,8,0.09);  --lt-med:  rgba(154,118,8,0.06);
-  --c-low:  #2e7a4e;  --bg-low:  rgba(46,122,78,0.09);  --lt-low:  rgba(46,122,78,0.06);
+  --c-crit: #d42020;  --bg-crit: rgba(212,32,32,0.11);  --lt-crit: rgba(212,32,32,0.07);
+  --c-high: #cc5e0a;  --bg-high: rgba(204,94,10,0.11);  --lt-high: rgba(204,94,10,0.07);
+  --c-med:  #b08800;  --bg-med:  rgba(176,136,0,0.11);  --lt-med:  rgba(176,136,0,0.07);
+  --c-low:  #1a8c4e;  --bg-low:  rgba(26,140,78,0.10);  --lt-low:  rgba(26,140,78,0.06);
 
   --c-active:   #1d6640;
   --c-hold:     #6a7286;
@@ -71,7 +71,7 @@ body::before {
 }
 .site-title {
   font-family: var(--font-d); font-size: 1.85rem; font-weight: 600;
-  letter-spacing: 0.01em; line-height: 1; color: #b85010;
+  letter-spacing: 0.01em; line-height: 1; color: #cc5008;
 }
 .header-right { display: flex; align-items: center; gap: 0.65rem; flex-shrink: 0; padding-top: 4px; }
 .last-updated { font-size: 0.67rem; color: var(--t3); white-space: nowrap; }
@@ -129,7 +129,7 @@ body::before {
 .banner { display: none; max-width: 1400px; margin: 1.1rem auto 0; padding: 0 2rem; }
 .banner.vis { display: block; }
 .banner-inner {
-  background: linear-gradient(135deg, var(--c-high) 0%, var(--gold) 100%);
+  background: linear-gradient(135deg, #cc5e0a 0%, #b08800 100%);
   border-radius: var(--r); padding: 0.8rem 1.2rem;
   box-shadow: 0 2px 12px rgba(184,92,16,0.25);
 }
@@ -181,10 +181,10 @@ body::before {
   padding: 0.75rem 1.1rem 0.7rem 1rem;
   border-bottom: 1px solid rgba(0,0,0,0.06);
 }
-.card[data-p="critical"] .card-head { background: rgba(197,45,45,0.09); }
-.card[data-p="high"]     .card-head { background: rgba(184,92,16,0.09); }
-.card[data-p="medium"]   .card-head { background: rgba(154,118,8,0.09); }
-.card[data-p="low"]      .card-head { background: rgba(46,122,78,0.08); }
+.card[data-p="critical"] .card-head { background: #f0dbd6; }
+.card[data-p="high"]     .card-head { background: #f0e2ce; }
+.card[data-p="medium"]   .card-head { background: #ede8c8; }
+.card[data-p="low"]      .card-head { background: #d8ede0; }
 .card[data-p="complete"] .card-head { background: var(--surface-2); }
 
 .card-head-row { display: flex; align-items: flex-start; gap: 0.55rem; }
@@ -328,10 +328,10 @@ body::before {
   padding: 1.4rem 2rem 1.2rem 1.6rem;
   border-bottom: 1px solid rgba(0,0,0,0.06);
 }
-.detail-card[data-p="critical"] .detail-head { background: rgba(197,45,45,0.09); }
-.detail-card[data-p="high"]     .detail-head { background: rgba(184,92,16,0.09); }
-.detail-card[data-p="medium"]   .detail-head { background: rgba(154,118,8,0.09); }
-.detail-card[data-p="low"]      .detail-head { background: rgba(46,122,78,0.08); }
+.detail-card[data-p="critical"] .detail-head { background: #f0dbd6; }
+.detail-card[data-p="high"]     .detail-head { background: #f0e2ce; }
+.detail-card[data-p="medium"]   .detail-head { background: #ede8c8; }
+.detail-card[data-p="low"]      .detail-head { background: #d8ede0; }
 .detail-card[data-p="complete"] .detail-head { background: var(--surface-2); }
 
 .detail-head-row { display: flex; align-items: flex-start; gap: 0.65rem; }
@@ -458,7 +458,7 @@ body::before {
 <div class="banner" id="banner">
   <div class="banner-inner">
     <div class="banner-title">📋 Showing demo data</div>
-    <p>To connect your Google Sheet, open this file in a text editor, find <code>const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRIa9ts872TEOeP1ae5q5TSC2d7gIl__ccGxBpEF_6PktD5dX-utYzbh3ccWZWoLW4OrOp-AbI0qVCR/pub?output=csv'</code> and paste your published CSV URL inside the quotes.</p>
+    <p>To connect your Google Sheet, open this file in a text editor, find <code>const SHEET_CSV_URL = ''</code> and paste your published CSV URL inside the quotes.</p>
   </div>
 </div>
 
