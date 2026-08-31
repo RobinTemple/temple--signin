@@ -494,6 +494,7 @@ function showScreen(name) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   if (['event','names','other','weekday-other'].includes(name)) document.getElementById('nav-signin').classList.add('active');
   else if (name === 'admin') document.getElementById('nav-admin').classList.add('active');
+  document.getElementById('header-actions').classList.toggle('visible', name === 'names' || name === 'other');
   if (name !== 'names') hideUndoBar();
   updateHeaderSub();
   if (name === 'names' || name === 'other') resetAutoTimer();
