@@ -592,26 +592,30 @@ function updatePendingBadge() {
 
 function downloadCSV(csv, filename) {
   const blob = new Blob([csv], { type: 'text/csv' });
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-  // Try Web Share API first — works reliably on all iOS versions
-  if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'text/csv' })] })) {
-    const file = new File([blob], filename, { type: 'text/csv' });
-    navigator.share({ files: [file], title: filename })
-      .catch(err => { if (err.name !== 'AbortError') showCSVFallback(csv, filename); });
-    return;
+  // Try Web Share API with file — works on iOS 15+ and modern Android
+  if (navigator.share && navigator.canShare) {
+    try {
+      const file = new File([blob], filename, { type: 'text/csv' });
+      if (navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file], title: filename })
+          .catch(err => { if (err.name !== 'AbortError') showCSVFallback(csv, filename); });
+        return;
+      }
+    } catch(e) {}
   }
 
-  // Try standard anchor download (works on newer iOS Safari)
+  // On iOS blob download doesn't work — go straight to copy fallback
+  if (isIOS) { showCSVFallback(csv, filename); return; }
+
+  // Desktop browsers — standard anchor download
   try {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url; a.download = filename; a.click();
     URL.revokeObjectURL(url);
-    return;
-  } catch(e) {}
-
-  // Fallback — show the CSV in a text area so user can copy and paste into email/Notes
-  showCSVFallback(csv, filename);
+  } catch(e) { showCSVFallback(csv, filename); }
 }
 
 function showCSVFallback(csv, filename) {
