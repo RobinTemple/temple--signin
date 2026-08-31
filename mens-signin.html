@@ -55,14 +55,10 @@
   .sched-card.active-vigil    { background: var(--vigil-light); border-color: var(--vigil-text); color: var(--vigil-text); }
 
   /* ACTION BUTTONS */
-  .action-toggle { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px; }
-  .action-btn { padding: 10px 10px; font-size: 16px; font-weight: 700; border-radius: var(--radius); border: 2.5px solid transparent; cursor: pointer; text-align: center; -webkit-appearance: none; transition: all 0.12s; }
-  .action-btn .action-icon { font-size: 20px; display: block; margin-bottom: 2px; }
-  .action-btn .action-label { font-size: 15px; }
-  .action-btn.arrive { background: var(--green-light); border-color: var(--green-border); color: var(--green); }
-  .action-btn.depart { background: var(--amber-light); border-color: var(--amber-border); color: var(--amber); }
-  .action-btn.arrive.selected { background: var(--green-solid); border-color: var(--green-solid); color: white; }
-  .action-btn.depart.selected { background: var(--amber-solid); border-color: var(--amber-solid); color: white; }
+  /* EVENT TITLE BAR */
+  .event-title-bar { padding: 12px 16px 10px; background: var(--surface); border-bottom: 2px solid var(--border); display: flex; flex-direction: column; gap: 3px; }
+  .event-title-bar span:first-child { font-size: 20px; font-weight: 700; color: var(--text); }
+  .event-title-bar span:last-child { font-size: 13px; color: var(--text-muted); }
 
   /* EVENT LISTS — show/hide by schedule */
   .event-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
@@ -83,15 +79,7 @@
   .home-btn { font-size: 13px; background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.45); color: white; padding: 8px 14px; border-radius: 20px; cursor: pointer; white-space: nowrap; flex-shrink: 0; }
 
   /* ACTION BANNER */
-  .action-banner { padding: 14px 16px 12px; border-bottom: 3px solid transparent; transition: background 0.2s; }
-  .action-banner.arrive  { background: var(--green-light); color: var(--green); border-color: var(--green-border); }
-  .action-banner.depart  { background: var(--amber-light); color: var(--amber); border-color: var(--amber-border); }
-  .action-banner-event { font-size: 22px; font-weight: 800; line-height: 1.2; margin-bottom: 6px; }
-  .action-banner-row2 { display: flex; align-items: center; gap: 10px; }
-  .action-banner-icon { font-size: 20px; flex-shrink: 0; }
-  .action-banner-text { font-size: 18px; font-weight: 700; letter-spacing: 0.04em; }
-  .action-banner-change { font-size: 14px; font-weight: 700; padding: 7px 16px; border-radius: 20px; border: 2px solid rgba(255,255,255,0.85); background: rgba(255,255,255,0.18); color: #FFFFFF; cursor: pointer; margin-left: auto; flex-shrink: 0; -webkit-appearance: none; }
-  .action-banner-change:active { background: rgba(255,255,255,0.28); }
+
 
   .today-bar { background: var(--surface); border-bottom: 1px solid var(--border-light); padding: 7px 16px; display: flex; gap: 16px; font-size: 13px; color: var(--text-muted); }
   .today-bar strong { color: var(--text); }
@@ -177,18 +165,6 @@
         </button>
       </div>
 
-      <div class="section-label">I am…</div>
-      <div class="action-toggle">
-        <button class="action-btn arrive selected" id="btn-arrive" onclick="selectAction('arrive')">
-          <span class="action-icon">🙏</span>
-          <span class="action-label">Arriving</span>
-        </button>
-        <button class="action-btn depart" id="btn-depart" onclick="selectAction('depart')">
-          <span class="action-icon">🚶</span>
-          <span class="action-label">Departing</span>
-        </button>
-      </div>
-
       <div class="section-label">Event</div>
 
       <!-- WEEKDAY events -->
@@ -247,17 +223,13 @@
 
   <!-- SCREEN: NAMES -->
   <div class="screen" id="screen-names">
-    <div class="action-banner arrive" id="action-banner">
-      <div class="action-banner-event" id="action-banner-event"></div>
-      <div class="action-banner-row2">
-        <span class="action-banner-icon" id="action-banner-icon">🙏</span>
-        <span class="action-banner-text" id="action-banner-text">ARRIVING</span>
-        <button class="action-banner-change" onclick="handleBannerBtn()">Switch to Departing</button>
-      </div>
+    <div class="event-title-bar" id="event-title-bar">
+      <span id="event-title-text"></span>
+      <span>Tap your name to sign in · tap again to sign out</span>
     </div>
     <div class="today-bar">
       <span>Today: <strong id="today-count">0</strong></span>
-      <span>This event: <strong id="event-count">0</strong></span>
+      <span>Here now: <strong id="event-count">0</strong></span>
     </div>
     <div class="undo-bar" id="undo-bar">
       <span class="undo-bar-text" id="undo-bar-text"></span>
@@ -265,22 +237,22 @@
     </div>
     <div style="padding: 12px 0 12px;">
       <div class="name-grid">
-        <button class="name-btn" id="nb-Bob DeLollis"         onclick="recordAction('Bob DeLollis')">Bob</button>
-        <button class="name-btn" id="nb-Bruce Burnham"        onclick="recordAction('Bruce Burnham')">Bruce</button>
-        <button class="name-btn" id="nb-Chris Beaver"         onclick="recordAction('Chris Beaver')">Chris B.</button>
-        <button class="name-btn" id="nb-Chris Merz"           onclick="recordAction('Chris Merz')">Chris M.</button>
-        <button class="name-btn" id="nb-Da-vid Forsythe"      onclick="recordAction('Da-vid Forsythe')">Da-vid</button>
-        <button class="name-btn" id="nb-Gilbert Evans"        onclick="recordAction('Gilbert Evans')">Gilbert</button>
-        <button class="name-btn" id="nb-Greg Wells"           onclick="recordAction('Greg Wells')">Greg</button>
-        <button class="name-btn" id="nb-Hoi Ngo"              onclick="recordAction('Hoi Ngo')">Hoi</button>
-        <button class="name-btn" id="nb-Joseph Taylor"        onclick="recordAction('Joseph Taylor')">Joseph</button>
-        <button class="name-btn" id="nb-Julian Butler"        onclick="recordAction('Julian Butler')">Julian</button>
-        <button class="name-btn" id="nb-Leo Burke"            onclick="recordAction('Leo Burke')">Leo</button>
-        <button class="name-btn" id="nb-Malcolm Burke"        onclick="recordAction('Malcolm Burke')">Malcolm</button>
-        <button class="name-btn" id="nb-Michael Shaw"         onclick="recordAction('Michael Shaw')">Michael</button>
-        <button class="name-btn" id="nb-Michiel Vos"          onclick="recordAction('Michiel Vos')">Michiel</button>
-        <button class="name-btn" id="nb-Miki Malinka"         onclick="recordAction('Miki Malinka')">Miki</button>
-        <button class="name-btn" id="nb-Robin Temple"         onclick="recordAction('Robin Temple')">Robin</button>
+        <button class="name-btn" id="nb-Bob DeLollis"         onclick="tapName('Bob DeLollis')">Bob</button>
+        <button class="name-btn" id="nb-Bruce Burnham"        onclick="tapName('Bruce Burnham')">Bruce</button>
+        <button class="name-btn" id="nb-Chris Beaver"         onclick="tapName('Chris Beaver')">Chris B.</button>
+        <button class="name-btn" id="nb-Chris Merz"           onclick="tapName('Chris Merz')">Chris M.</button>
+        <button class="name-btn" id="nb-Da-vid Forsythe"      onclick="tapName('Da-vid Forsythe')">Da-vid</button>
+        <button class="name-btn" id="nb-Gilbert Evans"        onclick="tapName('Gilbert Evans')">Gilbert</button>
+        <button class="name-btn" id="nb-Greg Wells"           onclick="tapName('Greg Wells')">Greg</button>
+        <button class="name-btn" id="nb-Hoi Ngo"              onclick="tapName('Hoi Ngo')">Hoi</button>
+        <button class="name-btn" id="nb-Joseph Taylor"        onclick="tapName('Joseph Taylor')">Joseph</button>
+        <button class="name-btn" id="nb-Julian Butler"        onclick="tapName('Julian Butler')">Julian</button>
+        <button class="name-btn" id="nb-Leo Burke"            onclick="tapName('Leo Burke')">Leo</button>
+        <button class="name-btn" id="nb-Malcolm Burke"        onclick="tapName('Malcolm Burke')">Malcolm</button>
+        <button class="name-btn" id="nb-Michael Shaw"         onclick="tapName('Michael Shaw')">Michael</button>
+        <button class="name-btn" id="nb-Michiel Vos"          onclick="tapName('Michiel Vos')">Michiel</button>
+        <button class="name-btn" id="nb-Miki Malinka"         onclick="tapName('Miki Malinka')">Miki</button>
+        <button class="name-btn" id="nb-Robin Temple"         onclick="tapName('Robin Temple')">Robin</button>
         <button class="name-btn other-btn" id="nb-other-link" onclick="showScreen('other')">+ Other</button>
       </div>
     </div>
@@ -334,7 +306,11 @@
     </button>
   </div>
   <div class="nav-wrap" style="position:relative">
-    <button class="nav-btn" id="nav-admin" onclick="showScreen('admin');renderSessions()">
+    <button class="nav-btn" id="nav-admin"
+      onpointerdown="startSessionsHold(event)"
+      onpointerup="cancelSessionsHold()"
+      onpointerleave="cancelSessionsHold()"
+      oncontextmenu="return false">
       <span class="nav-icon">📋</span><span>Sessions</span>
     </button>
     <span class="pending-badge" id="pending-badge" style="display:none">0</span>
@@ -346,7 +322,6 @@ const DEVOTEES = ["Bob DeLollis","Bruce Burnham","Chris Beaver","Chris Merz","Da
 const OTHER_DEVOTEES = [];
 
 let schedule     = 'weekday';
-let currentAction = 'arrive';
 let currentEvent  = null;
 let currentScreen = 'event';
 let autoResetTimer = null;
@@ -373,16 +348,8 @@ function setSchedule(s) {
     document.getElementById('btn-' + k).className = 'sched-card' + (k === s ? ' active-' + k : '');
     document.getElementById('events-' + k).style.display = k === s ? 'grid' : 'none';
   });
-  // Clear selected event if it was from a different schedule
   document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
   currentEvent = null;
-}
-
-function selectAction(action) {
-  currentAction = action;
-  document.getElementById('btn-arrive').classList.toggle('selected', action === 'arrive');
-  document.getElementById('btn-depart').classList.toggle('selected', action === 'depart');
-  if (currentEvent) goToNames();
 }
 
 function selectEvent(btn, eventName) {
@@ -393,54 +360,20 @@ function selectEvent(btn, eventName) {
 }
 
 function selectCombined(btn, event1, event2) {
-  currentAction = 'arrive';
   currentEvent = event1 + ' + ' + event2;
-  document.getElementById('btn-arrive').classList.add('selected');
-  document.getElementById('btn-depart').classList.remove('selected');
   document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
   btn.classList.add('selected');
   goToNames();
 }
 
 function goToNames() {
-  updateActionBanner();
+  document.getElementById('event-title-text').textContent = currentEvent || '';
   updateNameStates();
   updateCounts();
   showScreen('names');
 }
 
-function updateActionBanner() {
-  const isArrive = currentAction === 'arrive';
-  const banner = document.getElementById('action-banner');
-  banner.className = 'action-banner ' + (isArrive ? 'arrive' : 'depart');
-  document.getElementById('action-banner-event').textContent = currentEvent || '';
-  document.getElementById('action-banner-icon').textContent  = isArrive ? '🙏' : '🚶';
-  document.getElementById('action-banner-text').textContent  = isArrive ? 'ARRIVING' : 'DEPARTING';
-  banner.querySelector('.action-banner-change').textContent  =
-    isArrive ? 'Switch to Departing' : 'Switch to Arriving';
-}
-
-function handleBannerBtn() { flipAction(); }
-
-function flipAction() {
-  const wasArrive = currentAction === 'arrive';
-  currentAction = wasArrive ? 'depart' : 'arrive';
-  document.getElementById('btn-arrive').classList.toggle('selected', currentAction === 'arrive');
-  document.getElementById('btn-depart').classList.toggle('selected', currentAction === 'depart');
-  if (wasArrive) {
-    goToNames();
-  } else {
-    currentEvent = null;
-    document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
-    showScreen('event');
-  }
-}
-
 function resetToEventScreen() {
-  const newAction = currentAction === 'arrive' ? 'depart' : 'arrive';
-  currentAction = newAction;
-  document.getElementById('btn-arrive').classList.toggle('selected', newAction === 'arrive');
-  document.getElementById('btn-depart').classList.toggle('selected', newAction === 'depart');
   currentEvent = null;
   document.querySelectorAll('.event-btn.selected').forEach(b => b.classList.remove('selected'));
   showScreen('event');
@@ -469,18 +402,36 @@ function updateNameStates() {
 let lastAction = null;
 let undoTimer  = null;
 
-function recordAction(name) {
-  const now = new Date();
-  const entry = { name, event: currentEvent, action: currentAction,
-    date: todayDate(), time: formatTime(now), timestamp: now.toISOString() };
-  allSignIns.push(entry);
-  lastAction = entry;
-  try { localStorage.setItem('signins_mens', JSON.stringify(allSignIns)); } catch(e) {}
-  updatePendingBadge();
-  updateNameStates();
-  updateCounts();
-  showConfirmToast(name, currentAction === 'arrive', formatTime(now));
-  showUndoBar(name, currentAction === 'arrive');
+// 3-state tap: white → arrive (green) → depart (amber) → undo depart → green
+function tapName(name) {
+  const todayStr = todayDate();
+  const records = allSignIns.filter(r => r.date === todayStr && r.event === currentEvent && r.name === name);
+  const latestAction = records.length > 0 ? records[records.length - 1].action : null;
+
+  if (latestAction === 'depart') {
+    const idx = allSignIns.lastIndexOf(records[records.length - 1]);
+    if (idx !== -1) allSignIns.splice(idx, 1);
+    try { localStorage.setItem('signins_mens', JSON.stringify(allSignIns)); } catch(e) {}
+    updatePendingBadge();
+    updateNameStates();
+    updateCounts();
+    hideUndoBar();
+    showConfirmToast(name, true, formatTime(new Date()));
+    showUndoBar(name, true);
+  } else {
+    const action = latestAction === 'arrive' ? 'depart' : 'arrive';
+    const now = new Date();
+    const entry = { name, event: currentEvent, action,
+      date: todayStr, time: formatTime(now), timestamp: now.toISOString() };
+    allSignIns.push(entry);
+    lastAction = entry;
+    try { localStorage.setItem('signins_mens', JSON.stringify(allSignIns)); } catch(e) {}
+    updatePendingBadge();
+    updateNameStates();
+    updateCounts();
+    showConfirmToast(name, action === 'arrive', formatTime(now));
+    showUndoBar(name, action === 'arrive');
+  }
 }
 
 function showUndoBar(name, isArrive) {
@@ -529,9 +480,11 @@ function showConfirmToast(name, isArrive, timeStr) {
 function updateCounts() {
   const t = todayDate();
   const all = allSignIns.filter(r => r.date === t);
-  const evt = all.filter(r => r.event === currentEvent && r.action === 'arrive');
+  const latest = {};
+  all.filter(r => r.event === currentEvent).forEach(r => { latest[r.name] = r.action; });
+  const hereNow = Object.values(latest).filter(a => a === 'arrive').length;
   document.getElementById('today-count').textContent = new Set(all.map(r=>r.name)).size;
-  document.getElementById('event-count').textContent = new Set(evt.map(r=>r.name)).size;
+  document.getElementById('event-count').textContent = hereNow;
 }
 
 function showScreen(name) {
@@ -541,7 +494,6 @@ function showScreen(name) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   if (['event','names','other','weekday-other'].includes(name)) document.getElementById('nav-signin').classList.add('active');
   else if (name === 'admin') document.getElementById('nav-admin').classList.add('active');
-  document.getElementById('header-actions').classList.toggle('visible', name === 'names' || name === 'other');
   if (name !== 'names') hideUndoBar();
   updateHeaderSub();
   if (name === 'names' || name === 'other') resetAutoTimer();
@@ -556,6 +508,19 @@ function clearAutoTimer() {
   if (autoResetTimer) { clearTimeout(autoResetTimer); autoResetTimer = null; }
 }
 document.addEventListener('touchstart', () => { if (currentScreen==='names' || currentScreen==='other') resetAutoTimer(); }, {passive:true});
+
+let sessionsHoldTimer = null;
+function startSessionsHold(e) {
+  e.preventDefault();
+  sessionsHoldTimer = setTimeout(() => {
+    sessionsHoldTimer = null;
+    showScreen('admin');
+    renderSessions();
+  }, 1500);
+}
+function cancelSessionsHold() {
+  if (sessionsHoldTimer) { clearTimeout(sessionsHoldTimer); sessionsHoldTimer = null; }
+}
 
 function getSessions() {
   const map = {};
@@ -628,11 +593,41 @@ function updatePendingBadge() {
 }
 
 function downloadCSV(csv, filename) {
-  const blob = new Blob([csv], {type:'text/csv'});
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = filename; a.click();
-  URL.revokeObjectURL(url);
+  const blob = new Blob([csv], { type: 'text/csv' });
+
+  // Try Web Share API first — works reliably on all iOS versions
+  if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], filename, { type: 'text/csv' })] })) {
+    const file = new File([blob], filename, { type: 'text/csv' });
+    navigator.share({ files: [file], title: filename })
+      .catch(err => { if (err.name !== 'AbortError') showCSVFallback(csv, filename); });
+    return;
+  }
+
+  // Try standard anchor download (works on newer iOS Safari)
+  try {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+    return;
+  } catch(e) {}
+
+  // Fallback — show the CSV in a text area so user can copy and paste into email/Notes
+  showCSVFallback(csv, filename);
+}
+
+function showCSVFallback(csv, filename) {
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:999;display:flex;flex-direction:column;padding:20px;gap:12px';
+  overlay.innerHTML = `
+    <div style="color:white;font-size:17px;font-weight:600">📋 ${filename}</div>
+    <div style="color:#ccc;font-size:14px;line-height:1.5">Your iPad can't download directly. Select all the text below, copy it, then paste into an email or Notes app and save as a .csv file.</div>
+    <textarea id="csv-fallback-text" style="flex:1;font-size:12px;font-family:monospace;padding:10px;border-radius:8px;border:none;resize:none" readonly>${csv}</textarea>
+    <div style="display:flex;gap:10px">
+      <button onclick="document.getElementById('csv-fallback-text').select();document.execCommand('copy');this.textContent='✓ Copied!'" style="flex:1;padding:14px;background:#2E6B35;color:white;border:none;border-radius:10px;font-size:16px;font-weight:600">Copy all</button>
+      <button onclick="this.closest('div[style]').remove()" style="flex:1;padding:14px;background:#444;color:white;border:none;border-radius:10px;font-size:16px">Close</button>
+    </div>`;
+  document.body.appendChild(overlay);
 }
 
 function todayDate() {
@@ -649,5 +644,12 @@ function formatDisplayDate(str) {
 
 init();
 </script>
+  <!-- Service Worker — enables offline use after first load -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/temple--signin/sw.js')
+        .catch(err => console.warn('Service worker registration failed:', err));
+    }
+  </script>
 </body>
 </html>
