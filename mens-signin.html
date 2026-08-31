@@ -306,11 +306,7 @@
     </button>
   </div>
   <div class="nav-wrap" style="position:relative">
-    <button class="nav-btn" id="nav-admin"
-      ontouchstart="startSessionsHold(event)"
-      ontouchend="cancelSessionsHold()"
-      ontouchcancel="cancelSessionsHold()"
-      oncontextmenu="return false">
+    <button class="nav-btn" id="nav-admin" onclick="handleSessionsTap()">
       <span class="nav-icon">📋</span><span>Sessions</span>
     </button>
     <span class="pending-badge" id="pending-badge" style="display:none">0</span>
@@ -510,17 +506,18 @@ function clearAutoTimer() {
 }
 document.addEventListener('touchstart', () => { if (currentScreen==='names' || currentScreen==='other') resetAutoTimer(); }, {passive:true});
 
-let sessionsHoldTimer = null;
-function startSessionsHold(e) {
-  e.preventDefault(); // prevent long-press context menu on iOS
-  sessionsHoldTimer = setTimeout(() => {
-    sessionsHoldTimer = null;
+let sessionsTapCount = 0;
+let sessionsTapTimer = null;
+function handleSessionsTap() {
+  sessionsTapCount++;
+  if (sessionsTapCount === 1) {
+    sessionsTapTimer = setTimeout(() => { sessionsTapCount = 0; }, 600);
+  } else if (sessionsTapCount >= 2) {
+    clearTimeout(sessionsTapTimer);
+    sessionsTapCount = 0;
     showScreen('admin');
     renderSessions();
-  }, 1500);
-}
-function cancelSessionsHold() {
-  if (sessionsHoldTimer) { clearTimeout(sessionsHoldTimer); sessionsHoldTimer = null; }
+  }
 }
 
 function getSessions() {
