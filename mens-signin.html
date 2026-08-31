@@ -307,9 +307,9 @@
   </div>
   <div class="nav-wrap" style="position:relative">
     <button class="nav-btn" id="nav-admin"
-      onpointerdown="startSessionsHold(event)"
-      onpointerup="cancelSessionsHold()"
-      onpointerleave="cancelSessionsHold()"
+      ontouchstart="startSessionsHold(event)"
+      ontouchend="cancelSessionsHold()"
+      ontouchcancel="cancelSessionsHold()"
       oncontextmenu="return false">
       <span class="nav-icon">📋</span><span>Sessions</span>
     </button>
@@ -512,7 +512,7 @@ document.addEventListener('touchstart', () => { if (currentScreen==='names' || c
 
 let sessionsHoldTimer = null;
 function startSessionsHold(e) {
-  e.preventDefault();
+  e.preventDefault(); // prevent long-press context menu on iOS
   sessionsHoldTimer = setTimeout(() => {
     sessionsHoldTimer = null;
     showScreen('admin');
