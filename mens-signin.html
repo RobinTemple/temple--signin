@@ -628,12 +628,41 @@ function showCSVFallback(csv, filename) {
       <div style="color:white;font-size:17px;font-weight:600;margin-bottom:10px">📋 ${filename}</div>
       <div style="color:#ccc;font-size:14px;line-height:1.6;margin-bottom:14px">Your iPad cannot download directly.<br>Tap <b style="color:white">Copy all</b> below, then paste into an email or Notes app.</div>
       <div style="display:flex;gap:10px;margin-bottom:14px">
-        <button id="csv-copy-btn" style="flex:1;padding:16px;background:#2E6B35;color:white;border:none;border-radius:10px;font-size:16px;font-weight:600" onclick="var t=document.getElementById('csv-text');t.select();document.execCommand('copy');document.getElementById('csv-copy-btn').textContent='✓ Copied!'">Copy all</button>
+        <button id="csv-copy-btn" style="flex:1;padding:16px;background:#2E6B35;color:white;border:none;border-radius:10px;font-size:16px;font-weight:600">Copy all</button>
         <button style="flex:1;padding:16px;background:#555;color:white;border:none;border-radius:10px;font-size:16px" onclick="document.getElementById('csv-overlay').remove()">Close</button>
       </div>
       <textarea id="csv-text" style="width:100%;height:300px;font-size:11px;font-family:monospace;padding:10px;border-radius:8px;border:none;resize:none;box-sizing:border-box" readonly>${csv}</textarea>
     </div>`;
   document.body.appendChild(overlay);
+
+  document.getElementById('csv-copy-btn').addEventListener('click', function() {
+    const btn = this;
+    const text = document.getElementById('csv-text').value;
+    // Try modern Clipboard API first (iOS 13.4+ with HTTPS)
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text)
+        .then(() => { btn.textContent = '✓ Copied!'; btn.style.background = '#1a4a22'; })
+        .catch(() => iosCopy(text, btn));
+    } else {
+      iosCopy(text, btn);
+    }
+  });
+}
+
+function iosCopy(text, btn) {
+  // iOS fallback: create a temporary textarea, select its content, copy
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);width:1px;height:1px;opacity:0;';
+  document.body.appendChild(ta);
+  ta.focus();
+  ta.setSelectionRange(0, text.length);
+  try {
+    const ok = document.execCommand('copy');
+    if (ok) { btn.textContent = '✓ Copied!'; btn.style.background = '#1a4a22'; }
+    else { btn.textContent = 'Select text manually ↓'; }
+  } catch(e) { btn.textContent = 'Select text manually ↓'; }
+  document.body.removeChild(ta);
 }
 
 function todayDate() {
