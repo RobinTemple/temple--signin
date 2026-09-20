@@ -1,0 +1,899 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Ashram Sign-In — Men's Side</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --bg: #0f0f1a;
+      --surface: #161628;
+      --surface2: #1e1e34;
+      --surface3: #242440;
+      --text: #dde4f0;
+      --text-muted: #6e7e9e;
+      --border: #282845;
+      --arrived-bg: #132518;
+      --arrived-border: #2a5c38;
+      --arrived-text: #86c99e;
+      --departed-bg: #361808;
+      --departed-border: #7a3808;
+      --departed-text: #d8936a;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Helvetica Neue', -apple-system, BlinkMacSystemFont, Helvetica, sans-serif;
+      font-weight: 100;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* ── Screens ── */
+    .screen { display: none; height: 100vh; flex-direction: column; }
+    .screen.active { display: flex; }
+
+    /* ════════════════════════════════════════
+       HOME / SCHEDULE SCREEN
+    ════════════════════════════════════════ */
+
+    #screen-home {
+      background:
+        radial-gradient(ellipse at 30% 20%, rgba(60,80,160,0.18) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 80%, rgba(80,50,130,0.15) 0%, transparent 55%),
+        var(--bg);
+    }
+
+    #screen-home .home-header {
+      padding: 40px 32px 24px;
+      text-align: center;
+    }
+
+    .greeting {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .home-date-display {
+      font-size: 22px;
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 20px;
+      letter-spacing: 0.01em;
+    }
+
+    .home-invite {
+      font-size: 15px;
+      font-weight: 300;
+      color: #9aaac8;
+      letter-spacing: 0.02em;
+    }
+
+    #screen-home .body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 0 28px 48px;
+      gap: 14px;
+    }
+
+    .schedule-row {
+      display: flex;
+      flex-direction: row;
+      gap: 12px;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .schedule-btn {
+      flex: 1;
+      padding: 28px 10px 22px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-top-width: 3px;
+      border-radius: 14px;
+      color: var(--text);
+      font-size: 16px;
+      font-weight: 300;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      text-align: center;
+      transition: background 0.2s, border-color 0.2s, transform 0.12s;
+    }
+
+    .schedule-btn:active {
+      transform: scale(0.96);
+      background: var(--surface3);
+    }
+
+    .btn-weekday  { border-top-color: #4a7ac8; }
+    .btn-weekday:active  { border-top-color: #6a9ae8; background: #14183a; }
+
+    .btn-guruvara { border-top-color: #2a8a7a; }
+    .btn-guruvara:active { border-top-color: #3ab09a; background: #0e2222; }
+
+    .btn-vigil    { border-top-color: #7050c0; }
+    .btn-vigil:active    { border-top-color: #9070e0; background: #16102e; }
+
+    .btn-icon {
+      display: block;
+      font-size: 22px;
+      margin-bottom: 10px;
+      opacity: 0.7;
+    }
+
+    .btn-label { display: block; }
+
+    /* ════════════════════════════════════════
+       NAMES SCREEN
+    ════════════════════════════════════════ */
+
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .header-main {
+      padding: 12px 14px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .back-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 24px;
+      line-height: 1;
+      cursor: pointer;
+      padding: 4px 10px 4px 0;
+      font-weight: 300;
+    }
+
+    .header-title { font-size: 18px; font-weight: 400; flex: 1; letter-spacing: 0.01em; }
+    .header-sub   { font-size: 12px; color: var(--text-muted); margin-top: 2px; font-weight: 300; }
+
+    /* Events header — two rows: nav row then Done row */
+    .events-nav-row {
+      padding: 10px 14px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .events-back-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 22px;
+      cursor: pointer;
+      padding: 4px 12px 4px 0;
+      font-weight: 300;
+    }
+
+    .home-top-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 400;
+      cursor: pointer;
+      padding: 9px 16px;
+      transition: background 0.15s;
+    }
+    .home-top-btn:active { background: var(--surface3); }
+
+    /* Done button — centred row between nav and person bar */
+    .done-row {
+      display: flex;
+      justify-content: center;
+      padding: 4px 14px 8px;
+    }
+    .done-btn {
+      background: #1e4028;
+      border: 1.5px solid #4a8c5c;
+      border-radius: 14px;
+      color: #b8e8c8;
+      font-size: 20px;
+      font-weight: 400;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      padding: 12px 56px;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .done-btn:active {
+      background: #132518;
+      border-color: #2a5c38;
+      color: #86c99e;
+    }
+    .done-btn.done-clicked {
+      background: #132518;
+      border-color: #2a5c38;
+      color: #86c99e;
+      transition: background 0.4s, border-color 0.4s, color 0.4s;
+    }
+
+    .events-person-bar {
+      padding: 6px 16px 10px;
+      border-bottom: 1px solid var(--border);
+    }
+    .events-person-name { font-size: 16px; font-weight: 400; }
+    .events-person-sub  { font-size: 12px; color: var(--text-muted); margin-top: 1px; font-weight: 300; }
+
+    /* ── Names list ── */
+    #names-list {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      align-content: start;
+    }
+
+    .name-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px 6px;
+      color: var(--text);
+      font-size: 27px;
+      font-weight: 100;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      transition: opacity 0.1s, transform 0.1s;
+      line-height: 1.3;
+      min-height: 88px;
+    }
+    .name-btn:active { opacity: 0.72; transform: scale(0.95); }
+
+    .name-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: transparent;
+    }
+    .name-btn.status-arrived  .name-dot { background: #50aa78; }
+    .name-btn.status-departed .name-dot { background: #b87840; }
+
+    .other-divider {
+      grid-column: 1 / -1;
+      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 8px 4px 2px;
+      border-top: 1px solid var(--border);
+      margin-top: 4px;
+    }
+
+    /* ════════════════════════════════════════
+       EVENTS SCREEN
+    ════════════════════════════════════════ */
+
+    .timer-bar { height: 2px; background: var(--border); flex-shrink: 0; }
+    .timer-fill { height: 100%; background: #2a5c40; width: 100%; }
+
+    #events-list {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 10px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      align-content: start;
+    }
+
+    #events-list.vigil-cols {
+      grid-template-columns: repeat(3, 1fr);
+    }
+
+    #events-list.vigil-cols .event-btn {
+      font-size: 18px;
+      min-height: 72px;
+      padding: 14px 6px;
+    }
+
+    .event-btn {
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 10px;
+      color: var(--text);
+      font-size: 23px;
+      font-weight: 100;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: opacity 0.1s, transform 0.1s;
+      text-align: center;
+      line-height: 1.25;
+      min-height: 90px;
+    }
+
+    /* Alternating row colors — pairs of 2 */
+    .event-btn:nth-child(4n+1),
+    .event-btn:nth-child(4n+2) { background: var(--surface2); }
+
+    .event-btn:nth-child(4n+3),
+    .event-btn:nth-child(4n+4) { background: var(--surface3); }
+
+    .event-btn:active { opacity: 0.72; transform: scale(0.97); }
+
+    .event-btn.arrived {
+      background: var(--arrived-bg) !important;
+      border-color: var(--arrived-border);
+      color: var(--arrived-text);
+    }
+    .event-btn.departed {
+      background: var(--departed-bg) !important;
+      border-color: var(--departed-border);
+      color: var(--departed-text);
+    }
+
+    .event-icon {
+      font-size: 17px;
+      opacity: 0.8;
+    }
+
+    /* ── Toast ── */
+    #toast {
+      position: fixed;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%) translateY(8px);
+      background: #1a2438;
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 10px 22px;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 300;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+      z-index: 300;
+      white-space: nowrap;
+    }
+    #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ── Admin ── */
+    .admin-toggle {
+      position: fixed;
+      bottom: 14px;
+      right: 14px;
+      width: 36px; height: 36px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      color: var(--text-muted);
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .admin-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 200;
+      align-items: flex-end;
+    }
+    .admin-overlay.open { display: flex; }
+    .admin-sheet {
+      background: var(--surface);
+      border-radius: 20px 20px 0 0;
+      padding: 20px 18px 36px;
+      width: 100%;
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    .admin-sheet h2 { font-size: 16px; font-weight: 400; margin-bottom: 14px; }
+    .admin-btn {
+      display: block; width: 100%;
+      padding: 13px 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 15px; font-weight: 300;
+      cursor: pointer; text-align: left;
+      margin-bottom: 8px;
+    }
+    .admin-close {
+      display: block; width: 100%;
+      padding: 13px;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      color: var(--text-muted);
+      font-size: 15px; font-weight: 300;
+      cursor: pointer; margin-top: 6px;
+    }
+    .record-summary {
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 11px 14px;
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+    .record-summary strong { color: var(--text); font-weight: 400; }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════════════
+     Screen 1 — Schedule selection
+═══════════════════════════════════════════ -->
+<div id="screen-home" class="screen active">
+  <div class="home-header">
+    <div class="greeting" id="home-greeting"></div>
+    <div class="home-date-display" id="home-date"></div>
+    <div class="home-invite">Please record your attendance</div>
+  </div>
+  <div class="body">
+    <div class="schedule-row">
+      <button class="schedule-btn btn-weekday"  onclick="selectSchedule('Weekday')">
+        <span class="btn-icon">☀</span>
+        <span class="btn-label">Weekday</span>
+      </button>
+      <button class="schedule-btn btn-guruvara" onclick="selectSchedule('Guruvara')">
+        <span class="btn-icon">✦</span>
+        <span class="btn-label">Guruvara</span>
+      </button>
+      <button class="schedule-btn btn-vigil"    onclick="selectSchedule('Temple Vigil')">
+        <span class="btn-icon">🕯</span>
+        <span class="btn-label">Temple Vigil</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     Screen 2 — Names
+═══════════════════════════════════════════ -->
+<div id="screen-names" class="screen">
+  <div class="header">
+    <div class="header-main">
+      <button class="back-btn" onclick="goHome()">Home</button>
+      <div class="header-text">
+        <div id="names-title" class="header-title"></div>
+        <div class="header-sub">Tap your name</div>
+      </div>
+    </div>
+  </div>
+  <div id="names-list"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     Screen 3 — Events
+═══════════════════════════════════════════ -->
+<div id="screen-events" class="screen">
+  <div class="header">
+    <div class="events-nav-row">
+      <button class="events-back-btn" onclick="goNames()">←  Names</button>
+      <button class="home-top-btn"    onclick="goHome()">Home</button>
+    </div>
+    <div class="done-row">
+      <button class="done-btn" onclick="this.classList.add('done-clicked');this.disabled=true;setTimeout(goNames,1500)">Done</button>
+    </div>
+    <div class="events-person-bar">
+      <div id="events-name" class="events-person-name"></div>
+      <div id="events-sub"  class="events-person-sub"></div>
+    </div>
+  </div>
+  <div class="timer-bar"><div id="timer-fill" class="timer-fill"></div></div>
+  <div id="events-list"></div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+<!-- Admin toggle -->
+<button class="admin-toggle" onclick="openAdmin()" title="Admin">⚙</button>
+<!-- Admin sheet -->
+<div id="admin-overlay" class="admin-overlay" onclick="maybeCloseAdmin(event)">
+  <div class="admin-sheet" onclick="event.stopPropagation()">
+    <h2>Admin</h2>
+    <button class="admin-btn" onclick="exportCSV()">📥 Export CSV</button>
+    <button class="admin-btn" onclick="clearToday()">🗑 Clear today's records</button>
+    <button class="admin-btn" onclick="clearAll()">⚠️ Clear all data</button>
+    <div id="admin-records" style="margin-top:14px;"></div>
+    <button class="admin-close" onclick="closeAdmin()">Close</button>
+  </div>
+</div>
+
+<script>
+// ── Data ──────────────────────────────────────────────────
+
+const DEVOTEES = [
+  "Bob DeLollis","Bruce Burnham","Chris Beaver","Chris Merz","Da-vid Forsythe",
+  "Gilbert Evans","Greg Wells","Hoi Ngo","Joseph Taylor","Julian Butler",
+  "Leo Burke","Malcolm Burke","Michael Shaw","Michiel Vos","Miki Malinka","Robin Temple"
+];
+
+const OTHER_DEVOTEES = [];
+
+const SCHEDULES = {
+  'Weekday': {
+    events: [
+      "AM Meditation + Puja","AM Meditation","Morning Puja","Meditation after Puja",
+      "4pm Meditation","Arati","Evening Meditation","Arati + Evening Meditation",
+      "📖 Teaching Manual","Paduka Mandir Puja",
+      "Celebration 1"
+    ]
+  },
+  'Guruvara': {
+    events: [
+      "AM Meditation + Puja","AM Meditation","Morning Puja",
+      "10am Recitation + 11am Meditation",
+      "10.00am Recitation+chanting","10:50am Meditation","Full Cycle",
+      "4pm Meditation","Arati","Evening Meditation","Arati + Evening Meditation",
+      "Saturday Evening: Chanting and Darshan"
+    ]
+  },
+  'Temple Vigil': {
+    events: [
+      "12:00am – 1:30am","1:30am – 3:00am","3:00am – 4:15am",
+      "8:00am – 9:00am","9:00am – 10:00am","10:00am – 10:30am",
+      "10:30am – 11:45am","11:45am – 12:15pm","12:15pm – 1:30pm",
+      "1:30pm – 2:30pm","2:30pm – 4:00pm","4:00pm – 5:00pm",
+      "5:00pm – 5:45pm","5:45pm – 7:00pm","7:00pm – 8:30pm",
+      "8:30pm – 10:00pm","10:00pm – 11:00pm","11:00pm – 12:00am"
+    ]
+  }
+};
+
+// ── State ─────────────────────────────────────────────────
+
+let currentSchedule = null;
+let currentPerson   = null;
+let autoTimer       = null;
+const AUTO_TIMEOUT  = 30000; // 30 seconds — events screen back to names
+
+let scheduleTimer   = null;
+const SCHEDULE_TIMEOUT = 2 * 60 * 60 * 1000; // 2 hours — names screen back to home
+
+let attendanceState = {};
+let signins = [];
+
+function todayKey() {
+  return new Date().toLocaleDateString('en-CA', {timeZone: 'Pacific/Fiji'});
+}
+
+function todayDisplay() {
+  return new Date().toLocaleDateString('en-AU', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    timeZone: 'Pacific/Fiji'
+  });
+}
+
+function getGreeting() {
+  const h = new Date().toLocaleString('en-AU', {hour: 'numeric', hour12: false, timeZone: 'Pacific/Fiji'});
+  const hr = parseInt(h);
+  if (hr < 12) return 'Good morning';
+  if (hr < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function nowTime() {
+  return new Date().toLocaleTimeString('en-AU', {
+    hour: '2-digit', minute: '2-digit', timeZone: 'Pacific/Fiji'
+  });
+}
+
+function loadData() {
+  try { attendanceState = JSON.parse(localStorage.getItem('attendanceState_mens') || '{}'); } catch(e) { attendanceState = {}; }
+  try { signins = JSON.parse(localStorage.getItem('signins_mens') || '[]'); } catch(e) { signins = []; }
+}
+
+function saveData() {
+  localStorage.setItem('attendanceState_mens', JSON.stringify(attendanceState));
+  localStorage.setItem('signins_mens', JSON.stringify(signins));
+}
+
+function getState(person, event) {
+  return attendanceState[todayKey()]?.[currentSchedule]?.[person]?.[event] || null;
+}
+
+function setState(person, event, val) {
+  const d = todayKey();
+  if (!attendanceState[d]) attendanceState[d] = {};
+  if (!attendanceState[d][currentSchedule]) attendanceState[d][currentSchedule] = {};
+  if (!attendanceState[d][currentSchedule][person]) attendanceState[d][currentSchedule][person] = {};
+  if (val === null) {
+    delete attendanceState[d][currentSchedule][person][event];
+  } else {
+    attendanceState[d][currentSchedule][person][event] = val;
+  }
+  saveData();
+}
+
+function personStatus(person) {
+  const data = attendanceState[todayKey()]?.[currentSchedule]?.[person];
+  if (!data || !Object.keys(data).length) return null;
+  const vals = Object.values(data);
+  if (vals.includes('departed')) return 'departed';
+  if (vals.includes('arrived'))  return 'arrived';
+  return null;
+}
+
+// ── Screens ───────────────────────────────────────────────
+
+function show(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function startScheduleTimer() {
+  clearScheduleTimer();
+  scheduleTimer = setTimeout(goHome, SCHEDULE_TIMEOUT);
+}
+
+function clearScheduleTimer() {
+  if (scheduleTimer) { clearTimeout(scheduleTimer); scheduleTimer = null; }
+}
+
+function goHome() {
+  stopTimer();
+  clearScheduleTimer();
+  currentPerson = null;
+  show('screen-home');
+  document.getElementById('home-greeting').textContent = getGreeting();
+  document.getElementById('home-date').textContent = todayDisplay();
+}
+
+function selectSchedule(schedule) {
+  currentSchedule = schedule;
+  renderNames();
+  show('screen-names');
+  startScheduleTimer();
+}
+
+function goNames() {
+  stopTimer();
+  renderNames();
+  show('screen-names');
+  startScheduleTimer();
+}
+
+function renderNames() {
+  document.getElementById('names-title').textContent = currentSchedule;
+  const list = document.getElementById('names-list');
+  list.innerHTML = '';
+  list.style.cssText = 'flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;align-content:start;';
+
+  [...DEVOTEES].sort().forEach(name => list.appendChild(makeNameBtn(name)));
+
+  // Occasional attendees — only shown if any exist
+  if (OTHER_DEVOTEES.length > 0) {
+    const divider = document.createElement('div');
+    divider.className = 'other-divider';
+    divider.textContent = 'Occasional';
+    list.appendChild(divider);
+    OTHER_DEVOTEES.forEach(name => list.appendChild(makeNameBtn(name)));
+  }
+}
+
+function makeNameBtn(name) {
+  const btn = document.createElement('button');
+  btn.className = 'name-btn';
+
+  const dot = document.createElement('span');
+  dot.className = 'name-dot';
+
+  const label = document.createElement('span');
+  label.textContent = name;
+
+  btn.appendChild(dot);
+  btn.appendChild(label);
+
+  const status = personStatus(name);
+  if (status) btn.classList.add('status-' + status);
+
+  btn.onclick = () => selectPerson(name);
+  return btn;
+}
+
+function selectPerson(name) {
+  clearScheduleTimer();
+  currentPerson = name;
+  renderEvents();
+  show('screen-events');
+  startTimer();
+}
+
+function renderEvents() {
+  document.getElementById('events-name').textContent = currentPerson;
+  document.getElementById('events-sub').textContent  = currentSchedule + ' · tap to sign in or out';
+
+  // Reset Done button for each new person
+  const doneBtn = document.querySelector('.done-btn');
+  if (doneBtn) { doneBtn.disabled = false; doneBtn.classList.remove('done-clicked'); }
+
+  const list = document.getElementById('events-list');
+  list.innerHTML = '';
+  list.classList.toggle('vigil-cols', currentSchedule === 'Temple Vigil');
+
+  SCHEDULES[currentSchedule].events.forEach(eventName => {
+    list.appendChild(makeEventBtn(eventName));
+  });
+}
+
+function makeEventBtn(eventName) {
+  const state = getState(currentPerson, eventName);
+  const btn = document.createElement('button');
+  btn.className = 'event-btn' + (state ? ' ' + state : '');
+
+  const icon = document.createElement('div');
+  icon.className = 'event-icon';
+  icon.textContent = iconFor(state);
+
+  const label = document.createElement('div');
+  label.textContent = eventName;
+
+  btn.appendChild(icon);
+  btn.appendChild(label);
+  btn.onclick = () => tapEvent(eventName, btn, icon);
+  return btn;
+}
+
+function iconFor(state) {
+  if (state === 'arrived')  return '✓';
+  if (state === 'departed') return '◁';
+  return '·';
+}
+
+function tapEvent(eventName, btn, icon) {
+  resetTimer();
+  const current = getState(currentPerson, eventName);
+  let next;
+  if (!current)              next = 'arrived';
+  else if (current === 'arrived') next = 'departed';
+  else                       next = null;
+
+  setState(currentPerson, eventName, next);
+  btn.className = 'event-btn' + (next ? ' ' + next : '');
+  icon.textContent = iconFor(next);
+
+  if (next) {
+    signins.push({
+      name: currentPerson, event: eventName, schedule: currentSchedule,
+      action: next, date: todayKey(), time: nowTime(), timestamp: new Date().toISOString()
+    });
+    saveData();
+    toast(next === 'arrived' ? '✓ Arrived — ' + currentPerson : '◁ Departed — ' + currentPerson);
+  } else {
+    toast('Cleared');
+  }
+
+  // Auto-return to names after brief visual confirmation
+  stopTimer();
+  setTimeout(goNames, 6000);
+}
+
+// ── Timer ─────────────────────────────────────────────────
+
+function startTimer() {
+  stopTimer();
+  const fill = document.getElementById('timer-fill');
+  fill.style.transition = 'none';
+  fill.style.width = '100%';
+  fill.getBoundingClientRect();
+  fill.style.transition = 'width ' + AUTO_TIMEOUT + 'ms linear';
+  fill.style.width = '0%';
+  autoTimer = setTimeout(goNames, AUTO_TIMEOUT);
+}
+
+function resetTimer() { startTimer(); }
+
+function stopTimer() {
+  if (autoTimer) { clearTimeout(autoTimer); autoTimer = null; }
+  const fill = document.getElementById('timer-fill');
+  if (fill) { fill.style.transition = 'none'; fill.style.width = '100%'; }
+}
+
+// ── Toast ─────────────────────────────────────────────────
+
+let toastTimer = null;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+// ── Admin ─────────────────────────────────────────────────
+
+function openAdmin() {
+  document.getElementById('admin-overlay').classList.add('open');
+  renderAdminRecords();
+}
+function closeAdmin() { document.getElementById('admin-overlay').classList.remove('open'); }
+function maybeCloseAdmin(e) { if (e.target === document.getElementById('admin-overlay')) closeAdmin(); }
+
+function renderAdminRecords() {
+  const el = document.getElementById('admin-records');
+  if (!signins.length) { el.innerHTML = '<div class="record-summary">No records yet.</div>'; return; }
+  const byDate = {};
+  signins.forEach(r => { const d = r.date||'unknown'; if (!byDate[d]) byDate[d]=[]; byDate[d].push(r); });
+  el.innerHTML = '';
+  Object.entries(byDate).sort((a,b) => b[0].localeCompare(a[0])).forEach(([date, recs]) => {
+    const div = document.createElement('div');
+    div.className = 'record-summary';
+    div.innerHTML = `<strong>${date}</strong> — ${recs.length} record${recs.length!==1?'s':''} (${recs.filter(r=>r.action==='arrived').length} in, ${recs.filter(r=>r.action==='departed').length} out)`;
+    el.appendChild(div);
+  });
+}
+
+function exportCSV() {
+  if (!signins.length) { toast('No records to export'); return; }
+  const header = 'Name,Event,Schedule,Action,Date,Time\n';
+  const rows = signins.map(r =>
+    [r.name,r.event,r.schedule||'',r.action,r.date,r.time]
+      .map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')
+  ).join('\n');
+  const blob = new Blob([header+rows],{type:'text/csv'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href=url; a.download='attendance_'+todayKey()+'.csv'; a.click();
+  URL.revokeObjectURL(url);
+  toast('CSV exported'); closeAdmin();
+}
+
+function clearToday() {
+  delete attendanceState[todayKey()];
+  signins = signins.filter(r => r.date !== todayKey());
+  saveData(); toast("Today's records cleared"); closeAdmin();
+}
+
+function clearAll() {
+  const btn = document.querySelector('#admin-overlay .admin-btn:last-of-type');
+  if (btn.dataset.confirm !== '1') {
+    btn.textContent = '⚠️ Tap again to confirm — cannot be undone';
+    btn.dataset.confirm = '1';
+    setTimeout(() => { btn.textContent='⚠️ Clear all data'; btn.dataset.confirm='0'; }, 4000);
+    return;
+  }
+  attendanceState={}; signins=[];
+  saveData(); toast('All data cleared'); closeAdmin();
+  btn.textContent='⚠️ Clear all data'; btn.dataset.confirm='0';
+}
+
+// ── Init ──────────────────────────────────────────────────
+loadData();
+goHome();
+</script>
+</body>
+</html>
