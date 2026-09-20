@@ -3,10 +3,10 @@
 // Change CACHE_VERSION whenever you deploy a new version of the HTML —
 // the old cache will be cleared automatically.
 
-const CACHE_VERSION = 'temple-signin-v4';
+const CACHE_VERSION = 'temple-signin-v5';
 const URLS = [
   '/temple--signin/1attendance-signin.html',
-  '/temple--signin/mens-signin.html',
+  '/temple--signin/1attendance-signin-mens.html',
 ];
 
 // ── Install: cache everything we need ──────────────────────────────────────
