@@ -623,7 +623,10 @@ function saveData() {
 }
 
 function getState(person, event) {
-  return attendanceState[todayKey()]?.[currentSchedule]?.[person]?.[event] || null;
+  var d = attendanceState[todayKey()];
+  var s = d && d[currentSchedule];
+  var p = s && s[person];
+  return (p && p[event]) || null;
 }
 
 function setState(person, event, val) {
@@ -640,7 +643,9 @@ function setState(person, event, val) {
 }
 
 function personStatus(person) {
-  const data = attendanceState[todayKey()]?.[currentSchedule]?.[person];
+  var d = attendanceState[todayKey()];
+  var s = d && d[currentSchedule];
+  var data = s && s[person];
   if (!data || !Object.keys(data).length) return null;
   const vals = Object.values(data);
   if (vals.includes('departed')) return 'departed';
