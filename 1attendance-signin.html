@@ -404,7 +404,7 @@
     .admin-overlay {
       display: none;
       position: fixed;
-      inset: 0;
+      top: 0; right: 0; bottom: 0; left: 0;
       background: rgba(0,0,0,0.6);
       z-index: 200;
       align-items: flex-end;
@@ -449,6 +449,33 @@
       margin-bottom: 5px;
     }
     .record-summary strong { color: var(--text); font-weight: 400; }
+    .csv-output {
+      display: none;
+      margin-top: 12px;
+    }
+    .csv-output textarea {
+      width: 100%;
+      height: 160px;
+      background: #0a0a14;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: #8ab4d8;
+      font-size: 11px;
+      font-family: monospace;
+      padding: 10px;
+      resize: none;
+    }
+    .csv-select-btn {
+      display: block; width: 100%;
+      padding: 11px 16px;
+      background: #1a2e48;
+      border: 1px solid #2a5c80;
+      border-radius: 10px;
+      color: #8ab4d8;
+      font-size: 14px; font-weight: 400;
+      cursor: pointer; text-align: center;
+      margin-top: 8px;
+    }
   </style>
 </head>
 <body>
@@ -525,10 +552,14 @@
 <div id="admin-overlay" class="admin-overlay" onclick="maybeCloseAdmin(event)">
   <div class="admin-sheet" onclick="event.stopPropagation()">
     <h2>Admin</h2>
-    <button class="admin-btn" onclick="exportCSV()">📥 Export CSV</button>
+    <button class="admin-btn" onclick="exportCSV()">📤 Share / Export CSV</button>
     <button class="admin-btn" onclick="clearToday()">🗑 Clear today's records</button>
     <button class="admin-btn" onclick="clearAll()">⚠️ Clear all data</button>
     <div id="admin-records" style="margin-top:14px;"></div>
+    <div class="csv-output" id="csv-output">
+      <textarea id="csv-text" readonly></textarea>
+      <button class="csv-select-btn" onclick="selectCSV()">Select all — then copy</button>
+    </div>
     <button class="admin-close" onclick="closeAdmin()">Close</button>
   </div>
 </div>
@@ -918,12 +949,35 @@ function exportCSV() {
     [r.name,r.event,r.schedule||'',r.action,r.date,r.time]
       .map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')
   ).join('\n');
-  const blob = new Blob([header+rows],{type:'text/csv'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href=url; a.download='attendance_'+todayKey()+'.csv'; a.click();
-  URL.revokeObjectURL(url);
-  toast('CSV exported'); closeAdmin();
+  const csv = header + rows;
+  const filename = 'attendance_ladies_' + todayKey() + '.csv';
+
+  if (navigator.share) {
+    var file = new File([csv], filename, {type: 'text/csv'});
+    var shareData = { files: [file] };
+    if (navigator.canShare && navigator.canShare(shareData)) {
+      navigator.share(shareData).catch(function() { showCSVFallback(csv); });
+      return;
+    }
+    navigator.share({ title: filename, text: csv }).catch(function() { showCSVFallback(csv); });
+    return;
+  }
+  showCSVFallback(csv);
+}
+
+function showCSVFallback(csv) {
+  var ta = document.getElementById('csv-text');
+  ta.value = csv;
+  document.getElementById('csv-output').style.display = 'block';
+  ta.focus();
+  ta.select();
+}
+
+function selectCSV() {
+  var ta = document.getElementById('csv-text');
+  ta.focus();
+  ta.select();
+  try { document.execCommand('selectAll'); } catch(e) {}
 }
 
 function clearToday() {
