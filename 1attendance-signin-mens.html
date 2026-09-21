@@ -581,6 +581,8 @@ let currentPerson   = null;
 let autoTimer       = null;
 const AUTO_TIMEOUT  = 30000; // 30 seconds — events screen back to names
 
+let tapReturnTimer  = null;
+
 let scheduleTimer   = null;
 const SCHEDULE_TIMEOUT = 2 * 60 * 60 * 1000; // 2 hours — names screen back to home
 
@@ -671,6 +673,7 @@ function clearScheduleTimer() {
 
 function goHome() {
   stopTimer();
+  if (tapReturnTimer) { clearTimeout(tapReturnTimer); tapReturnTimer = null; }
   clearScheduleTimer();
   currentPerson = null;
   show('screen-home');
@@ -687,6 +690,7 @@ function selectSchedule(schedule) {
 
 function goNames() {
   stopTimer();
+  if (tapReturnTimer) { clearTimeout(tapReturnTimer); tapReturnTimer = null; }
   renderNames();
   show('screen-names');
   startScheduleTimer();
@@ -804,12 +808,14 @@ function tapEvent(eventName, btn, icon) {
 
   // Auto-return to names after brief visual confirmation
   stopTimer();
-  setTimeout(goNames, 6000);
+  if (tapReturnTimer) { clearTimeout(tapReturnTimer); tapReturnTimer = null; }
+  tapReturnTimer = setTimeout(goNames, 6000);
 }
 
 function tapDone(btn) {
   btn.classList.add('done-clicked');
   btn.disabled = true;
+  if (tapReturnTimer) { clearTimeout(tapReturnTimer); tapReturnTimer = null; }
   setTimeout(goNames, 1500);
 }
 
