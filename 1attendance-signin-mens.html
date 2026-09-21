@@ -506,7 +506,7 @@
       <button class="home-top-btn"    onclick="goHome()">Home</button>
     </div>
     <div class="done-row">
-      <button class="done-btn" onclick="this.classList.add('done-clicked');this.disabled=true;setTimeout(goNames,1500)">Done</button>
+      <button class="done-btn" id="done-btn" onclick="tapDone(this)">Done</button>
     </div>
     <div class="events-person-bar">
       <div id="events-name" class="events-person-name"></div>
@@ -738,7 +738,7 @@ function renderEvents() {
   document.getElementById('events-sub').textContent  = currentSchedule + ' · tap to sign in or out';
 
   // Reset Done button for each new person
-  const doneBtn = document.querySelector('.done-btn');
+  const doneBtn = document.getElementById('done-btn');
   if (doneBtn) { doneBtn.disabled = false; doneBtn.classList.remove('done-clicked'); }
 
   const list = document.getElementById('events-list');
@@ -800,6 +800,12 @@ function tapEvent(eventName, btn, icon) {
   // Auto-return to names after brief visual confirmation
   stopTimer();
   setTimeout(goNames, 6000);
+}
+
+function tapDone(btn) {
+  btn.classList.add('done-clicked');
+  btn.disabled = true;
+  setTimeout(goNames, 1500);
 }
 
 // ── Timer ─────────────────────────────────────────────────
