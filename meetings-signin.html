@@ -132,8 +132,8 @@
       background: rgba(255,255,255,0.10);
       border: 1.5px solid rgba(255,255,255,0.18);
       border-radius: 10px;
-      padding: 15px 8px;
-      font-size: 1.08rem; font-weight: 400;
+      padding: 8px 6px;
+      font-size: 1.18rem; font-weight: 400;
       color: white;
       cursor: pointer;
       text-align: center;
@@ -274,6 +274,21 @@
     #screen-men .divider            { border-top-color: rgba(255,255,255,0.15); }
     #screen-attendance .btn-ghost,
     #screen-men .btn-ghost          { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.65); }
+
+    /* ── Fill full screen height on attendance screens ────── */
+    #screen-attendance,
+    #screen-men {
+      display: flex; flex-direction: column; min-height: 100dvh;
+    }
+    #screen-attendance .screen-body,
+    #screen-men .screen-body {
+      flex: 1; display: flex; flex-direction: column;
+      padding-bottom: 10px;
+    }
+    #screen-attendance .name-grid,
+    #screen-men .name-grid {
+      flex: 1; align-content: stretch;
+    }
   </style>
 </head>
 <body>
