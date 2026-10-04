@@ -43,8 +43,8 @@
       box-shadow: var(--shadow-md);
     }
     .header-home { background: #111827; }
-    .header-att  { background: var(--primary); }
-    .header-men  { background: #1e3550; }   /* slightly different to signal mode change */
+    .header-att  { background: #1e8a7a; }   /* warm teal */
+    .header-men  { background: #1e3550; }   /* dark navy for men */
     .header-sum  { background: #1a4a2a; }
     .header-set  { background: #3a2d5c; }
     .header-back {
@@ -62,7 +62,7 @@
 
     /* Home screen dark bg */
     #screen-home { background: var(--home-bg); min-height: 100vh; }
-    #screen-home .screen-body { padding: 14px 14px 36px; }
+    #screen-home .screen-body { padding: 14px 14px 36px; background: var(--home-bg); }
 
     /* Other screens */
     .screen-body { padding: 14px 14px 36px; background: var(--neutral-bg); min-height: 100vh; }
@@ -78,8 +78,8 @@
       background: rgba(255,255,255,0.10);
       border: 1.5px solid rgba(255,255,255,0.18);
       border-radius: 12px;
-      padding: 22px 12px 18px;
-      font-size: 0.97rem; font-weight: 600;
+      padding: 26px 12px 22px;
+      font-size: 1.25rem; font-weight: 500;
       color: white;
       cursor: pointer;
       text-align: center;
@@ -90,7 +90,7 @@
       background: rgba(255,255,255,0.22);
       border-color: rgba(255,255,255,0.50);
     }
-    .event-icon { font-size: 1.6rem; display: block; margin-bottom: 7px; }
+    .event-icon { font-size: 2rem; display: block; margin-bottom: 9px; }
 
     /* ── Section heading ──────────────────────────────────── */
     .section-heading {
@@ -111,7 +111,7 @@
 
     /* ── Counter bar ──────────────────────────────────────── */
     .counter-bar {
-      background: var(--primary);
+      background: #1e8a7a;
       color: white;
       display: flex; align-items: center; justify-content: center;
       gap: 6px;
@@ -121,37 +121,31 @@
     .counter-bar-men { background: #1e3550; }
     .counter-bar .sub { font-weight: 400; opacity: 0.78; font-size: 0.9rem; }
 
-    /* ── Name list ────────────────────────────────────────── */
-    .name-list { list-style: none; }
-    .name-item {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 13px 15px;
-      border-radius: 9px; margin-bottom: 6px;
+    /* ── Name grid ────────────────────────────────────────── */
+    .name-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .name-btn {
+      background: rgba(255,255,255,0.10);
+      border: 1.5px solid rgba(255,255,255,0.18);
+      border-radius: 10px;
+      padding: 15px 8px;
+      font-size: 1.08rem; font-weight: 400;
+      color: white;
       cursor: pointer;
-      background: var(--white);
-      border: 2px solid transparent;
-      box-shadow: var(--shadow-sm);
-      user-select: none;
+      text-align: center;
+      line-height: 1.3;
+      word-break: break-word;
       transition: background 0.10s, border-color 0.10s;
     }
-    .name-item:active { opacity: 0.70; }
-    .name-item.present {
-      background: var(--present-bg);
-      border-color: var(--present-border);
-    }
-    .name-item .name { font-size: 1rem; font-weight: 500; }
-    .name-item.present .name { color: var(--present-text); font-weight: 600; }
-    .check-icon {
-      width: 28px; height: 28px; border-radius: 50%;
-      border: 2px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 0.9rem; color: transparent;
-      background: var(--neutral-bg); flex-shrink: 0;
-    }
-    .name-item.present .check-icon {
-      background: var(--present-border);
-      border-color: var(--present-border);
-      color: white;
+    .name-btn:active { opacity: 0.70; }
+    .name-btn.present {
+      background: #195c28;
+      border-color: #34c759;
+      color: #afffca;
     }
 
     /* ── Search ───────────────────────────────────────────── */
@@ -272,6 +266,14 @@
 
     /* ── Divider ──────────────────────────────────────────── */
     .divider { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+
+    /* ── Dark attendance screens ──────────────────────────── */
+    #screen-attendance .screen-body,
+    #screen-men .screen-body        { background: #1a2234; }
+    #screen-attendance .divider,
+    #screen-men .divider            { border-top-color: rgba(255,255,255,0.15); }
+    #screen-attendance .btn-ghost,
+    #screen-men .btn-ghost          { border-color: rgba(255,255,255,0.25); color: rgba(255,255,255,0.65); }
   </style>
 </head>
 <body>
@@ -282,20 +284,19 @@
      SCREEN: HOME
 ═══════════════════════════════════════════════════════════ -->
 <div id="screen-home" class="screen active">
-  <div class="header header-home">
-    <h1>📋 Meeting Attendance</h1>
-    <p class="header-sub" id="home-date"></p>
+  <div class="header header-home" style="padding:18px 16px 16px">
+    <p id="home-date" style="font-size:1.18rem;font-weight:700;color:white;margin:0"></p>
   </div>
   <div class="screen-body">
-    <div class="section-heading section-heading-dark">Choose an event</div>
     <div class="event-grid" id="event-grid"></div>
 
-    <button class="settings-link" onclick="showSettingsScreen()">⚙ Edit event list</button>
-
-    <div id="today-section" style="display:none">
-      <div class="section-heading section-heading-dark" style="margin-top:20px">Today's sessions</div>
-      <div id="today-list"></div>
+    <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <button class="event-btn" style="background:#2d5060;border-color:rgba(255,255,255,0.25);padding:18px 12px 15px;font-size:1rem;" onclick="shareLatest()">
+        <span class="event-icon" style="font-size:1.5rem;margin-bottom:6px">📤</span>
+        Share last session
+      </button>
     </div>
+
   </div>
 </div>
 
@@ -308,24 +309,8 @@
     <h1 id="att-title"></h1>
     <p class="header-sub" id="att-date"></p>
   </div>
-  <div class="counter-bar" id="att-counter-bar">
-    <span id="cnt-num">0</span>
-    <span class="sub" id="cnt-label">present</span>
-  </div>
   <div class="screen-body">
-    <p style="font-size:0.75rem;color:var(--muted);text-align:center;margin-bottom:10px">
-      Tap to mark present — tap again to undo
-    </p>
-    <div class="search-wrap">
-      <span class="search-icon-overlay">🔍</span>
-      <input class="search-input" id="search-input" type="search"
-             placeholder="Search name…" oninput="filterNames()" autocomplete="off">
-    </div>
-    <ul class="name-list" id="name-list"></ul>
-    <div class="divider"></div>
-    <button class="btn btn-ghost" style="margin-bottom:8px" onclick="showAddPersonModal()">+ Add person</button>
-    <button class="btn btn-men" id="men-btn" style="margin-bottom:8px" onclick="openMensScreen()">👨 Men's Names →</button>
-    <button class="btn btn-success" onclick="showSummary()">View Summary & Export →</button>
+    <div class="name-grid" id="name-list"></div>
   </div>
 </div>
 
@@ -338,23 +323,11 @@
     <h1 id="men-title"></h1>
     <p class="header-sub" id="men-date"></p>
   </div>
-  <div class="counter-bar counter-bar-men">
-    <span id="cnt-men-num">0</span>
-    <span class="sub">men present</span>
-  </div>
   <div class="screen-body">
-    <p style="font-size:0.75rem;color:var(--muted);text-align:center;margin-bottom:10px">
-      Tap to mark present — tap again to undo
-    </p>
-    <div class="search-wrap">
-      <span class="search-icon-overlay">🔍</span>
-      <input class="search-input" id="men-search-input" type="search"
-             placeholder="Search name…" oninput="filterMenNames()" autocomplete="off">
+    <div class="name-grid" id="men-name-list"></div>
+    <div style="padding:10px 0 4px">
+      <button class="btn" style="background:#1e8a7a;color:white;font-size:1.05rem;font-weight:600;padding:16px;" onclick="closeMensScreen()">← Women's Names</button>
     </div>
-    <ul class="name-list" id="men-name-list"></ul>
-    <div class="divider"></div>
-    <button class="btn btn-ghost" style="margin-bottom:8px" onclick="showAddPersonModal('men')">+ Add person</button>
-    <button class="btn btn-success" onclick="showSummary()">View Summary & Export →</button>
   </div>
 </div>
 
@@ -403,27 +376,6 @@
       <br><br>
       <button class="btn btn-primary" onclick="addEvent()">Add Event</button>
     </div>
-    <div class="section-heading section-heading-light">Extra names added</div>
-    <div class="card">
-      <p style="font-size:0.84rem;color:var(--muted);margin-bottom:10px">
-        Names you've added via "+ Add person" appear below and are available in all future sessions.
-      </p>
-      <div id="extra-names-list"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════════════════════
-     MODAL: Add person
-═══════════════════════════════════════════════════════════ -->
-<div class="modal-overlay" id="add-modal" onclick="closeAddModal(event)">
-  <div class="modal-sheet">
-    <div class="modal-title">Add a person</div>
-    <label for="add-name-input">Name</label>
-    <input id="add-name-input" class="input" type="text" placeholder="Full name" autocomplete="off">
-    <br><br>
-    <button class="btn btn-primary" onclick="confirmAddPerson()">Add &amp; mark present</button>
-    <button class="btn btn-secondary" style="margin-top:8px" onclick="closeAddModal()">Cancel</button>
   </div>
 </div>
 
@@ -435,19 +387,18 @@
 <script>
 /* ─── Name lists ──────────────────────────────────────────── */
 const WOMEN_DEVOTEES = [
-  "Ann Walsh", "Beatrys de Ligt", "Blythe Massey", "Cynthia Mancor",
-  "Diane Bryan", "Elise Bady", "Inca Hincape", "Jana Divisova",
-  "Kristien Otten", "Krysia Banachowski", "Linda Oppenheimer", "Lisa Lurie",
-  "Madhuka Ranmuthu", "Marie Masek", "Nancy Petrowski", "Pamela Gray",
-  "Radha Webley", "Siegerdina Mandema", "Vanessa Kenoyer", "Yvonne Slayman",
+  "Ann", "Beatrys", "Blythe", "Cynthia",
+  "Diane", "Elise", "Inca", "Jana",
+  "Kristien", "Krysia", "Linda", "Lisa",
+  "Madhuka", "Marie", "Nancy", "Pamela",
+  "Radha", "Siegerdina", "Vanessa", "Yvonne",
   "Caroline", "Carol"
 ];
 
 const MEN_DEVOTEES = [
-  "Bob DeLollis", "Bruce Burnham", "Chris Beaver", "Chris Merz",
-  "David", "Gilbert Evans", "Hoi Ngo", "Joseph Taylor",
-  "Julian Butler", "Malcolm Burke", "Michael", "Michiel Vos",
-  "Miki Malinka", "Steve Brown"
+  "Bob", "Bruce", "Chris B.", "Chris M.", "Da-vid",
+  "Gilbert", "Greg", "Hoi", "Joseph", "Julian",
+  "Leo", "Malcolm", "Michael", "Michiel", "Miki", "Robin"
 ];
 
 /* ─── Default events ──────────────────────────────────────── */
@@ -459,8 +410,7 @@ const DEFAULT_EVENTS = [
 ];
 
 /* ─── App state ───────────────────────────────────────────── */
-let currentSession  = null;
-let addModalContext = 'women'; // which list modal adds to
+let currentSession = null;
 
 /* ─── Storage ─────────────────────────────────────────────── */
 function getEvents()        { return JSON.parse(localStorage.getItem('att_events')   || 'null') || DEFAULT_EVENTS; }
@@ -524,39 +474,18 @@ function goHome() {
   showScreen('screen-home');
   document.getElementById('home-date').textContent = longDate();
   renderEventGrid();
-  renderTodaySessions();
 }
 
 function renderEventGrid() {
   const events = getEvents();
   document.getElementById('event-grid').innerHTML = events.map(ev =>
-    `<button class="event-btn" onclick="startSession(${JSON.stringify(ev.name)})">
+    `<button class="event-btn" data-event="${escHtml(ev.name)}" onclick="startSession(this.dataset.event)">
       <span class="event-icon">${ev.icon || '📋'}</span>
       ${escHtml(ev.name)}
     </button>`
   ).join('');
 }
 
-function renderTodaySessions() {
-  const all    = getSessions();
-  const today  = todayKey();
-  const todays = all.filter(s => s.date === today).reverse();
-  const sec    = document.getElementById('today-section');
-  const list   = document.getElementById('today-list');
-
-  if (!todays.length) { sec.style.display = 'none'; return; }
-  sec.style.display = 'block';
-  list.innerHTML = todays.map(s => {
-    const n = (s.present || []).length + (s.presentMen || []).length;
-    return `<div class="history-item" onclick="resumeSession('${s.id}')">
-      <div>
-        <div class="history-name">${escHtml(s.eventName)}</div>
-        <div class="history-meta">${s.time || ''} · ${n} present total</div>
-      </div>
-      <span style="color:rgba(255,255,255,0.40);font-size:1.2rem">›</span>
-    </div>`;
-  }).join('');
-}
 
 function showSettingsScreen() {
   showScreen('screen-settings');
@@ -604,33 +533,23 @@ function openAttendanceScreen() {
   document.getElementById('att-title').textContent = currentSession.eventName;
   document.getElementById('att-date').textContent  = longDate(currentSession.date);
   document.getElementById('att-back-btn').onclick  = goHome;
-  document.getElementById('search-input').value    = '';
-  renderWomenList('');
+  renderWomenList();
   updateWomenCounter();
   showScreen('screen-attendance');
 }
 
-function renderWomenList(filter) {
+function renderWomenList() {
   const names   = allWomen();
-  // Include any women added ad-hoc to this session
   (currentSession.present || []).forEach(n => { if (!names.includes(n)) names.push(n); });
-
-  const lf      = filter.toLowerCase();
-  const shown   = lf ? names.filter(n => n.toLowerCase().includes(lf)) : names;
   const present = new Set(currentSession.present || []);
 
-  document.getElementById('name-list').innerHTML = shown.map(name => {
+  document.getElementById('name-list').innerHTML = names.map(name => {
     const isPresent = present.has(name);
-    return `<li class="name-item${isPresent ? ' present' : ''}"
-                onclick="toggleWoman(${JSON.stringify(name)})">
-      <span class="name">${escHtml(name)}</span>
-      <span class="check-icon">${isPresent ? '✓' : ''}</span>
-    </li>`;
-  }).join('');
-}
-
-function filterNames() {
-  renderWomenList(document.getElementById('search-input').value);
+    return `<button class="name-btn${isPresent ? ' present' : ''}"
+                data-name="${escHtml(name)}"
+                onclick="toggleWoman(this.dataset.name)">${escHtml(name)}</button>`;
+  }).join('') +
+  `<button class="name-btn" style="background:#1e3550;border-color:#2a4a70;" onclick="openMensScreen()">👨 Men →</button>`;
 }
 
 function toggleWoman(name) {
@@ -639,13 +558,11 @@ function toggleWoman(name) {
   if (idx >= 0) currentSession.present.splice(idx, 1);
   else          currentSession.present.push(name);
   saveSession();
-  renderWomenList(document.getElementById('search-input').value);
+  renderWomenList();
   updateWomenCounter();
 }
 
-function updateWomenCounter() {
-  document.getElementById('cnt-num').textContent = (currentSession.present || []).length;
-}
+function updateWomenCounter() { /* counter bar removed */ }
 
 /* ══════════════════════════════════════════════════════════
    MEN'S ATTENDANCE SCREEN
@@ -653,8 +570,7 @@ function updateWomenCounter() {
 function openMensScreen() {
   document.getElementById('men-title').textContent = `Men — ${currentSession.eventName}`;
   document.getElementById('men-date').textContent  = longDate(currentSession.date);
-  document.getElementById('men-search-input').value = '';
-  renderMenList('');
+  renderMenList();
   updateMenCounter();
   showScreen('screen-men');
 }
@@ -664,27 +580,17 @@ function closeMensScreen() {
   openAttendanceScreen();
 }
 
-function renderMenList(filter) {
+function renderMenList() {
   const names   = allMen();
-  // Include any men added ad-hoc to this session
   (currentSession.presentMen || []).forEach(n => { if (!names.includes(n)) names.push(n); });
-
-  const lf      = filter.toLowerCase();
-  const shown   = lf ? names.filter(n => n.toLowerCase().includes(lf)) : names;
   const present = new Set(currentSession.presentMen || []);
 
-  document.getElementById('men-name-list').innerHTML = shown.map(name => {
+  document.getElementById('men-name-list').innerHTML = names.map(name => {
     const isPresent = present.has(name);
-    return `<li class="name-item${isPresent ? ' present' : ''}"
-                onclick="toggleMan(${JSON.stringify(name)})">
-      <span class="name">${escHtml(name)}</span>
-      <span class="check-icon">${isPresent ? '✓' : ''}</span>
-    </li>`;
+    return `<button class="name-btn${isPresent ? ' present' : ''}"
+                data-name="${escHtml(name)}"
+                onclick="toggleMan(this.dataset.name)">${escHtml(name)}</button>`;
   }).join('');
-}
-
-function filterMenNames() {
-  renderMenList(document.getElementById('men-search-input').value);
 }
 
 function toggleMan(name) {
@@ -693,62 +599,12 @@ function toggleMan(name) {
   if (idx >= 0) currentSession.presentMen.splice(idx, 1);
   else          currentSession.presentMen.push(name);
   saveSession();
-  renderMenList(document.getElementById('men-search-input').value);
+  renderMenList();
   updateMenCounter();
 }
 
-function updateMenCounter() {
-  document.getElementById('cnt-men-num').textContent = (currentSession.presentMen || []).length;
-}
+function updateMenCounter() { /* counter bar removed */ }
 
-/* ══════════════════════════════════════════════════════════
-   ADD PERSON MODAL
-══════════════════════════════════════════════════════════ */
-function showAddPersonModal(context) {
-  addModalContext = context || 'women';
-  document.getElementById('add-name-input').value = '';
-  document.getElementById('add-modal').classList.add('open');
-  setTimeout(() => document.getElementById('add-name-input').focus(), 80);
-}
-function closeAddModal(e) {
-  if (!e || e.target === document.getElementById('add-modal'))
-    document.getElementById('add-modal').classList.remove('open');
-}
-function confirmAddPerson() {
-  const name = document.getElementById('add-name-input').value.trim();
-  if (!name) return;
-
-  if (addModalContext === 'men') {
-    if (!allMen().includes(name)) {
-      const ex = getExtraMen(); ex.push(name); saveExtraMen(ex);
-    }
-    if (!(currentSession.presentMen || []).includes(name)) {
-      if (!currentSession.presentMen) currentSession.presentMen = [];
-      currentSession.presentMen.push(name);
-      saveSession();
-    }
-    document.getElementById('add-modal').classList.remove('open');
-    renderMenList(document.getElementById('men-search-input').value);
-    updateMenCounter();
-  } else {
-    if (!allWomen().includes(name)) {
-      const ex = getExtraWomen(); ex.push(name); saveExtraWomen(ex);
-    }
-    if (!(currentSession.present || []).includes(name)) {
-      if (!currentSession.present) currentSession.present = [];
-      currentSession.present.push(name);
-      saveSession();
-    }
-    document.getElementById('add-modal').classList.remove('open');
-    renderWomenList(document.getElementById('search-input').value);
-    updateWomenCounter();
-  }
-  showToast(`${name} added & marked present`);
-}
-document.getElementById('add-name-input').addEventListener('keydown', e => {
-  if (e.key === 'Enter')  confirmAddPerson();
-  if (e.key === 'Escape') closeAddModal();
-});
 
 /* ══════════════════════════════════════════════════════════
    SUMMARY
@@ -793,6 +649,51 @@ function showSummary() {
   showScreen('screen-summary');
 }
 
+/* ─── Share latest session (called from home screen) ─────── */
+function shareLatest() {
+  const all = getSessions();
+  if (!all.length) { showToast('No sessions recorded yet'); return; }
+  const s     = all[all.length - 1];
+  const women = s.present    || [];
+  const men   = s.presentMen || [];
+  let text = `${s.eventName}\n${longDate(s.date)}${s.time ? ' · ' + s.time : ''}\n\n`;
+  text += `Present (${women.length + men.length}):\n`;
+  if (women.length) text += women.map(n => `  • ${n}`).join('\n') + '\n';
+  if (men.length) {
+    if (women.length) text += '  — Men —\n';
+    text += men.map(n => `  • ${n}`).join('\n') + '\n';
+  }
+  if (!women.length && !men.length) text += '  (none)\n';
+
+  const title = `${s.eventName} — ${longDate(s.date)}`;
+
+  const clipboardFallback = () => {
+    try {
+      const el = Object.assign(document.createElement('textarea'),
+        { value: text, style: 'position:fixed;opacity:0' });
+      document.body.appendChild(el); el.focus(); el.select();
+      document.execCommand('copy'); document.body.removeChild(el);
+      showToast('Copied ✓');
+    } catch { showToast('Copy failed'); }
+  };
+
+  if (navigator.share) {
+    navigator.share({ title, text })
+      .then(() => showToast('Shared ✓'))
+      .catch(err => {
+        if (err.name !== 'AbortError') {
+          if (navigator.clipboard?.writeText)
+            navigator.clipboard.writeText(text).then(() => showToast('Copied ✓')).catch(clipboardFallback);
+          else clipboardFallback();
+        }
+      });
+  } else if (navigator.clipboard?.writeText) {
+    navigator.clipboard.writeText(text).then(() => showToast('Copied ✓')).catch(clipboardFallback);
+  } else {
+    clipboardFallback();
+  }
+}
+
 /* ─── Copy ────────────────────────────────────────────────── */
 function copyToClipboard() {
   const s = currentSession;
@@ -822,7 +723,7 @@ function copyToClipboard() {
   } else { fallback(); }
 }
 
-/* ─── CSV export ──────────────────────────────────────────── */
+/* ─── CSV export — share sheet on mobile, download on desktop ─ */
 function exportCSV() {
   const s       = currentSession;
   const wPres   = new Set(s.present || []);
@@ -831,12 +732,24 @@ function exportCSV() {
   allWomen().forEach(n => rows.push([n, 'F', wPres.has(n) ? 'Present' : 'Not marked', s.eventName, s.date]));
   allMen().forEach(n   => rows.push([n, 'M', mPres.has(n) ? 'Present' : 'Not marked', s.eventName, s.date]));
 
-  const csv  = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
-  const blob = new Blob([csv], { type: 'text/csv' });
-  const url  = URL.createObjectURL(blob);
-  Object.assign(document.createElement('a'), {
-    href: url, download: `${s.eventName.replace(/[^a-z0-9]/gi,'-')}-${s.date}.csv`
-  }).click();
+  const csv      = rows.map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const filename = `${s.eventName.replace(/[^a-z0-9]/gi,'-')}-${s.date}.csv`;
+  const blob     = new Blob([csv], { type: 'text/csv' });
+  const file     = new File([blob], filename, { type: 'text/csv' });
+
+  // Use native share sheet (AirDrop, Mail, etc.) when available
+  if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+    navigator.share({ files: [file], title: filename })
+      .then(() => showToast('Shared ✓'))
+      .catch(err => { if (err.name !== 'AbortError') fallbackDownload(blob, filename); });
+  } else {
+    fallbackDownload(blob, filename);
+  }
+}
+
+function fallbackDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  Object.assign(document.createElement('a'), { href: url, download: filename }).click();
   URL.revokeObjectURL(url);
   showToast('CSV downloaded ✓');
 }
@@ -856,20 +769,6 @@ function renderSettings() {
           </div>`).join('')
       : '<p style="color:var(--muted);font-size:0.9rem">No events.</p>';
 
-  const exW = getExtraWomen();
-  const exM = getExtraMen();
-  const extra = [
-    ...exW.map(n => `<div class="edit-event-item">
-      <span class="ev-name">${escHtml(n)} <small style="color:var(--muted)">(women)</small></span>
-      <button class="del-btn" onclick="removeExtraW(${exW.indexOf(n)})">×</button>
-    </div>`),
-    ...exM.map(n => `<div class="edit-event-item">
-      <span class="ev-name">${escHtml(n)} <small style="color:var(--muted)">(men)</small></span>
-      <button class="del-btn" onclick="removeExtraM(${exM.indexOf(n)})">×</button>
-    </div>`)
-  ];
-  document.getElementById('extra-names-list').innerHTML =
-    extra.length ? extra.join('') : '<p style="color:var(--muted);font-size:0.85rem">None yet.</p>';
 }
 
 function addEvent() {
