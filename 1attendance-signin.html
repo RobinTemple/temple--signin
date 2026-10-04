@@ -999,9 +999,25 @@ function clearAll() {
   btn.textContent='⚠️ Clear all data'; btn.dataset.confirm='0';
 }
 
+// ── Error display (diagnostic) ────────────────────────────
+window.onerror = function(msg, src, line, col, err) {
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:#300;color:#fff;padding:30px;font-size:20px;font-family:monospace;z-index:99999;white-space:pre-wrap;overflow:auto;';
+  overlay.textContent = 'ERROR:\n' + msg + '\n\nLine: ' + line + '\nFile: ' + src + '\n\n' + (err && err.stack ? err.stack : '');
+  document.body.appendChild(overlay);
+  return true;
+};
+
 // ── Init ──────────────────────────────────────────────────
-loadData();
-goHome();
+try {
+  loadData();
+  goHome();
+} catch(e) {
+  var overlay = document.createElement('div');
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:#300;color:#fff;padding:30px;font-size:20px;font-family:monospace;z-index:99999;white-space:pre-wrap;overflow:auto;';
+  overlay.textContent = 'INIT ERROR:\n' + e.message + '\n\n' + e.stack;
+  document.body.appendChild(overlay);
+}
 
 // ── Service Worker (offline caching) ──────────────────────
 if ('serviceWorker' in navigator) {
