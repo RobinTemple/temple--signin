@@ -283,7 +283,7 @@
     #screen-attendance .screen-body,
     #screen-men .screen-body {
       flex: 1; display: flex; flex-direction: column;
-      padding-bottom: 10px;
+      padding-bottom: 10px; min-height: 0;
     }
     #screen-attendance .name-grid,
     #screen-men .name-grid {
@@ -326,9 +326,8 @@
   </div>
   <div class="screen-body">
     <div class="name-grid" id="name-list"></div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding-top:10px;flex-shrink:0">
-      <button class="btn" style="background:#1e3550;color:white;font-size:1.05rem;font-weight:600;padding:14px;" onclick="openMensScreen()">👨 Men →</button>
-      <button class="btn" style="background:#1e8a7a;color:white;font-size:1.05rem;font-weight:600;padding:14px;" onclick="finishWomen()">✓ Done</button>
+    <div style="padding-top:10px;flex-shrink:0">
+      <button class="btn" style="background:#1e3550;color:white;font-size:1.05rem;font-weight:600;padding:14px;" onclick="openMensScreen()">👨 Men's Names →</button>
     </div>
   </div>
 </div>
@@ -571,9 +570,6 @@ function renderWomenList() {
   }).join('');
 }
 
-function finishWomen() {
-  openMensScreen();
-}
 
 function toggleWoman(name) {
   if (!currentSession.present) currentSession.present = [];
