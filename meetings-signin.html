@@ -279,7 +279,11 @@
     /* ── Fill full screen height on attendance screens ────── */
     #screen-attendance,
     #screen-men {
-      display: flex; flex-direction: column; min-height: 100dvh;
+      flex-direction: column; min-height: 100dvh;
+    }
+    #screen-attendance.active,
+    #screen-men.active {
+      display: flex;   /* overrides .screen.active { display:block } */
     }
     #screen-attendance .screen-body,
     #screen-men .screen-body {
