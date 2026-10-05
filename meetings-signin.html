@@ -139,7 +139,7 @@
       text-align: center;
       line-height: 1.3;
       word-break: break-word;
-      transition: background 0.10s, border-color 0.10s;
+      touch-action: manipulation;
     }
     .name-btn:active { opacity: 0.70; }
     .name-btn.present {
@@ -167,6 +167,7 @@
       padding: 13px; border: none; border-radius: 8px;
       font-size: 0.97rem; font-weight: 600;
       cursor: pointer; text-align: center; line-height: 1;
+      touch-action: manipulation;
     }
     .btn + .btn { margin-top: 8px; }
     .btn-primary   { background: var(--primary); color: white; }
@@ -326,9 +327,6 @@
   </div>
   <div class="screen-body">
     <div class="name-grid" id="name-list"></div>
-    <div style="padding-top:10px;flex-shrink:0">
-      <button class="btn" style="background:#1e3550;color:white;font-size:1.05rem;font-weight:600;padding:14px;" onclick="openMensScreen()">👨 Men's Names →</button>
-    </div>
   </div>
 </div>
 
@@ -567,7 +565,8 @@ function renderWomenList() {
     return `<button class="name-btn${isPresent ? ' present' : ''}"
                 data-name="${escHtml(name)}"
                 onclick="toggleWoman(this.dataset.name)">${escHtml(name)}</button>`;
-  }).join('');
+  }).join('') +
+  `<button class="name-btn" style="background:#1e3550;border-color:#2a4a70;font-size:1rem;" onclick="openMensScreen()">👨 Men →</button>`;
 }
 
 
