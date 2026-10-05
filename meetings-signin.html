@@ -315,6 +315,10 @@
         <span class="event-icon" style="font-size:1.5rem;margin-bottom:6px">📤</span>
         Share last session
       </button>
+      <button class="event-btn" style="background:#3a2010;border-color:rgba(255,255,255,0.15);padding:18px 12px 15px;font-size:1rem;" onclick="clearOldSessions()">
+        <span class="event-icon" style="font-size:1.5rem;margin-bottom:6px">🗑️</span>
+        Clear old sessions
+      </button>
     </div>
 
   </div>
@@ -746,6 +750,24 @@ function copyToClipboard() {
   if (navigator.clipboard?.writeText) {
     navigator.clipboard.writeText(text).then(() => showToast('Copied ✓')).catch(fallback);
   } else { fallback(); }
+}
+
+/* ─── Clear sessions older than 30 days ───────────────────── */
+function clearOldSessions() {
+  const all = getSessions();
+  if (!all.length) { showToast('No sessions stored'); return; }
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - 30);
+  const cutoffStr = cutoff.toISOString().slice(0, 10); // YYYY-MM-DD
+  const keep    = all.filter(s => s.date >= cutoffStr);
+  const removed = all.length - keep.length;
+  if (removed === 0) {
+    showToast('No sessions older than 30 days');
+    return;
+  }
+  if (!confirm(`Delete ${removed} session${removed > 1 ? 's' : ''} older than 30 days?`)) return;
+  saveSessions(keep);
+  showToast(`Cleared ${removed} old session${removed > 1 ? 's' : ''} ✓`);
 }
 
 /* ─── CSV export — share sheet on mobile, download on desktop ─ */
