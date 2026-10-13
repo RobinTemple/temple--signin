@@ -977,11 +977,17 @@ function exportCSV() {
   if (navigator.share) {
     try {
       var file = new File([csv], filename, {type: 'text/csv'});
+      // Try file sharing (iOS 15+) — opens share sheet with AirDrop + file
       navigator.share({ files: [file] })
-        .then(function() { /* shared successfully */ })
         .catch(function(err) {
           if (err && err.name === 'AbortError') return;
-          showCSVFallback(csv);
+          // File sharing not supported — try text sharing (iOS 12.4+)
+          // Still opens share sheet with AirDrop; recipient gets CSV as text
+          navigator.share({ title: filename, text: csv })
+            .catch(function(err2) {
+              if (err2 && err2.name === 'AbortError') return;
+              showCSVFallback(csv);
+            });
         });
     } catch(e) {
       showCSVFallback(csv);
