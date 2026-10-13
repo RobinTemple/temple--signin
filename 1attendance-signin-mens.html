@@ -676,13 +676,15 @@ function setState(person, event, val) {
 }
 
 function personStatus(person) {
-  var d = attendanceState[todayKey()];
-  var s = d && d[currentSchedule];
-  var data = s && s[person];
-  if (!data || !Object.keys(data).length) return null;
-  const vals = Object.values(data);
-  if (vals.includes('departed')) return 'departed';
-  if (vals.includes('arrived'))  return 'arrived';
+  // Use most recent signin record so arriving at a second event after
+  // departing a first one correctly shows green, not brown.
+  var today = todayKey();
+  for (var i = signins.length - 1; i >= 0; i--) {
+    var r = signins[i];
+    if (r.name === person && r.date === today && r.schedule === currentSchedule) {
+      return r.action;
+    }
+  }
   return null;
 }
 
@@ -847,7 +849,7 @@ function tapDone(btn) {
   btn.classList.add('done-clicked');
   btn.disabled = true;
   if (tapReturnTimer) { clearTimeout(tapReturnTimer); tapReturnTimer = null; }
-  setTimeout(goNames, 1500);
+  setTimeout(goNames, 400);
 }
 
 // ── Timer ─────────────────────────────────────────────────
