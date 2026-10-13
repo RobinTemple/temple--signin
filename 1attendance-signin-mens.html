@@ -977,18 +977,15 @@ function exportCSV() {
   if (navigator.share) {
     try {
       var file = new File([csv], filename, {type: 'text/csv'});
-      // Try file sharing (iOS 15+) — opens share sheet with AirDrop + file
-      navigator.share({ files: [file] })
-        .catch(function(err) {
-          if (err && err.name === 'AbortError') return;
-          // File sharing not supported — try text sharing (iOS 12.4+)
-          // Still opens share sheet with AirDrop; recipient gets CSV as text
-          navigator.share({ title: filename, text: csv })
-            .catch(function(err2) {
-              if (err2 && err2.name === 'AbortError') return;
-              showCSVFallback(csv);
-            });
-        });
+      // Decide file vs text share synchronously — must pick before any async call
+      // so the single navigator.share() fires directly from the user gesture.
+      // On iOS 18+ a chained .catch() share loses gesture context and silently fails.
+      var shareData = (navigator.canShare && navigator.canShare({ files: [file] }))
+        ? { files: [file] }
+        : { title: filename, text: csv };
+      navigator.share(shareData).catch(function(err) {
+        if (err && err.name !== 'AbortError') showCSVFallback(csv);
+      });
     } catch(e) {
       showCSVFallback(csv);
     }
