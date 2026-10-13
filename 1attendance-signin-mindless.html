@@ -70,7 +70,7 @@
       flex: 1;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      padding: 48px 12px 24px;
+      padding: 48px 12px 70px; /* extra bottom space so gear button stays clear of scroll layer */
       display: grid;
       grid-template-columns: repeat(4, 120px);
       gap: 16px;
@@ -234,7 +234,7 @@
     .admin-toggle {
       position: fixed;
       bottom: 14px; right: 14px;
-      width: 36px; height: 36px;
+      width: 44px; height: 44px;
       background: var(--surface2);
       border: 1px solid var(--border);
       border-radius: 50%;
@@ -244,7 +244,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 100;
+      /* Raise above webkit-overflow-scrolling composited layers on older iOS */
+      z-index: 9000;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
+      touch-action: manipulation;
+      pointer-events: auto;
     }
     .admin-overlay {
       display: none;
@@ -395,7 +400,7 @@
 </div>
 
 <div id="toast"></div>
-<button class="admin-toggle" onclick="promptPIN()" title="Admin">⚙</button>
+<button class="admin-toggle" onclick="promptPIN()" ontouchend="event.preventDefault();promptPIN();" title="Admin">⚙</button>
 
 <!-- PIN overlay -->
 <div id="pin-overlay" class="pin-overlay">
