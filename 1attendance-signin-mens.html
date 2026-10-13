@@ -915,10 +915,29 @@ function exportCSV() {
       .map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')
   ).join('\n');
   const csv = header + rows;
-  const ta = document.getElementById('csv-text');
+  const filename = 'attendance_mens_' + todayKey() + '.csv';
+
+  if (navigator.share) {
+    try {
+      var file = new File([csv], filename, {type: 'text/csv'});
+      navigator.share({ files: [file] })
+        .then(function() { /* shared successfully */ })
+        .catch(function(err) {
+          if (err && err.name === 'AbortError') return;
+          showCSVFallback(csv);
+        });
+    } catch(e) {
+      showCSVFallback(csv);
+    }
+    return;
+  }
+  showCSVFallback(csv);
+}
+
+function showCSVFallback(csv) {
+  var ta = document.getElementById('csv-text');
   ta.value = csv;
-  const box = document.getElementById('csv-output');
-  box.style.display = 'block';
+  document.getElementById('csv-output').style.display = 'block';
   ta.focus();
   ta.select();
 }
