@@ -37,7 +37,7 @@
     }
 
     .screen { display: none; height: 100vh; flex-direction: column; }
-    .screen.active { display: flex; position: relative; }
+    .screen.active { display: flex; }
 
     /* ════════════════════════════════════════
        NAMES SCREEN (home)
@@ -70,7 +70,7 @@
       flex: 1;
       overflow-y: auto;
       -webkit-overflow-scrolling: touch;
-      padding: 48px 12px 70px; /* extra bottom space so gear button stays clear of scroll layer */
+      padding: 16px 12px 24px;
       display: grid;
       grid-template-columns: repeat(4, 120px);
       gap: 16px;
@@ -232,19 +232,17 @@
 
     /* ── Admin ── */
     .admin-toggle {
-      position: absolute;
-      bottom: 14px; right: 14px;
-      width: 44px; height: 44px;
-      background: var(--surface2);
-      border: 1px solid var(--border);
+      width: 36px; height: 36px;
+      background: transparent;
+      border: none;
       border-radius: 50%;
       color: var(--text-muted);
-      font-size: 15px;
+      font-size: 16px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      z-index: 50;
+      flex-shrink: 0;
       touch-action: manipulation;
     }
     .admin-overlay {
@@ -365,6 +363,7 @@
         <div class="header-title">Mindless Company</div>
         <div class="header-sub">Please record your attendance</div>
       </div>
+      <button class="admin-toggle" onclick="promptPIN()" title="Admin">⚙</button>
     </div>
     <div class="names-meta">
       <span class="names-greeting" id="names-greeting"></span>
@@ -372,7 +371,6 @@
     </div>
   </div>
   <div id="names-list"></div>
-  <button class="admin-toggle" onclick="promptPIN()" title="Admin">⚙</button>
 </div>
 
 <!-- ══════════════════════════════════════════
