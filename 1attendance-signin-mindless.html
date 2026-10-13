@@ -37,7 +37,7 @@
     }
 
     .screen { display: none; height: 100vh; flex-direction: column; }
-    .screen.active { display: flex; }
+    .screen.active { display: flex; position: relative; }
 
     /* ════════════════════════════════════════
        NAMES SCREEN (home)
@@ -232,7 +232,7 @@
 
     /* ── Admin ── */
     .admin-toggle {
-      position: fixed;
+      position: absolute;
       bottom: 14px; right: 14px;
       width: 44px; height: 44px;
       background: var(--surface2);
@@ -244,12 +244,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      /* Raise above webkit-overflow-scrolling composited layers on older iOS */
-      z-index: 9000;
-      -webkit-transform: translateZ(0);
-      transform: translateZ(0);
+      z-index: 50;
       touch-action: manipulation;
-      pointer-events: auto;
     }
     .admin-overlay {
       display: none;
@@ -376,6 +372,7 @@
     </div>
   </div>
   <div id="names-list"></div>
+  <button class="admin-toggle" onclick="promptPIN()" title="Admin">⚙</button>
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -400,7 +397,6 @@
 </div>
 
 <div id="toast"></div>
-<button class="admin-toggle" onclick="promptPIN()" ontouchend="event.preventDefault();promptPIN();" title="Admin">⚙</button>
 
 <!-- PIN overlay -->
 <div id="pin-overlay" class="pin-overlay">
