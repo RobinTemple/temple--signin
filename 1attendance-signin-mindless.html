@@ -47,6 +47,10 @@
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
       padding: 14px 16px 12px;
+      position: relative;
+      z-index: 10;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
     }
     .names-header-top {
       display: flex;
@@ -244,6 +248,10 @@
       justify-content: center;
       flex-shrink: 0;
       touch-action: manipulation;
+      -webkit-user-select: none;
+      user-select: none;
+      -webkit-transform: translateZ(0);
+      transform: translateZ(0);
     }
     .admin-overlay {
       display: none;
@@ -363,7 +371,7 @@
         <div class="header-title">Mindless Company</div>
         <div class="header-sub">Please record your attendance</div>
       </div>
-      <button class="admin-toggle" onclick="promptPIN()" title="Admin">⚙</button>
+      <button class="admin-toggle" onclick="promptPIN()" ontouchend="event.preventDefault();promptPIN();" title="Admin">⚙</button>
     </div>
     <div class="names-meta">
       <span class="names-greeting" id="names-greeting"></span>
