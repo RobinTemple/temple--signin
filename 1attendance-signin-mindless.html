@@ -262,6 +262,7 @@
       width: 100%;
       max-height: 70vh;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
     }
     .admin-sheet h2 { font-size: 16px; font-weight: 400; margin-bottom: 14px; }
     .admin-btn {
@@ -274,6 +275,8 @@
       font-size: 15px; font-weight: 300;
       cursor: pointer; text-align: left;
       margin-bottom: 8px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: rgba(255,255,255,0.1);
     }
     .admin-close {
       display: block; width: 100%;
@@ -744,24 +747,21 @@ function exportCSV() {
   var csv = header + rows.join('\n');
   var filename = 'attendance_mindless_' + todayKey() + '.csv';
 
+  // Always show the textarea first — this iPad may not support AirDrop,
+  // so the copy/paste fallback is the primary export method here.
+  showCSVFallback(csv);
+
+  // Additionally attempt file share if the device supports it (newer iPads with AirDrop).
+  // Use canShare synchronously so the single navigator.share() fires from the user gesture.
+  // On iOS 18+ a chained .catch() share loses gesture context and silently fails.
   if (navigator.share) {
     try {
       var file = new File([csv], filename, {type: 'text/csv'});
-      // Decide file vs text share synchronously — must pick before any async call
-      // so the single navigator.share() fires directly from the user gesture.
-      // On iOS 18+ a chained .catch() share loses gesture context and silently fails.
-      var shareData = (navigator.canShare && navigator.canShare({ files: [file] }))
-        ? { files: [file] }
-        : { title: filename, text: csv };
-      navigator.share(shareData).catch(function(err) {
-        if (err && err.name !== 'AbortError') showCSVFallback(csv);
-      });
-    } catch(e) {
-      showCSVFallback(csv);
-    }
-    return;
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        navigator.share({ files: [file] }).catch(function() {});
+      }
+    } catch(e) {}
   }
-  showCSVFallback(csv);
 }
 
 function showCSVFallback(csv) {
