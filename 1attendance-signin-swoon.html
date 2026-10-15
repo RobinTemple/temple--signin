@@ -366,6 +366,37 @@
       cursor: pointer; text-align: center;
       margin-top: 8px;
     }
+  
+    /* ── PIN overlay ── */
+    .pin-overlay {
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.82);
+      align-items: center; justify-content: center;
+      flex-direction: column; gap: 24px;
+    }
+    .pin-overlay.open { display: flex; }
+    .pin-title { color: #dde4f0; font-size: 16px; font-weight: 300; letter-spacing: 0.08em; }
+    .pin-dots { display: flex; gap: 14px; }
+    .pin-dot {
+      width: 14px; height: 14px; border-radius: 50%;
+      border: 2px solid #4a5a80; background: transparent;
+      transition: background 0.12s, border-color 0.12s;
+    }
+    .pin-dot.filled { background: #7090d0; border-color: #7090d0; }
+    .pin-dot.error  { background: #d05050; border-color: #d05050; }
+    .pin-numpad { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+    .pin-key {
+      width: 68px; height: 68px; border-radius: 50%;
+      background: #1e1e34; border: 1.5px solid #282845;
+      color: #dde4f0; font-size: 22px; font-weight: 200;
+      cursor: pointer; transition: background 0.12s;
+    }
+    .pin-key:active { background: #2a2a50; }
+    .pin-cancel {
+      color: #6e7e9e; font-size: 13px; font-weight: 300;
+      background: none; border: none; cursor: pointer;
+      letter-spacing: 0.06em; padding: 8px 20px;
+    }
   </style>
 </head>
 <body>
@@ -412,11 +443,37 @@
 </div>
 
 <div id="toast"></div>
-<button class="admin-toggle" onclick="openAdmin()" title="Admin">⚙</button>
+<button class="admin-toggle" onclick="promptPIN()" title="Admin">⚙</button>
+
+<!-- PIN overlay -->
+<div id="pin-overlay" class="pin-overlay">
+  <div class="pin-title">Enter PIN</div>
+  <div class="pin-dots">
+    <div class="pin-dot" id="pd0"></div>
+    <div class="pin-dot" id="pd1"></div>
+    <div class="pin-dot" id="pd2"></div>
+    <div class="pin-dot" id="pd3"></div>
+  </div>
+  <div class="pin-numpad">
+    <button class="pin-key" onclick="pinKey('1')">1</button>
+    <button class="pin-key" onclick="pinKey('2')">2</button>
+    <button class="pin-key" onclick="pinKey('3')">3</button>
+    <button class="pin-key" onclick="pinKey('4')">4</button>
+    <button class="pin-key" onclick="pinKey('5')">5</button>
+    <button class="pin-key" onclick="pinKey('6')">6</button>
+    <button class="pin-key" onclick="pinKey('7')">7</button>
+    <button class="pin-key" onclick="pinKey('8')">8</button>
+    <button class="pin-key" onclick="pinKey('9')">9</button>
+    <button class="pin-key" onclick="pinBack()">⌫</button>
+    <button class="pin-key" onclick="pinKey('0')">0</button>
+    <button class="pin-cancel" onclick="pinCancel()">Cancel</button>
+  </div>
+</div>
+<!-- Admin sheet -->
 <div id="admin-overlay" class="admin-overlay" onclick="maybeCloseAdmin(event)">
   <div class="admin-sheet" onclick="if(event&&event.stopPropagation)event.stopPropagation()">
     <h2>Admin — Swoon of Faith</h2>
-    <button class="admin-btn" onclick="exportCSV()">📥 Show CSV data</button>
+    <button class="admin-btn" onclick="exportCSV()">📤 Share / Export CSV</button>
     <button class="admin-btn" onclick="clearToday()">🗑 Clear today's records</button>
     <button class="admin-btn" id="clear-all-btn" onclick="clearAll()">⚠️ Clear all data</button>
     <div id="admin-records" style="margin-top:14px;"></div>
@@ -434,7 +491,7 @@
 var HALL_NAME    = 'Swoon of Faith';
 var SCHEDULE_KEY = 'SoF';
 
-var MAIN_DEVOTEES = ['Ben', 'Blythe', 'Madhuka', 'Yvonne'];
+var MAIN_DEVOTEES = ['Blythe', 'Madhuka', 'Yvonne'];
 
 var SUB_MEN    = ['Bob', 'Gilbert', 'Hoi', 'Joseph', 'Leo', 'Malcolm', 'Michael', 'Miki', 'Robin'];
 var SUB_LADIES = ['Carol', 'Caroline', 'Diane', 'Krysia', 'Lisa', 'Radha', 'Vanessa'];
@@ -510,23 +567,15 @@ function setState(person, event, val) {
 }
 
 function personStatus(person) {
-  var d = attendanceState[todayKey()];
-  var s = d && d[SCHEDULE_KEY];
-  var data = s && s[person];
-  if (!data) return null;
-  var hasKeys = false;
-  var foundDeparted = false;
-  var foundArrived = false;
-  for (var k in data) {
-    if (data.hasOwnProperty(k)) {
-      hasKeys = true;
-      if (data[k] === 'departed') foundDeparted = true;
-      if (data[k] === 'arrived')  foundArrived  = true;
+  // Use most recent signin record so arriving at a second event after
+  // departing a first one correctly shows green, not brown.
+  var today = todayKey();
+  for (var i = signins.length - 1; i >= 0; i--) {
+    var r = signins[i];
+    if (r.name === person && r.date === today) {
+      return r.action;
     }
   }
-  if (!hasKeys) return null;
-  if (foundDeparted) return 'departed';
-  if (foundArrived)  return 'arrived';
   return null;
 }
 
@@ -703,7 +752,7 @@ function tapDone(btn) {
   btn.classList.add('done-clicked');
   btn.disabled = true;
   if (tapReturnTimer) { clearTimeout(tapReturnTimer); tapReturnTimer = null; }
-  setTimeout(goNames, 1500);
+  setTimeout(goNames, 400);
 }
 
 // ── Timer ─────────────────────────────────────────────────
@@ -788,13 +837,18 @@ function exportCSV() {
   if (navigator.share) {
     try {
       var file = new File([csv], filename, {type: 'text/csv'});
-      var shareData = {files: [file]};
-      if (navigator.canShare && navigator.canShare(shareData)) {
-        navigator.share(shareData).catch(function() { showCSVFallback(csv); });
-        return;
-      }
-    } catch(e) {}
-    navigator.share({title: filename, text: csv}).catch(function() { showCSVFallback(csv); });
+      // Decide file vs text share synchronously — must pick before any async call
+      // so the single navigator.share() fires directly from the user gesture.
+      // On iOS 18+ a chained .catch() share loses gesture context and silently fails.
+      var shareData = (navigator.canShare && navigator.canShare({ files: [file] }))
+        ? { files: [file] }
+        : { title: filename, text: csv };
+      navigator.share(shareData).catch(function(err) {
+        if (err && err.name !== 'AbortError') showCSVFallback(csv);
+      });
+    } catch(e) {
+      showCSVFallback(csv);
+    }
     return;
   }
   showCSVFallback(csv);
@@ -848,6 +902,40 @@ function clearAll() {
 // ── Init ──────────────────────────────────────────────────
 loadData();
 renderNames();
+
+// ── PIN ───────────────────────────────────────────────────
+var PIN_CODE = '1903';
+var pinEntry = '';
+function promptPIN() {
+  pinEntry = ''; updatePinDots();
+  document.getElementById('pin-overlay').classList.add('open');
+}
+function pinKey(d) {
+  if (pinEntry.length >= 4) return;
+  pinEntry += d; updatePinDots();
+  if (pinEntry.length === 4) { setTimeout(checkPIN, 120); }
+}
+function pinBack() { pinEntry = pinEntry.slice(0, -1); updatePinDots(); }
+function pinCancel() {
+  document.getElementById('pin-overlay').classList.remove('open');
+  pinEntry = ''; updatePinDots();
+}
+function updatePinDots() {
+  for (var i = 0; i < 4; i++) {
+    var dot = document.getElementById('pd' + i);
+    dot.classList.remove('filled', 'error');
+    if (i < pinEntry.length) dot.classList.add('filled');
+  }
+}
+function checkPIN() {
+  if (pinEntry === PIN_CODE) {
+    document.getElementById('pin-overlay').classList.remove('open');
+    pinEntry = ''; updatePinDots(); openAdmin();
+  } else {
+    for (var i = 0; i < 4; i++) { document.getElementById('pd' + i).classList.add('error'); }
+    setTimeout(function() { pinEntry = ''; updatePinDots(); }, 800);
+  }
+}
 </script>
 </body>
 </html>
